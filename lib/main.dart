@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:note_demo/widgets/demo_widget.dart';
+import 'package:note_demo/widgets/text_editor.dart';
 
 void main() {
   runApp(const MainApp());
@@ -9,8 +11,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello Wold!'))),
-    );
+    return const MaterialApp(home: Scaffold(body: DemoWidget()));
   }
 }
