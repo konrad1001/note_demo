@@ -36,6 +36,10 @@ class _DemoWidgetState extends State<DemoWidget> with TickerProviderStateMixin {
             title: const Text("Notes demo"),
             bottom: TabBar(
               controller: _tabController,
+              onTap: (index) {
+                print("swupe, ${index}");
+                if (index == 1) context.read<DemoWidgetCubit>().fetch();
+              },
               tabs: const <Widget>[
                 Tab(text: "Write"),
                 Tab(text: "Revise"),
@@ -46,7 +50,12 @@ class _DemoWidgetState extends State<DemoWidget> with TickerProviderStateMixin {
             controller: _tabController,
             children: <Widget>[
               Center(child: TextEditor(controller: state.controller)),
-              Center(child: AIScreen(controller: state.controller)),
+              Center(
+                child: AIScreen(
+                  controller: TextEditingController(text: state.modelAnswer),
+                  isLoading: state.isLoading,
+                ),
+              ),
             ],
           ),
         ),
