@@ -21,6 +21,8 @@ class GeminiResponse {
       responseId: json['responseId'],
     );
   }
+
+  String get firstCandidateText => candidates.first.content.parts.first.text;
 }
 
 class Candidate {

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:note_demo/agents/agent_utils.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/widgets/models.dart';
 
@@ -12,8 +13,12 @@ class DemoWidgetCubit extends Cubit<AppState> {
     : super(
         AppState(controller: TextEditingController(), modelAnswer: "Empty"),
       ) {
-    print("init");
+    agent = GPTAgent(role: AgentRole.principle);
+    researcher = GPTAgent(role: AgentRole.researcher);
   }
+
+  late GPTAgent agent;
+  late GPTAgent researcher;
 
   fetch() async {
     if (state.controller.text.length < 20) return;
@@ -21,13 +26,17 @@ class DemoWidgetCubit extends Cubit<AppState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      final response = await GPTAgent.fetch(state.controller.text);
-      emit(
-        state.copyWith(
-          modelAnswer: response.candidates.first.content.parts.first.text,
-          isLoading: false,
-        ),
+      final response = await agent.fetch(state.controller.text);
+      final principalAnswer = response.firstCandidateText;
+      final researchResponse = await researcher.fetch(
+        '<PrincipalAnswer>$principalAnswer <Notes>${state.controller.text}',
       );
+      final researchAnswer = researchResponse.firstCandidateText;
+
+      final combinedAnswer =
+          '$principalAnswer\n\nAdditional Study Material:\n$researchAnswer';
+
+      emit(state.copyWith(modelAnswer: combinedAnswer, isLoading: false));
     } catch (e) {
       emit(state.copyWith(modelAnswer: "Error: $e", isLoading: false));
     }
