@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:markdown_widget/widget/all.dart';
 
 class AIScreen extends StatelessWidget {
   const AIScreen({
@@ -19,11 +20,7 @@ class AIScreen extends StatelessWidget {
           if (isLoading) Center(child: CircularProgressIndicator()),
           Opacity(
             opacity: isLoading ? 0.5 : 1.0,
-            child: TextField(
-              maxLines: 200,
-              controller: controller,
-              readOnly: true,
-            ),
+            child: MarkdownWidget(data: controller.text),
           ),
         ],
       ),
