@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:note_demo/agents/agent_utils.dart';
-import 'package:note_demo/widgets/models.dart';
+import 'package:note_demo/models/gemini_response.dart';
 
 const kUrl =
     'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';

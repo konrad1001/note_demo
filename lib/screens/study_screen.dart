@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:markdown_widget/widget/markdown.dart';
 import 'package:note_demo/app/agent_provider.dart';
 import 'package:note_demo/app/app_notifier.dart';
 
@@ -14,10 +15,11 @@ class StudyScreen extends ConsumerWidget {
     return ListView(
       children: [
         switch (response) {
-          AsyncData(:final value) => Text(
-            'Agent Response: ${value.firstCandidateText}',
+          AsyncData(:final value) => SizedBox(
+            height: 500,
+            child: MarkdownWidget(data: value.firstCandidateText),
           ),
-          AsyncLoading() => const CircularProgressIndicator(),
+          AsyncLoading() => Center(child: const CircularProgressIndicator()),
           AsyncError(:final error) => Text('Error: $error'),
         },
       ],
