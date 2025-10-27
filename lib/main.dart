@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:note_demo/widgets/demo_widget.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:note_demo/app/app.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(ProviderScope(child: const MainApp()));
 }
 
 class MainApp extends StatelessWidget {
@@ -10,6 +11,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: Scaffold(body: DemoWidget()));
+    return const MaterialApp(home: App());
   }
 }

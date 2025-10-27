@@ -10,6 +10,7 @@ const kDefaultAgentInstructions = """ <System Instructions>
 
 enum AgentRole {
   principle,
+  designer,
   researcher;
 
   String get systemInstructions {
@@ -24,6 +25,19 @@ enum AgentRole {
           Dont use any titles, or any of your own prefacing text. If there is not enough information in the notes to complete any of the steps,
           respond with a short encouraging message.
           """;
+      case AgentRole.designer:
+        return """<System Instructions>
+          You are an expert data generator. Your sole purpose is to output a single, valid JSON object based on the specification. 
+          DO NOT include any explanatory text, commentary, or markdown outside of the final JSON object.
+          <Specification> Convert the given content into the following structure:
+          {
+            "title": string, // The inferred title of the topic.
+            "summary": string, // A concise summary of the topic in 20 words.
+            "study_plan": [string] // An array of strings, each representing a step in a study plan. Try to use subdivisions in the notes to make a chronological plan. If not enough content is available, this should be an empty array.
+          }
+          Ensure that the JSON is properly formatted and valid. If there is not enough information in the notes to complete any of the fields,
+          use empty strings or an empty array as appropriate.
+        """;
       case AgentRole.researcher:
         return """<System Instructions>
           You are a tool for generating additional material to help a student study. You are coordinating with a principal agent, 

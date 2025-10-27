@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:markdown_widget/widget/all.dart';
 import 'package:note_demo/widgets/ai_screen.dart';
 import 'package:note_demo/widgets/demo_widget_cubit.dart';
 import 'package:note_demo/widgets/text_editor.dart';
@@ -38,7 +37,7 @@ class _DemoWidgetState extends State<DemoWidget> with TickerProviderStateMixin {
             bottom: TabBar(
               controller: _tabController,
               onTap: (index) {
-                print("swupe, ${index}");
+                print("swupe, $index");
                 if (index == 1) context.read<DemoWidgetCubit>().fetch();
               },
               tabs: const <Widget>[

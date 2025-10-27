@@ -1,19 +1,14 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 import 'package:note_demo/agents/agent_utils.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
-import 'package:note_demo/widgets/models.dart';
 
 class DemoWidgetCubit extends Cubit<AppState> {
   DemoWidgetCubit()
     : super(
         AppState(controller: TextEditingController(), modelAnswer: "Empty"),
       ) {
-    agent = GPTAgent(role: AgentRole.principle);
+    agent = GPTAgent(role: AgentRole.designer);
     researcher = GPTAgent(role: AgentRole.researcher);
   }
 
