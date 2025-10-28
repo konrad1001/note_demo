@@ -67,9 +67,10 @@ class StudyPlanList extends StatelessWidget {
         children: [
           ...design.studyPlan.map(
             (e) => Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Checkbox(value: false, onChanged: (_) {}),
-                Text(e),
+                Flexible(child: Text(e)),
               ],
             ),
           ),

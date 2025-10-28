@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 class FileService {
   Future<File> _getFile() async {
     final dir = await getApplicationDocumentsDirectory();
-    return File('${dir.path}/note.json');
+    return File('${dir.path}/note_taker/study_plan.json');
   }
 
   /// Reads and parses the JSON file

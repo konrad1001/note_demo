@@ -32,7 +32,9 @@ class _AppState extends State<App> with TickerProviderStateMixin {
     return Consumer(
       builder: (context, ref, child) {
         return Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
+            backgroundColor: Colors.white,
             title: const Text("Notes demo"),
             bottom: TabBar(
               controller: _tabController,
