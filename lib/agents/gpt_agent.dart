@@ -23,7 +23,6 @@ class GPTAgent {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print('Response: ${jsonEncode(data)}');
 
       final modelResponse = GeminiResponse.fromJson(data);
 

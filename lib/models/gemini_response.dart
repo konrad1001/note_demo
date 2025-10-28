@@ -1,90 +1,77 @@
-class GeminiResponse {
-  final List<Candidate> candidates;
-  final UsageMetadata usageMetadata;
-  final String modelVersion;
-  final String responseId;
+import 'dart:convert';
 
-  GeminiResponse({
-    required this.candidates,
-    required this.usageMetadata,
-    required this.modelVersion,
-    required this.responseId,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:note_demo/models/study_design.dart';
 
-  factory GeminiResponse.fromJson(Map<String, dynamic> json) {
-    return GeminiResponse(
-      candidates: (json['candidates'] as List)
-          .map((e) => Candidate.fromJson(e))
-          .toList(),
-      usageMetadata: UsageMetadata.fromJson(json['usageMetadata']),
-      modelVersion: json['modelVersion'],
-      responseId: json['responseId'],
-    );
-  }
+part 'gemini_response.freezed.dart';
+part 'gemini_response.g.dart';
 
+@freezed
+abstract class GeminiResponse with _$GeminiResponse {
+  const factory GeminiResponse({
+    required List<Candidate> candidates,
+    required UsageMetadata usageMetadata,
+    required String modelVersion,
+    required String responseId,
+  }) = _GeminiResponse;
+
+  factory GeminiResponse.fromJson(Map<String, dynamic> json) =>
+      _$GeminiResponseFromJson(json);
+}
+
+extension GeminiResponseX on GeminiResponse {
   String get firstCandidateText => candidates.first.content.parts.first.text;
-}
 
-class Candidate {
-  final Content content;
-  final String finishReason;
-  final int index;
-
-  Candidate({
-    required this.content,
-    required this.finishReason,
-    required this.index,
-  });
-
-  factory Candidate.fromJson(Map<String, dynamic> json) {
-    return Candidate(
-      content: Content.fromJson(json['content']),
-      finishReason: json['finishReason'],
-      index: json['index'],
-    );
+  StudyDesign getStudyDesign() {
+    try {
+      final cleaned = firstCandidateText
+          .replaceAll(RegExp(r'```json|```'), '')
+          .trim();
+      print(cleaned);
+      final jsonMap = json.decode(cleaned) as Map<String, dynamic>;
+      print(jsonMap);
+      return StudyDesign.fromJson(jsonMap);
+    } catch (e) {
+      return StudyDesign.error(e);
+    }
   }
 }
 
-class Content {
-  final List<Part> parts;
-  final String? role;
+@freezed
+abstract class Candidate with _$Candidate {
+  const factory Candidate({
+    required Content content,
+    required String finishReason,
+    required int index,
+  }) = _Candidate;
 
-  Content({required this.parts, this.role});
-
-  factory Content.fromJson(Map<String, dynamic> json) {
-    return Content(
-      parts: (json['parts'] as List).map((e) => Part.fromJson(e)).toList(),
-      role: json['role'],
-    );
-  }
+  factory Candidate.fromJson(Map<String, dynamic> json) =>
+      _$CandidateFromJson(json);
 }
 
-class Part {
-  final String text;
+@freezed
+abstract class Content with _$Content {
+  const factory Content({required List<Part> parts, String? role}) = _Content;
 
-  Part({required this.text});
-
-  factory Part.fromJson(Map<String, dynamic> json) {
-    return Part(text: json['text']);
-  }
+  factory Content.fromJson(Map<String, dynamic> json) =>
+      _$ContentFromJson(json);
 }
 
-class UsageMetadata {
-  final int promptTokenCount;
-  final int candidatesTokenCount;
-  final int totalTokenCount;
+@freezed
+abstract class Part with _$Part {
+  const factory Part({required String text}) = _Part;
 
-  UsageMetadata({
-    required this.promptTokenCount,
-    required this.candidatesTokenCount,
-    required this.totalTokenCount,
-  });
+  factory Part.fromJson(Map<String, dynamic> json) => _$PartFromJson(json);
+}
 
-  factory UsageMetadata.fromJson(Map<String, dynamic> json) {
-    return UsageMetadata(
-      promptTokenCount: json['promptTokenCount'],
-      candidatesTokenCount: json['candidatesTokenCount'],
-      totalTokenCount: json['totalTokenCount'],
-    );
-  }
+@freezed
+abstract class UsageMetadata with _$UsageMetadata {
+  const factory UsageMetadata({
+    required int promptTokenCount,
+    required int candidatesTokenCount,
+    required int totalTokenCount,
+  }) = _UsageMetadata;
+
+  factory UsageMetadata.fromJson(Map<String, dynamic> json) =>
+      _$UsageMetadataFromJson(json);
 }
