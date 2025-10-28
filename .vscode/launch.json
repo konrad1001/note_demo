@@ -5,10 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "note_demo",
+      "name": "note_demo (Mock)",
       "request": "launch",
       "type": "dart",
-      "toolArgs": ["--dart-define-from-file=config.json"]
+      "toolArgs": ["--dart-define-from-file=config.json"],
+      "args": ["--dart-define=ENVIRONMENT=MOCK"]
+    },
+    {
+      "name": "note_demo (Dev)",
+      "request": "launch",
+      "type": "dart",
+      "toolArgs": ["--dart-define-from-file=config.json"],
+      "args": ["--dart-define=ENVIRONMENT=DEV"]
     }
   ]
 }
