@@ -45,3 +45,7 @@ app.*.map.json
 /android/app/release
 
 config.json
+
+# Auto-generated
+*.g.dart
+*.freezed.dart
