@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:markdown_widget/widget/markdown.dart';
-import 'package:note_demo/app/agent_provider.dart';
-import 'package:note_demo/app/app_notifier.dart';
+import 'package:note_demo/providers/agent_provider.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/models/study_design.dart';
 

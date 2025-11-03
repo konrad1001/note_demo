@@ -33,6 +33,13 @@ class _AppState extends State<App> with TickerProviderStateMixin {
     return Consumer(
       builder: (context, ref, child) {
         return MacMenuBar(
+          functions: (
+            openFile: () {
+              print("opening file");
+              ref.watch(noteContentProvider.notifier).loadFromFile();
+            },
+            saveFile: () {},
+          ),
           child: Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
@@ -40,11 +47,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
               title: const Text("Notes demo"),
               bottom: TabBar(
                 controller: _tabController,
-                onTap: (index) {
-                  ref
-                      .read(noteContentProvider.notifier)
-                      .updateText(_notesController.text);
-                },
+                onTap: (index) {},
                 tabs: const <Widget>[
                   Tab(text: "Write"),
                   Tab(text: "Revise"),

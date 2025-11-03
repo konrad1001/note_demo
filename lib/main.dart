@@ -9,6 +9,7 @@ void main() async {
   await windowManager.ensureInitialized();
 
   WindowOptions windowOptions = WindowOptions(
+    title: "Note GPT",
     size: Size(1000, 600),
     center: true,
     skipTaskbar: false,
@@ -27,6 +28,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: App());
+    return const MaterialApp(title: "Note GPT", home: App());
   }
 }

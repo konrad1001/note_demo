@@ -1,36 +1,17 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:file_picker/file_picker.dart';
 
 class FileService {
-  Future<File> _getFile() async {
-    final dir = await getApplicationDocumentsDirectory();
-    return File('${dir.path}/note_taker/study_plan.json');
-  }
+  Future<File?> pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['txt', 'md'],
+    );
 
-  /// Reads and parses the JSON file
-  Future<Map<String, dynamic>?> readJson() async {
-    try {
-      final file = await _getFile();
-      if (await file.exists()) {
-        final jsonString = await file.readAsString();
-        return jsonDecode(jsonString) as Map<String, dynamic>;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      return {"error": "Error reading file: $e"};
-    }
-  }
-
-  /// Writes data to JSON file
-  Future<void> writeJson(Map<String, dynamic> data) async {
-    try {
-      final file = await _getFile();
-      final jsonString = const JsonEncoder.withIndent('  ').convert(data);
-      await file.writeAsString(jsonString, flush: true);
-    } catch (e) {
-      throw Exception('Error writing file: $e');
+    if (result != null) {
+      return File(result.files.single.path!);
+    } else {
+      return null;
     }
   }
 }

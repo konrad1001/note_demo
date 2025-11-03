@@ -1,8 +1,11 @@
 import 'package:flutter/widgets.dart';
 
-class MacMenuBar extends StatelessWidget {
-  const MacMenuBar({super.key, this.child});
+typedef MenuBarFunctions = ({Function() openFile, Function() saveFile});
 
+class MacMenuBar extends StatelessWidget {
+  const MacMenuBar({super.key, this.child, required this.functions});
+
+  final MenuBarFunctions functions;
   final Widget? child;
 
   @override
@@ -27,7 +30,12 @@ class MacMenuBar extends StatelessWidget {
           label: "File",
           menus: <PlatformMenuItem>[
             PlatformMenuItemGroup(
-              members: [PlatformMenuItem(label: "Open...", onSelected: () {})],
+              members: [
+                PlatformMenuItem(
+                  label: "Open...",
+                  onSelected: functions.openFile,
+                ),
+              ],
             ),
             PlatformMenuItemGroup(
               members: [PlatformMenuItem(label: "Save", onSelected: () {})],
