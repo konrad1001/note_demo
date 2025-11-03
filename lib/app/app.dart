@@ -34,11 +34,8 @@ class _AppState extends State<App> with TickerProviderStateMixin {
       builder: (context, ref, child) {
         return MacMenuBar(
           functions: (
-            openFile: () {
-              print("opening file");
-              ref.watch(noteContentProvider.notifier).loadFromFile();
-            },
-            saveFile: () {},
+            openFile: ref.watch(noteContentProvider.notifier).loadFromFile,
+            saveFile: ref.watch(noteContentProvider.notifier).saveFile,
           ),
           child: Scaffold(
             backgroundColor: Colors.white,

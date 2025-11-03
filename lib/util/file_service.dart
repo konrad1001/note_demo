@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 
 class FileService {
@@ -13,5 +14,12 @@ class FileService {
     } else {
       return null;
     }
+  }
+
+  void saveFile(String content) async {
+    String? outputFile = await FilePicker.platform.saveFile(
+      dialogTitle: 'Please select an output file:',
+      bytes: Uint8List.fromList(content.codeUnits),
+    );
   }
 }

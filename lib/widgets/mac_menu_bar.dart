@@ -38,7 +38,9 @@ class MacMenuBar extends StatelessWidget {
               ],
             ),
             PlatformMenuItemGroup(
-              members: [PlatformMenuItem(label: "Save", onSelected: () {})],
+              members: [
+                PlatformMenuItem(label: "Save", onSelected: functions.saveFile),
+              ],
             ),
           ],
         ),

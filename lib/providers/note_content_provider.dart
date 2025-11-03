@@ -20,6 +20,10 @@ class NoteContentNotifier extends StateNotifier<TextEditingController> {
     }
   }
 
+  void saveFile() async {
+    ref.watch(fileServiceProvider).saveFile(state.text);
+  }
+
   void updateText(String newText) {
     state = TextEditingController(text: newText);
   }
