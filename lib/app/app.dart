@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:note_demo/app/app_notifier.dart';
+import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/screens/notes_screen.dart';
 import 'package:note_demo/screens/study_screen.dart';
+import 'package:note_demo/widgets/mac_menu_bar.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -31,30 +32,32 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
+        return MacMenuBar(
+          child: Scaffold(
             backgroundColor: Colors.white,
-            title: const Text("Notes demo"),
-            bottom: TabBar(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              title: const Text("Notes demo"),
+              bottom: TabBar(
+                controller: _tabController,
+                onTap: (index) {
+                  ref
+                      .read(noteContentProvider.notifier)
+                      .updateText(_notesController.text);
+                },
+                tabs: const <Widget>[
+                  Tab(text: "Write"),
+                  Tab(text: "Revise"),
+                ],
+              ),
+            ),
+            body: TabBarView(
               controller: _tabController,
-              onTap: (index) {
-                ref
-                    .read(appNotifierProvider.notifier)
-                    .updateText(_notesController.text);
-              },
-              tabs: const <Widget>[
-                Tab(text: "Write"),
-                Tab(text: "Revise"),
+              children: <Widget>[
+                NotesScreen(controller: _notesController),
+                StudyScreen(),
               ],
             ),
-          ),
-          body: TabBarView(
-            controller: _tabController,
-            children: <Widget>[
-              NotesScreen(controller: _notesController),
-              StudyScreen(),
-            ],
           ),
         );
       },
