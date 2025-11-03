@@ -9,18 +9,14 @@ class FileService {
   }
 
   /// Reads and parses the JSON file
-  Future<Map<String, dynamic>> readJson() async {
+  Future<Map<String, dynamic>?> readJson() async {
     try {
       final file = await _getFile();
       if (await file.exists()) {
         final jsonString = await file.readAsString();
         return jsonDecode(jsonString) as Map<String, dynamic>;
       } else {
-        return {
-          "title": "Untitled",
-          "content": "",
-          "lastModified": DateTime.now().toIso8601String(),
-        };
+        return null;
       }
     } catch (e) {
       return {"error": "Error reading file: $e"};

@@ -1,16 +1,23 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 class NoteContentNotifier extends StateNotifier<String> {
-  NoteContentNotifier() : super("");
+  NoteContentNotifier() : super("") {
+    print("init");
+  }
 
   void updateText(String newText) {
     state = newText;
   }
 }
 
-final appNotifierProvider = StateNotifierProvider<NoteContentNotifier, String>(
+final noteContentProvider = StateNotifierProvider<NoteContentNotifier, String>(
   (ref) => NoteContentNotifier(),
 );
+
+// final noteContentLoader = FutureProvider<String>((ref) async {
+
+// })
 
 class NoteState {
   final String content;
