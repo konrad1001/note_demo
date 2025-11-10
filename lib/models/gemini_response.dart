@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/models/study_design.dart';
+import 'package:note_demo/models/study_tools.dart';
 
 part 'gemini_response.freezed.dart';
 part 'gemini_response.g.dart';
@@ -27,9 +28,7 @@ extension GeminiResponseX on GeminiResponse {
       final cleaned = firstCandidateText
           .replaceAll(RegExp(r'```json|```'), '')
           .trim();
-      print(cleaned);
       final jsonMap = json.decode(cleaned) as Map<String, dynamic>;
-      print(jsonMap);
       return StudyDesign.fromJson(jsonMap);
     } catch (e) {
       return StudyDesign.error(e);

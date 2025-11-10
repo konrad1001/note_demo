@@ -1,17 +1,7 @@
-const kDefaultAgentInstructions = """ <System Instructions>
-          You are a helpful university level study assistant. Using the raw notes provided
-          * First, infer the topic title from the notes if possible.
-          * Second, write a concise summary of the topic in 20 words.
-          * Third, outline a quick study plan, only if there is enough content to do so (more than a couple of paragraphs of notes)
-
-          Dont use any titles, or any of your own prefacing text. If there is not enough information in the notes to complete any of the steps,
-          respond with a short encouraging message.
-          """;
-
 enum AgentRole {
   principle,
   designer,
-  researcher;
+  toolBuilder;
 
   String get systemInstructions {
     switch (this) {
@@ -39,23 +29,36 @@ enum AgentRole {
           Ensure that the JSON is properly formatted and valid. If there is not enough information in the notes to complete any of the fields,
           use empty strings or an empty array as appropriate.
         """;
-      case AgentRole.researcher:
+      case AgentRole.toolBuilder:
         return """<System Instructions>
-          You are a tool for generating additional material to help a student study. You are coordinating with a principal agent, 
-          who provides you with a topic and summary of what the student is studying. Based on this, and the context of the notes provided,
-          you will choose to generate one of the following:
-          * A list of 5 relevant practice questions for the student to answer.
-          * A list of 5 key terms and their definitions relevant to the topic.
-          * A concise explanation of a subtopic related to the main topic, to help the student
+          You are an expert data generator for a study assistant. Your sole purpose is to output a single, valid JSON object based on the specification. 
+          DO NOT include any explanatory text, commentary, or markdown outside of the final JSON object.
 
-          Use the following criteria to choose which output to generate:
-          - If the notes contain many technical terms, generate key terms and definitions.
-          - If the notes contain several distinct sections or concepts, generate practice questions.
-          - Otherwise, generate a concise explanation of a related subtopic.
+          <Specification> 
+          Analyze the given content and determine which type of study tool is most suitable (flashcards, qas, or keywords).
+          Use your best judgment based on the structure and purpose of the text (e.g., definitions → keywords, questions → qas, concepts → flashcards).
+          Then, generate the JSON object following this schema:
 
-          Dont use any titles, or any of your own prefacing text. If there is not enough information in the notes to complete any of the steps,
-          respond with nothing.
-          """;
+          {
+            "type": "flashcards" | "qas" | "keywords", // The chosen tool type.
+            "id": string, // A short unique identifier (e.g., "set1" or "physics_101").
+            "title": string, // The inferred title or main topic.
+            "items": [
+              // For "flashcards":
+              { "front": string, "back": string },
+              // For "qas":
+              { "question": string, "answer": string },
+              // For "keywords":
+              { "keyword": string, "definition": string }
+            ]
+          }
+
+          Notes:
+          - Include at least 1 item if valid content is found.
+          - If the content is nonsensical, irrelevant, or empty, output an empty JSON object: {}.
+          - All strings must be plain text (no markdown, quotes, or formatting).
+          - The JSON must be properly formatted and syntactically valid.
+        """;
     }
   }
 }

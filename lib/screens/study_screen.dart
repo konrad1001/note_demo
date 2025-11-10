@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
 import 'package:note_demo/models/study_design.dart';
+import 'package:note_demo/providers/study_tools_provider.dart';
 
 class StudyScreen extends ConsumerWidget {
   const StudyScreen({super.key});
@@ -28,27 +29,40 @@ class Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Stack(
-          children: [
-            Opacity(
-              opacity: isLoading ? 0.5 : 1.0,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 12,
-                children: [
-                  Text(
-                    design.title,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            child: Stack(
+              children: [
+                Opacity(
+                  opacity: isLoading ? 0.5 : 1.0,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 12,
+                    children: [
+                      Text(
+                        design.title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        ),
+                      ),
+                      Text(design.summary, style: TextStyle(fontSize: 16)),
+                      Container(
+                        height: 300,
+                        child: SingleChildScrollView(
+                          child: StudyPlanList(design: design),
+                        ),
+                      ),
+                      StudyToolsContainer(),
+                    ],
                   ),
-                  Text(design.summary, style: TextStyle(fontSize: 16)),
-                  StudyPlanList(design: design),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -76,6 +90,23 @@ class StudyPlanList extends StatelessWidget {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class StudyToolsContainer extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final studyTools = ref.watch(studyToolsProvider);
+    return Container(
+      height: 200,
+      color: const Color.fromARGB(101, 169, 185, 194),
+      child: Column(
+        children: [
+          Text(studyTools.isLoading.toString()),
+          Text(studyTools.tools.toString()),
         ],
       ),
     );
