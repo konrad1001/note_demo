@@ -27,10 +27,11 @@ enum AgentRole {
           """;
       case AgentRole.designer:
         return """<System Instructions>
-          You are an expert data generator. Your sole purpose is to output a single, valid JSON object based on the specification. 
+          You are an expert data generator for a study assistant. Your sole purpose is to output a single, valid JSON object based on the specification. 
           DO NOT include any explanatory text, commentary, or markdown outside of the final JSON object.
           <Specification> Convert the given content into the following structure:
           {
+            "valid": bool, // Is the content a valid set of notes, that it makes sense to generate a study plan. False if the content is nonsensical or empty.
             "title": string, // The inferred title of the topic.
             "summary": string, // A concise summary of the topic in 20 words.
             "study_plan": [string] // An array of strings, each representing a step in a study plan. Try to use subdivisions in the notes to make a chronological plan. If not enough content is available, this should be an empty array.

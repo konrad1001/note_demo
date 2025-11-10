@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:note_demo/providers/agent_provider.dart';
-import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/providers/study_content_provider.dart';
 import 'package:note_demo/models/study_design.dart';
 
 class StudyScreen extends ConsumerWidget {
@@ -9,40 +8,45 @@ class StudyScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final response = ref.watch(agentProvider);
+    final studyContent = ref.watch(studyContentProvider);
 
-    return ListView(
-      children: [
-        switch (response) {
-          AsyncData(:final value) => Dashboard(design: value.getStudyDesign()),
-          AsyncLoading() => Center(child: const CircularProgressIndicator()),
-          AsyncError(:final error) => Text('Error: $error'),
-        },
-      ],
+    return studyContent.when(
+      empty: () => Center(child: Text('No study design available.')),
+      loading: () => Center(child: CircularProgressIndicator()),
+      idle: (design, isLoading) =>
+          Dashboard(design: design, isLoading: isLoading),
     );
   }
 }
 
 class Dashboard extends StatelessWidget {
-  const Dashboard({super.key, required this.design});
+  const Dashboard({super.key, required this.design, required this.isLoading});
 
   final StudyDesign design;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 12,
+        child: Stack(
           children: [
-            Text(
-              design.title,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            Opacity(
+              opacity: isLoading ? 0.5 : 1.0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 12,
+                children: [
+                  Text(
+                    design.title,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  ),
+                  Text(design.summary, style: TextStyle(fontSize: 16)),
+                  StudyPlanList(design: design),
+                ],
+              ),
             ),
-            Text(design.summary, style: TextStyle(fontSize: 16)),
-            StudyPlanList(design: design),
           ],
         ),
       ),

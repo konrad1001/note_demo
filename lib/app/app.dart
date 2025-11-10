@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
+import 'package:note_demo/providers/study_content_provider.dart';
 import 'package:note_demo/screens/notes_screen.dart';
 import 'package:note_demo/screens/study_screen.dart';
 import 'package:note_demo/widgets/menu%20bar/menu_bar.dart';
@@ -41,10 +42,14 @@ class _AppState extends State<App> with TickerProviderStateMixin {
             backgroundColor: Colors.white,
             appBar: AppBar(
               backgroundColor: Colors.white,
-              title: const Text("Notes demo"),
+              toolbarHeight: 16,
               bottom: TabBar(
                 controller: _tabController,
-                onTap: (index) {},
+                onTap: (index) {
+                  if (index == 1) {
+                    ref.watch(studyContentProvider.notifier).prepareDesign();
+                  }
+                },
                 tabs: const <Widget>[
                   Tab(text: "Write"),
                   Tab(text: "Revise"),

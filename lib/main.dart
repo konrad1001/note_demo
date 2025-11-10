@@ -10,9 +10,9 @@ void main() async {
   WindowOptions windowOptions = WindowOptions(
     title: "Note GPT",
     size: Size(1000, 600),
+    minimumSize: Size(400, 300),
     center: true,
     skipTaskbar: false,
-    // titleBarStyle: TitleBarStyle.hidden,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();

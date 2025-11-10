@@ -1,21 +1,18 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/providers/file_service_provider.dart';
 
 part 'note_content_provider.freezed.dart';
 
-class NoteContentNotifier extends StateNotifier<NoteContentState> {
-  final Ref ref;
-
-  NoteContentNotifier(this.ref)
-    : super(
-        NoteContentState(
-          editingController: TextEditingController(),
-          previousContent: "",
-        ),
-      );
+class NoteContentNotifier extends Notifier<NoteContentState> {
+  @override
+  NoteContentState build() {
+    return NoteContentState(
+      editingController: TextEditingController(),
+      previousContent: '',
+    );
+  }
 
   void loadFromFile() async {
     final file = await ref.watch(fileServiceProvider).pickFile();
@@ -39,11 +36,15 @@ class NoteContentNotifier extends StateNotifier<NoteContentState> {
       editingController: TextEditingController(text: newText),
     );
   }
+
+  void setPreviousContent(String text) {
+    state = state.copyWith(previousContent: text);
+  }
 }
 
 final noteContentProvider =
-    StateNotifierProvider<NoteContentNotifier, NoteContentState>(
-      (ref) => NoteContentNotifier(ref),
+    NotifierProvider<NoteContentNotifier, NoteContentState>(
+      () => NoteContentNotifier(),
     );
 
 @freezed
