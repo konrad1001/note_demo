@@ -5,7 +5,6 @@ import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Must add this line.
   await windowManager.ensureInitialized();
 
   WindowOptions windowOptions = WindowOptions(
@@ -13,7 +12,7 @@ void main() async {
     size: Size(1000, 600),
     center: true,
     skipTaskbar: false,
-    titleBarStyle: TitleBarStyle.hidden,
+    // titleBarStyle: TitleBarStyle.hidden,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();

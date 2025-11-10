@@ -1,12 +1,10 @@
-import 'package:flutter/widgets.dart';
-
-typedef MenuBarFunctions = ({Function() openFile, Function() saveFile});
+part of 'menu_bar.dart';
 
 class MacMenuBar extends StatelessWidget {
-  const MacMenuBar({super.key, this.child, required this.functions});
+  const MacMenuBar({super.key, required this.child, required this.functions});
 
   final MenuBarFunctions functions;
-  final Widget? child;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {

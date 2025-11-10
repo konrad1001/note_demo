@@ -1,21 +1,31 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/providers/file_service_provider.dart';
 
-class NoteContentNotifier extends StateNotifier<TextEditingController> {
+part 'note_content_provider.freezed.dart';
+
+class NoteContentNotifier extends StateNotifier<NoteContentState> {
   final Ref ref;
 
-  NoteContentNotifier(this.ref) : super(TextEditingController()) {
-    print("init");
-  }
+  NoteContentNotifier(this.ref)
+    : super(
+        NoteContentState(
+          editingController: TextEditingController(),
+          previousContent: "",
+        ),
+      );
 
   void loadFromFile() async {
     final file = await ref.watch(fileServiceProvider).pickFile();
 
     if (file != null) {
       file.readAsString().then((result) {
-        state = TextEditingController(text: result);
+        state = state.copyWith(
+          editingController: TextEditingController(text: result),
+          previousContent: result,
+        );
       });
     }
   }
@@ -25,11 +35,25 @@ class NoteContentNotifier extends StateNotifier<TextEditingController> {
   }
 
   void updateText(String newText) {
-    state = TextEditingController(text: newText);
+    state = state.copyWith(
+      editingController: TextEditingController(text: newText),
+    );
   }
 }
 
 final noteContentProvider =
-    StateNotifierProvider<NoteContentNotifier, TextEditingController>(
+    StateNotifierProvider<NoteContentNotifier, NoteContentState>(
       (ref) => NoteContentNotifier(ref),
     );
+
+@freezed
+abstract class NoteContentState with _$NoteContentState {
+  const factory NoteContentState({
+    required TextEditingController editingController,
+    required String previousContent,
+  }) = _NoteContentState;
+}
+
+extension NoteContentStateX on NoteContentState {
+  String get text => editingController.text;
+}

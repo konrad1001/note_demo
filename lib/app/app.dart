@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/screens/notes_screen.dart';
 import 'package:note_demo/screens/study_screen.dart';
-import 'package:note_demo/widgets/mac_menu_bar.dart';
+import 'package:note_demo/widgets/menu%20bar/menu_bar.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -32,7 +32,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        return MacMenuBar(
+        return OSMenuBar(
           functions: (
             openFile: ref.watch(noteContentProvider.notifier).loadFromFile,
             saveFile: ref.watch(noteContentProvider.notifier).saveFile,
