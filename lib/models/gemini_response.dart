@@ -23,6 +23,13 @@ abstract class GeminiResponse with _$GeminiResponse {
 extension GeminiResponseX on GeminiResponse {
   String get firstCandidateText => candidates.first.content.parts.first.text;
 
+  Map<String, dynamic> get firstCandidateJSON {
+    final cleaned = firstCandidateText
+        .replaceAll(RegExp(r'```json|```'), '')
+        .trim();
+    return json.decode(cleaned) as Map<String, dynamic>;
+  }
+
   StudyDesign getStudyDesign() {
     try {
       final cleaned = firstCandidateText
