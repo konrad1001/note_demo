@@ -1,3 +1,4 @@
+import 'package:diff_match_patch/diff_match_patch.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/agents/agent_utils.dart';
@@ -6,6 +7,7 @@ import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
+import 'package:note_demo/util/diff.dart';
 
 part 'principle_agent_provider.freezed.dart';
 
@@ -19,14 +21,20 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     final noteContent = ref.read(noteContentProvider);
     final noteContentNotifier = ref.read(noteContentProvider.notifier);
 
-    if ((noteContent.text.length - noteContent.previousContent.length).abs() >
-        20) {
-      print("prev: ${noteContent.previousContent}");
-      print("next: ${noteContent.text}");
+    final prev = noteContent.previousContent;
+    final next = noteContent.text;
 
-      noteContentNotifier.setPreviousContent(noteContent.text);
+    final diffTool = DiffTool();
+    final diff = diffTool.diff(prev, next);
 
-      // _runPrinciple(noteContent.text);
+    print(diff);
+
+    if (diff.$1 > 300) {
+      noteContentNotifier.setPreviousContent(next);
+
+      diffTool.diff(prev, next);
+
+      _runPrinciple(diff.$2);
     }
   }
 
