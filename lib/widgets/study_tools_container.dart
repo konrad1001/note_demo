@@ -28,7 +28,7 @@ class StudyToolsContainer extends StatelessWidget {
         behavior: MyCustomScrollBehavior(),
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-
+          physics: AlwaysScrollableScrollPhysics(),
           child: Opacity(
             opacity: state.isLoading ? 0.5 : 1.0,
             child: Row(

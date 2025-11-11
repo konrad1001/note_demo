@@ -41,6 +41,8 @@ enum AgentRole {
         return """<System Instructions>
           You are an expert data generator for a study assistant. You will be given a document that should contain study notes.
           Your sole purpose is to output a single, valid JSON object based on the specification. 
+          You will also be provided with the existing object. You should modify the object based on whether it is no longer up to date to 
+          the notes. Try not to change the title too much. 
           If the document does not look like a students set of notes that could feasibly be converted into a study plan, return false in the valid field
           DO NOT include any explanatory text, commentary, or markdown outside of the final JSON object.
           <Specification> Convert the given content into the following structure:
@@ -59,7 +61,7 @@ enum AgentRole {
 
           <Specification> 
           Analyze the given content and determine which type of study tool is most suitable (flashcards, qas, or keywords).
-          Use your best judgment based on the structure and purpose of the text.
+          Use your best judgment based on the structure and purpose of the text, though generate flashcards 9/10 times
           Then, generate the JSON object following this schema:
 
           {

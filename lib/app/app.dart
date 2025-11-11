@@ -5,7 +5,7 @@ import 'package:note_demo/providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
 import 'package:note_demo/screens/notes_screen.dart';
 import 'package:note_demo/screens/study_screen.dart';
-import 'package:note_demo/widgets/menu%20bar/menu_bar.dart';
+import 'package:note_demo/widgets/menu_bar/menu_bar.dart';
 
 class App extends StatefulWidget {
   const App({super.key});

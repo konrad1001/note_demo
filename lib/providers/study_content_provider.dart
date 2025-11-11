@@ -3,33 +3,39 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/agents/agent_utils.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/mock/mocks.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/mock_service_provider.dart';
+import 'package:note_demo/providers/principle_agent_provider.dart';
 
 part 'study_content_provider.freezed.dart';
 
 class StudyContentNotifier extends Notifier<StudyContentState> {
   @override
   StudyContentState build() {
+    _subscribeToPrinciple();
     return StudyContentState.empty();
   }
 
   StudyContentState prevState = StudyContentState.empty();
 
-  void prepareDesign() {
-    final noteContent = ref.read(noteContentProvider);
-    final noteContentNotifier = ref.read(noteContentProvider.notifier);
-    if ((noteContent.text.length - noteContent.previousContent.length).abs() >
-        20) {
-      state = _loading;
-      _updateDesign(noteContent.text);
-      noteContentNotifier.setPreviousContent(noteContent.text);
-    }
+  void _subscribeToPrinciple() {
+    ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
+      switch (next) {
+        case PrincipleAgentStateIdle idle:
+          if (idle.valid && idle.tool.contains('plan')) {
+            _updateDesign();
+          }
+        default: // continue
+      }
+    });
   }
 
-  _updateDesign(String noteContent) async {
+  _updateDesign() async {
+    state = _loading;
+
     final useMock = ref.watch(mockServiceProvider);
 
     if (useMock) {
@@ -43,7 +49,9 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
     final model = GPTAgent<StudyDesign>(role: AgentRole.designer);
 
     try {
-      final design = await model.fetch(noteContent);
+      final design = await model.fetch(_buildPrompt());
+      final appNotifer = ref.read(appNotifierProvider.notifier);
+      appNotifer.setStudyDesign(design);
 
       if (design.valid) {
         state = StudyContentState.idle(design: design);
@@ -54,6 +62,13 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
       print("Error $e");
       state = prevState;
     }
+  }
+
+  String _buildPrompt() {
+    final noteContent = ref.read(noteContentProvider);
+    final studyDesign = ref.read(appNotifierProvider);
+
+    return "<Studyplan> ${studyDesign.design ?? StudyDesign.empty()} <User> ${noteContent.text}";
   }
 
   StudyContentState get _loading {

@@ -40,7 +40,7 @@ class GeminiService {
       },
     ],
     "generationConfig": {
-      "maxOutputTokens": 500,
+      "maxOutputTokens": 600,
       "thinkingConfig": {"thinkingBudget": 0},
     },
   });
