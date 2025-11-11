@@ -1,27 +1,25 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'agent_response.dart';
 
 part 'study_tools.freezed.dart';
 part 'study_tools.g.dart';
 
-/// Represents grouped collections of study tools.
-/// Each factory holds a list of its own type.
 @freezed
-abstract class StudyTools with _$StudyTools {
-  /// A group of flashcards.
+abstract class StudyTools extends AgentResponse with _$StudyTools {
+  StudyTools._();
+
   const factory StudyTools.flashcards({
     required String id,
     required String title,
     required List<FlashcardItem> items,
   }) = FlashcardGroup;
 
-  /// A group of Q&A pairs.
   const factory StudyTools.qas({
     required String id,
     required String title,
     required List<QuestionAnswerItem> items,
   }) = QAGroup;
 
-  /// A group of keywords.
   const factory StudyTools.keywords({
     required String id,
     required String title,
@@ -32,7 +30,6 @@ abstract class StudyTools with _$StudyTools {
       _$StudyToolsFromJson(json);
 }
 
-/// A single flashcard.
 @freezed
 abstract class FlashcardItem with _$FlashcardItem {
   const factory FlashcardItem({required String front, required String back}) =
@@ -42,7 +39,6 @@ abstract class FlashcardItem with _$FlashcardItem {
       _$FlashcardItemFromJson(json);
 }
 
-/// A single question/answer item.
 @freezed
 abstract class QuestionAnswerItem with _$QuestionAnswerItem {
   const factory QuestionAnswerItem({
@@ -54,7 +50,6 @@ abstract class QuestionAnswerItem with _$QuestionAnswerItem {
       _$QuestionAnswerItemFromJson(json);
 }
 
-/// A single keyword/definition item.
 @freezed
 abstract class KeywordItem with _$KeywordItem {
   const factory KeywordItem({

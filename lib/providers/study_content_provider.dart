@@ -42,9 +42,8 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
       return;
     }
 
-    final model = GPTAgent(role: AgentRole.designer);
-    final response = await model.fetch(noteContent);
-    final design = response.getStudyDesign();
+    final model = GPTAgent<StudyDesign>(role: AgentRole.designer);
+    final design = await model.fetch(noteContent);
 
     if (design.valid) {
       state = StudyContentState.idle(design: design);

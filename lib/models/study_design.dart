@@ -1,10 +1,13 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'agent_response.dart';
 
 part 'study_design.freezed.dart';
 part 'study_design.g.dart';
 
 @freezed
-abstract class StudyDesign with _$StudyDesign {
+abstract class StudyDesign extends AgentResponse with _$StudyDesign {
+  StudyDesign._();
+
   const factory StudyDesign({
     required bool valid,
     required String title,

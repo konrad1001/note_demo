@@ -1,7 +1,24 @@
+import 'package:note_demo/models/study_design.dart';
+import 'package:note_demo/models/study_tools.dart';
+
 enum AgentRole {
   principle,
   designer,
   toolBuilder;
+
+  Type get responseType => switch (this) {
+    // TODO: Handle this case.
+    AgentRole.principle => throw UnimplementedError(),
+    AgentRole.designer => StudyDesign,
+    AgentRole.toolBuilder => StudyTools,
+  };
+
+  Function(Map<String, Object?> json) get fromJson => switch (this) {
+    // TODO: Handle this case.
+    AgentRole.principle => throw UnimplementedError(),
+    AgentRole.designer => StudyDesign.fromJson,
+    AgentRole.toolBuilder => StudyTools.fromJson,
+  };
 
   String get systemInstructions {
     switch (this) {

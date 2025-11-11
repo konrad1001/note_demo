@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/agents/agent_utils.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/models/study_design.dart';
 import 'package:note_demo/models/study_tools.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
@@ -30,20 +31,12 @@ class StudyToolsNotifier extends Notifier<StudyToolsState> {
 
     final noteContent = ref.read(noteContentProvider);
 
-    final model = GPTAgent(role: AgentRole.designer);
+    final model = GPTAgent<StudyTools>(role: AgentRole.toolBuilder);
     final response = await model.fetch(noteContent.text);
 
     print(response);
 
-    state = StudyToolsState(
-      tools: [
-        StudyTools.flashcards(
-          id: "id",
-          title: response.firstCandidateText,
-          items: [FlashcardItem(front: "front", back: "back")],
-        ),
-      ],
-    );
+    state = StudyToolsState(tools: [response]);
   }
 }
 
