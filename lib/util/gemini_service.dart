@@ -28,8 +28,6 @@ class GeminiService {
   Map<String, String> get _headers {
     const apiKey = String.fromEnvironment("GEMINI_KEY");
 
-    print(apiKey);
-
     return {'Content-Type': 'application/json', 'x-goog-api-key': apiKey};
   }
 

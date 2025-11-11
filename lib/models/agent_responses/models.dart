@@ -1,25 +1,70 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'agent_response.dart';
 
-part 'study_tools.freezed.dart';
-part 'study_tools.g.dart';
+part 'models.freezed.dart';
+part 'models.g.dart';
+
+abstract class AgentResponse {
+  const AgentResponse();
+}
 
 @freezed
-abstract class StudyTools extends AgentResponse with _$StudyTools {
-  StudyTools._();
+abstract class PrincipleResponse extends AgentResponse
+    with _$PrincipleResponse {
+  const PrincipleResponse._();
+  const factory PrincipleResponse({
+    required bool valid,
+    required List<String> tool,
+    @JsonKey(name: "agent_notes") required String agentNotes,
+  }) = _PrincipleResponse;
 
+  factory PrincipleResponse.fromJson(Map<String, dynamic> json) =>
+      _$PrincipleResponseFromJson(json);
+}
+
+@freezed
+abstract class StudyDesign extends AgentResponse with _$StudyDesign {
+  const StudyDesign._();
+
+  const factory StudyDesign({
+    required bool valid,
+    required String title,
+    required String summary,
+    @JsonKey(name: "study_plan") required List<String> studyPlan,
+  }) = _StudyDesign;
+
+  factory StudyDesign.fromJson(Map<String, Object?> json) =>
+      _$StudyDesignFromJson(json);
+
+  static StudyDesign error(Object e) => StudyDesign(
+    valid: true,
+    title: e.toString(),
+    summary: e.toString(),
+    studyPlan: [],
+  );
+
+  static StudyDesign empty() =>
+      StudyDesign(valid: true, title: '', summary: '', studyPlan: []);
+}
+
+@Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
+abstract class StudyTools extends AgentResponse with _$StudyTools {
+  const StudyTools._();
+
+  @FreezedUnionValue('flashcards')
   const factory StudyTools.flashcards({
     required String id,
     required String title,
     required List<FlashcardItem> items,
   }) = FlashcardGroup;
 
+  @FreezedUnionValue('qas')
   const factory StudyTools.qas({
     required String id,
     required String title,
     required List<QuestionAnswerItem> items,
   }) = QAGroup;
 
+  @FreezedUnionValue('keywords')
   const factory StudyTools.keywords({
     required String id,
     required String title,

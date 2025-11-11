@@ -1,5 +1,4 @@
-import 'package:note_demo/models/study_design.dart';
-import 'package:note_demo/models/study_tools.dart';
+import 'package:note_demo/models/agent_responses/models.dart';
 
 enum AgentRole {
   principle,
@@ -7,15 +6,13 @@ enum AgentRole {
   toolBuilder;
 
   Type get responseType => switch (this) {
-    // TODO: Handle this case.
-    AgentRole.principle => throw UnimplementedError(),
+    AgentRole.principle => PrincipleResponse,
     AgentRole.designer => StudyDesign,
     AgentRole.toolBuilder => StudyTools,
   };
 
   Function(Map<String, Object?> json) get fromJson => switch (this) {
-    // TODO: Handle this case.
-    AgentRole.principle => throw UnimplementedError(),
+    AgentRole.principle => PrincipleResponse.fromJson,
     AgentRole.designer => StudyDesign.fromJson,
     AgentRole.toolBuilder => StudyTools.fromJson,
   };
@@ -24,17 +21,27 @@ enum AgentRole {
     switch (this) {
       case AgentRole.principle:
         return """<System Instructions>
-          You are a helpful university level study assistant. Using the raw notes provided
-          * First, infer the topic title from the notes if possible.
-          * Second, write a concise summary of the topic in 20 words.
-          * Third, outline a quick study plan, only if there is enough content to do so (more than a couple of paragraphs of notes)
-
-          Dont use any titles, or any of your own prefacing text. If there is not enough information in the notes to complete any of the steps,
-          respond with a short encouraging message.
+          You are the principle agent within a study assistant agentic tool. You will be given a document that should contain study notes, as well
+          as a JSON already containing some information
+          You will communicate in JSON matching the following specification.
+          You should first check if the document looks like the notes of a student on a specific topic. If the content is not something that could
+          feasibly be the basis of a study plan, return false for the 'valid' parameter. 
+          Secondly, you will have access to two tools, "plan" and "resource". The 'tool' parameter should be a list of strings containing one or none
+          of either of these functions, which call other agents.
+          - "plan": call this when the contents of the notes vary enough from the given study plan, to trigger it to get updated
+          - "resource": call this to trigger a new resource to be made for the notes. Use when enough new content arrives
+          <Specification> Respond in the following structure:
+          {
+            "valid": bool, // Is the content a valid set of notes, that it makes sense to generate a study plan. False if the content is nonsensical or empty.
+            "tool": [string] // Either "plan" or "resource" or both.
+            "agent_notes": string  // Notes to yourself for future iterations. Keep this brief. 
+          }
           """;
       case AgentRole.designer:
         return """<System Instructions>
-          You are an expert data generator for a study assistant. Your sole purpose is to output a single, valid JSON object based on the specification. 
+          You are an expert data generator for a study assistant. You will be given a document that should contain study notes.
+          Your sole purpose is to output a single, valid JSON object based on the specification. 
+          If the document does not look like a students set of notes that could feasibly be converted into a study plan, return false in the valid field
           DO NOT include any explanatory text, commentary, or markdown outside of the final JSON object.
           <Specification> Convert the given content into the following structure:
           {
@@ -43,8 +50,7 @@ enum AgentRole {
             "summary": string, // A concise summary of the topic in 20 words.
             "study_plan": [string] // An array of strings, each representing a step in a study plan. Try to use subdivisions in the notes to make a chronological plan. If not enough content is available, this should be an empty array.
           }
-          Ensure that the JSON is properly formatted and valid. If there is not enough information in the notes to complete any of the fields,
-          use empty strings or an empty array as appropriate.
+          Ensure that the JSON is properly formatted and valid. 
         """;
       case AgentRole.toolBuilder:
         return """<System Instructions>
@@ -53,7 +59,7 @@ enum AgentRole {
 
           <Specification> 
           Analyze the given content and determine which type of study tool is most suitable (flashcards, qas, or keywords).
-          Use your best judgment based on the structure and purpose of the text (e.g., definitions → keywords, questions → qas, concepts → flashcards).
+          Use your best judgment based on the structure and purpose of the text.
           Then, generate the JSON object following this schema:
 
           {
@@ -69,12 +75,6 @@ enum AgentRole {
               { "keyword": string, "definition": string }
             ]
           }
-
-          Notes:
-          - Include at least 1 item if valid content is found.
-          - If the content is nonsensical, irrelevant, or empty, output an empty JSON object: {}.
-          - All strings must be plain text (no markdown, quotes, or formatting).
-          - The JSON must be properly formatted and syntactically valid.
         """;
     }
   }

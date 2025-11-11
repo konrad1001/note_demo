@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:note_demo/models/study_design.dart';
+import 'package:note_demo/models/agent_responses/models.dart';
 
 part 'gemini_response.freezed.dart';
 part 'gemini_response.g.dart';

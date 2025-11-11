@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
+import 'package:note_demo/providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
 import 'package:note_demo/screens/notes_screen.dart';
 import 'package:note_demo/screens/study_screen.dart';
@@ -47,7 +48,8 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                 controller: _tabController,
                 onTap: (index) {
                   if (index == 1) {
-                    ref.watch(studyContentProvider.notifier).prepareDesign();
+                    // ref.watch(studyContentProvider.notifier).prepareDesign();
+                    ref.watch(principleAgentProvider.notifier).runPrinciple();
                   }
                 },
                 tabs: const <Widget>[
