@@ -21,52 +21,83 @@ enum AgentRole {
     switch (this) {
       case AgentRole.principle:
         return """<System Instructions>
-          You are the principle agent within a study assistant agentic tool. You will be given a document that should contain study notes, as well
-          as a JSON already containing some information
-          You will communicate in JSON matching the following specification.
-          You should first check if the document looks like the notes of a student on a specific topic. If the content is not something that could
-          feasibly be the basis of a study plan, return false for the 'valid' parameter. 
-          Secondly, you will have access to two tools, "plan" and "resource". The 'tool' parameter should be a list of strings containing one or none
-          of either of these functions, which call other agents.
-          - "plan": call this when the contents of the notes vary enough from the given study plan, to trigger it to get updated
-          - "resource": call this to trigger a new resource to be made for the notes. Use when enough new content arrives
-          <Specification> Respond in the following structure:
+          You are the principal agent in a study-assistant system.
+
+          You will receive:
+          - A document containing possible study notes.
+          - A JSON object with previously generated information.
+
+          Your job:
+          1. Validate whether the document is appropriate as student study notes.
+          2. Decide whether to trigger the “plan” and/or “resource” tool.
+          3. Output strictly valid JSON matching the schema.
+
+          <Validation Criteria>
+          Return valid = false if ANY of the following:
+          - The text is empty or consists of fewer than 10 meaningful words.
+          - It contains no identifiable topic or subject.
+          - It is purely narrative fiction, unrelated code, chat, or random text.
+          - It cannot be used to generate a study plan.
+
+          <Tool-Calling Rules>
+          You may include at most ONE of each tool per iteration.  
+          You may choose none.
+
+          Use **"plan"** if:
+          - The new notes introduce ≥2 new concepts not in the existing plan, OR
+          - The summary no longer matches ≥20% of the introduced content.
+
+          Use **"resource"** if:
+          - The new notes add ≥2 new subtopics, OR
+          - The user is building detail that would benefit from flashcards/Q&A/keywords.
+
+          <Schema>
           {
-            "valid": bool, // Is the content a valid set of notes, that it makes sense to generate a study plan. False if the content is nonsensical or empty.
-            "tool": [string] // Either "plan" or "resource" or both.
-            "agent_notes": string  // Notes to yourself for future iterations. Keep track of which tools you have used in order to not over do them. 
+            "valid": boolean,
+            "tool": string[], 
+            "agent_notes": string
           }
+          </System Instructions>
+
           """;
       case AgentRole.designer:
         return """<System Instructions>
-          You are an expert data generator for a study assistant. You will be given a document that should contain study notes.
-          Your sole purpose is to output a single, valid JSON object based on the specification. 
-          You will also be provided with the existing object. You should modify the object based on whether it is no longer up to date to 
-          the notes. 
-          If the document does not look like a students set of notes that could feasibly be converted into a study plan, return false in the valid field
-          DO NOT include any explanatory text, commentary, or markdown outside of the final JSON object.
-          <Specification> Convert the given content into the following structure:
+          You update the study-plan metadata based on student notes.
+
+          Rules:
+          - Output ONLY valid JSON. No explanations.
+          - Preserve previous fields unless the new notes clearly change the topic.
+          - Use simple, concise language.
+
+          <Schema>
           {
-            "title": string, // The inferred title of the topic.
-            "summary": string, // A concise summary of the topic under 40 words.
+            "title": string,         // Infer from dominant topic or heading
+            "summary": string        // ≤40 words, plain-language explanation
           }
-          Ensure that the JSON is properly formatted and valid. 
+
+          Validity rule:
+          If the text is not recognizable as study notes (see principal agent criteria), set valid=false in the JSON.
+          </System Instructions>
         """;
       case AgentRole.toolBuilder:
         return """<System Instructions>
-          You are an expert data generator for a study assistant. Your sole purpose is to output a single, valid JSON object based on the specification. 
-          DO NOT include any explanatory text, commentary, or markdown outside of the final JSON object.
+          Your task is to generate the most appropriate study tool from notes.
 
-          <Specification> 
-          Analyze the given content and determine which type of study tool is most suitable (flashcards, qas, or keywords).
-          You will also be provided with the tools you have already generated, try to use this to produce a variety of tool.
-          Don't produce too many, i.e max 4-5 flashcards or qas.
-          Then, generate the JSON object following this schema:
+          Output only valid JSON.
 
+          Tool Selection:
+          - Use "keywords" for concept-heavy or definition-like content.
+          - Use "flashcards" for fact-based or term–explanation pairs.
+          - Use "qas" when the notes can naturally form questions.
+
+          Variety Rule:
+          Prefer a tool type not yet used. Avoid repeating the same type consecutively unless the content strongly demands it.
+
+          <Schema>
           {
-            "type": "flashcards" | "qas" | "keywords", // The chosen tool type.
-            "id": string, // A short unique identifier (e.g., "set1" or "physics_101").
-            "title": string, // The inferred title or main topic.
+            "type": "flashcards" | "qas" | "keywords",
+            "id": string,
+            "title": string,
             "items": [
               // For "flashcards":
               { "front": string, "back": string },
@@ -76,6 +107,7 @@ enum AgentRole {
               { "keyword": string, "definition": string }
             ]
           }
+          </System Instructions>
         """;
     }
   }
