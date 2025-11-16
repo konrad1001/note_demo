@@ -20,6 +20,8 @@ dependencies:
   markdown_widget: ^2.3.2+8
   path_provider: ^2.1.5
   window_manager: ^0.5.1
+  hive_ce: ^2.15.1
+  crypto: ^3.0.7
 
 dev_dependencies:
   flutter_test:

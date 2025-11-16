@@ -2,16 +2,14 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
-import 'package:note_demo/providers/study_tools_provider.dart';
+import 'package:note_demo/providers/models.dart';
 import 'package:note_demo/screens/resource_screen.dart';
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
-  // Override behavior methods and getters like dragDevices
   @override
   Set<PointerDeviceKind> get dragDevices => {
     PointerDeviceKind.touch,
     PointerDeviceKind.mouse,
-    // etc.
   };
 }
 
@@ -29,9 +27,10 @@ class StudyToolsContainer extends StatelessWidget {
         behavior: MyCustomScrollBehavior(),
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 32),
           physics: AlwaysScrollableScrollPhysics(),
           child: Opacity(
-            opacity: state.isLoading ? 0.5 : 1.0,
+            opacity: state.isLoading ? 1.0 : 1.0,
             child: Row(
               spacing: 12,
               key: ValueKey(state.tools.length),

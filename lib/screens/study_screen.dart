@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/providers/models.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
 import 'package:note_demo/providers/study_tools_provider.dart';
 import 'package:note_demo/widgets/study_tools_container.dart';
@@ -30,7 +31,7 @@ class StudyScreen extends ConsumerWidget {
             error: (error) => Center(child: Text(error.toString())),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: StudyToolsContainer(state: studyTools),
           ),
         ],
@@ -62,34 +63,6 @@ class Dashboard extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                 ),
                 Text(design.summary, style: TextStyle(fontSize: 16)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class StudyPlanList extends StatelessWidget {
-  final StudyDesign design;
-
-  const StudyPlanList({super.key, required this.design});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        spacing: 8,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ...design.studyPlan.map(
-            (e) => Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Checkbox(value: false, onChanged: (_) {}),
-                Flexible(child: Text(e)),
               ],
             ),
           ),

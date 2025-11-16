@@ -25,20 +25,16 @@ abstract class PrincipleResponse extends AgentResponse
 abstract class StudyDesign extends AgentResponse with _$StudyDesign {
   const StudyDesign._();
 
-  const factory StudyDesign({
-    required String title,
-    required String summary,
-    @JsonKey(name: "study_plan") @Default([]) List<String> studyPlan,
-  }) = _StudyDesign;
+  const factory StudyDesign({required String title, required String summary}) =
+      _StudyDesign;
 
   factory StudyDesign.fromJson(Map<String, Object?> json) =>
       _$StudyDesignFromJson(json);
 
   static StudyDesign error(Object e) =>
-      StudyDesign(title: e.toString(), summary: e.toString(), studyPlan: []);
+      StudyDesign(title: e.toString(), summary: e.toString());
 
-  static StudyDesign empty() =>
-      StudyDesign(title: '', summary: '', studyPlan: []);
+  static StudyDesign empty() => StudyDesign(title: '', summary: '');
 }
 
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
