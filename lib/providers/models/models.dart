@@ -60,6 +60,11 @@ abstract class StudyToolsState with _$StudyToolsState {
   }) = _StudyToolsState;
 }
 
+@freezed
+abstract class AppEvent with _$AppEvent {
+  const factory AppEvent.loadedFromFile({required AppState state}) = _AppEvent;
+}
+
 extension NoteContentStateX on NoteContentState {
   String get text => editingController.text;
 }

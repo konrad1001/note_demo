@@ -4,7 +4,7 @@ import 'package:hive_ce/hive.dart';
 import 'package:note_demo/app/app.dart';
 import 'package:note_demo/db/models/app_state_adapter.dart';
 import 'package:note_demo/db/util.dart';
-import 'package:note_demo/providers/models.dart';
+import 'package:note_demo/providers/models/models.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
 

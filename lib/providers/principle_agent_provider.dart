@@ -3,7 +3,7 @@ import 'package:note_demo/agents/agent_utils.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/app_notifier.dart';
-import 'package:note_demo/providers/models.dart';
+import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/util/diff.dart';
 

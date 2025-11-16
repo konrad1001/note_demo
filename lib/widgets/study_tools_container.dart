@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
-import 'package:note_demo/providers/models.dart';
+import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/screens/resource_screen.dart';
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {

@@ -1,14 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:note_demo/db/note_content_hasher.dart';
 import 'package:note_demo/db/util.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/file_service_provider.dart';
-import 'package:note_demo/providers/models.dart';
-
-part 'note_content_provider.freezed.dart';
+import 'package:note_demo/providers/models/models.dart';
 
 class NoteContentNotifier extends Notifier<NoteContentState> {
   @override

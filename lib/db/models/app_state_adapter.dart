@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:hive_ce/hive.dart';
-import 'package:note_demo/providers/models.dart';
+import 'package:note_demo/providers/models/models.dart';
 
 class AppStateAdapter extends TypeAdapter<AppState> {
   @override

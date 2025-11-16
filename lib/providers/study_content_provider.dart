@@ -2,8 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/agent_utils.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/providers/app_event_provider.dart';
 import 'package:note_demo/providers/app_notifier.dart';
-import 'package:note_demo/providers/models.dart';
+import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/mock/mocks.dart';
 import 'package:note_demo/models/gemini_response.dart';
@@ -15,14 +16,35 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
   StudyContentState build() {
     _subscribeToPrinciple();
     _subscribeToAppState();
-    return StudyContentState.empty();
+
+    final design = ref.read(appNotifierProvider).design;
+    if (design != null) {
+      state = StudyContentState.idle(design: design);
+    } else {
+      state = StudyContentState.empty();
+    }
+
+    return state;
   }
 
   StudyContentState _prevState = StudyContentState.empty();
 
   void _subscribeToAppState() {
-    ref.listen<AppState>(appNotifierProvider, (prev, next) {
-      print(next);
+    ref.listen<AsyncValue<AppEvent>>(appEventStreamProvider, (prev, next) {
+      next.whenData((event) {
+        print("Event $event fired");
+        event.maybeWhen(
+          loadedFromFile: (appState) {
+            final design = appState.design;
+            if (design != null) {
+              state = StudyContentState.idle(design: design);
+            } else {
+              state = StudyContentState.empty();
+            }
+          },
+          orElse: () {},
+        );
+      });
     });
   }
 

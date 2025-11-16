@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
-import 'package:note_demo/providers/models.dart';
+import 'package:note_demo/providers/app_event_provider.dart';
+import 'package:note_demo/providers/models/models.dart';
 
 class AppNotifier extends Notifier<AppState> {
   @override
@@ -9,6 +10,13 @@ class AppNotifier extends Notifier<AppState> {
   }
 
   void loadAppState(AppState nextState) {
+    state = nextState;
+
+    print("loading state: $nextState");
+
+    ref
+        .read(appEventControllerProvider)
+        .add(AppEvent.loadedFromFile(state: nextState));
     state = nextState;
   }
 

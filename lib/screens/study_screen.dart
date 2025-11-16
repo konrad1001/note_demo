@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
-import 'package:note_demo/providers/models.dart';
+import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
 import 'package:note_demo/providers/study_tools_provider.dart';
 import 'package:note_demo/widgets/study_tools_container.dart';
