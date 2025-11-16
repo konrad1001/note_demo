@@ -1,13 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
-
-part 'app_notifier.freezed.dart';
+import 'package:note_demo/providers/models.dart';
 
 class AppNotifier extends Notifier<AppState> {
   @override
   AppState build() {
     return AppState(design: null, tools: []);
+  }
+
+  void loadAppState(AppState nextState) {
+    state = nextState;
   }
 
   void setStudyDesign(StudyDesign? next) {
@@ -22,19 +24,3 @@ class AppNotifier extends Notifier<AppState> {
 final appNotifierProvider = NotifierProvider<AppNotifier, AppState>(
   AppNotifier.new,
 );
-
-@freezed
-abstract class AppState with _$AppState {
-  const factory AppState({
-    StudyDesign? design,
-    @Default([]) List<StudyTools> tools,
-  }) = _AppState;
-}
-
-extension AppStateX on AppState {
-  String get toolsOverview => tools.fold(
-    "",
-    (overview, resource) =>
-        "$overview,${resource.map(flashcards: (_) => "Flashcards:", qas: (_) => "QAs:", keywords: (_) => "Keywords:")}${resource.title}",
-  );
-}

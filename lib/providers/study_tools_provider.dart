@@ -5,11 +5,10 @@ import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/app_notifier.dart';
+import 'package:note_demo/providers/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
-
-part 'study_tools_provider.freezed.dart';
 
 class StudyResourcesNotifier extends Notifier<StudyToolsState> {
   @override
@@ -68,11 +67,3 @@ final studyResourcesProvider =
     NotifierProvider<StudyResourcesNotifier, StudyToolsState>(
       () => StudyResourcesNotifier(),
     );
-
-@freezed
-abstract class StudyToolsState with _$StudyToolsState {
-  const factory StudyToolsState({
-    @Default([]) List<StudyTools> tools,
-    @Default(false) bool isLoading,
-  }) = _StudyToolsState;
-}
