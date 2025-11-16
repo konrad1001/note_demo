@@ -11,7 +11,7 @@ import 'package:note_demo/providers/study_content_provider.dart';
 
 part 'study_tools_provider.freezed.dart';
 
-class StudyToolsNotifier extends Notifier<StudyToolsState> {
+class StudyResourcesNotifier extends Notifier<StudyToolsState> {
   @override
   StudyToolsState build() {
     _subscribeToPrinciple();
@@ -30,26 +30,11 @@ class StudyToolsNotifier extends Notifier<StudyToolsState> {
     });
   }
 
-  void _subscribeToStudyContent() {
-    ref.listen<StudyContentState>(studyContentProvider, (prev, next) {
-      print("prev: $prev, next: $next");
-      if (next is StudyContentStateIdle && next.design.valid && !next.isLoading)
-      // &&
-      //     next.design != (prev as StudyContentStateIdle?)?.design)
-      {
-        print("updating");
-
-        _updateTools();
-      }
-    });
-  }
-
   void _updateTools() async {
     state = state.copyWith(isLoading: true);
 
     await Future.delayed(Duration(seconds: 1));
 
-    final noteContent = ref.read(noteContentProvider);
     final appNotifer = ref.read(appNotifierProvider.notifier);
 
     final model = GPTAgent<StudyTools>(role: AgentRole.toolBuilder);
@@ -72,15 +57,16 @@ class StudyToolsNotifier extends Notifier<StudyToolsState> {
 
   String _buildPrompt() {
     final noteContent = ref.read(noteContentProvider);
+    final diff = ref.read(principleAgentProvider).diff?.additions ?? "";
     final studyDesign = ref.read(appNotifierProvider);
 
-    return "<Resources> ${studyDesign.tools} <User> ${noteContent.text}";
+    return "<Resources> ${studyDesign.tools} <User> $diff";
   }
 }
 
-final studyToolsProvider =
-    NotifierProvider<StudyToolsNotifier, StudyToolsState>(
-      () => StudyToolsNotifier(),
+final studyResourcesProvider =
+    NotifierProvider<StudyResourcesNotifier, StudyToolsState>(
+      () => StudyResourcesNotifier(),
     );
 
 @freezed

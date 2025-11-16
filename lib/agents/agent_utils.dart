@@ -34,7 +34,7 @@ enum AgentRole {
           {
             "valid": bool, // Is the content a valid set of notes, that it makes sense to generate a study plan. False if the content is nonsensical or empty.
             "tool": [string] // Either "plan" or "resource" or both.
-            "agent_notes": string  // Notes to yourself for future iterations. Keep this brief. 
+            "agent_notes": string  // Notes to yourself for future iterations. Keep track of which tools you have used in order to not over do them. 
           }
           """;
       case AgentRole.designer:
@@ -42,15 +42,13 @@ enum AgentRole {
           You are an expert data generator for a study assistant. You will be given a document that should contain study notes.
           Your sole purpose is to output a single, valid JSON object based on the specification. 
           You will also be provided with the existing object. You should modify the object based on whether it is no longer up to date to 
-          the notes. Try not to change the title too much. 
+          the notes. 
           If the document does not look like a students set of notes that could feasibly be converted into a study plan, return false in the valid field
           DO NOT include any explanatory text, commentary, or markdown outside of the final JSON object.
           <Specification> Convert the given content into the following structure:
           {
-            "valid": bool, // Is the content a valid set of notes, that it makes sense to generate a study plan. False if the content is nonsensical or empty.
             "title": string, // The inferred title of the topic.
-            "summary": string, // A concise summary of the topic in 20 words.
-            "study_plan": [string] // An array of strings, each representing a step in a study plan. Try to use subdivisions in the notes to make a chronological plan. If not enough content is available, this should be an empty array.
+            "summary": string, // A concise summary of the topic under 40 words.
           }
           Ensure that the JSON is properly formatted and valid. 
         """;
@@ -61,7 +59,8 @@ enum AgentRole {
 
           <Specification> 
           Analyze the given content and determine which type of study tool is most suitable (flashcards, qas, or keywords).
-          Use your best judgment based on the structure and purpose of the text, though generate flashcards 9/10 times
+          You will also be provided with the tools you have already generated, try to use this to produce a variety of tool.
+          Don't produce too many, i.e max 4-5 flashcards or qas.
           Then, generate the JSON object following this schema:
 
           {

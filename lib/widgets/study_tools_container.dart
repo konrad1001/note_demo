@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/study_tools_provider.dart';
+import 'package:note_demo/screens/resource_screen.dart';
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   // Override behavior methods and getters like dragDevices
@@ -81,15 +82,24 @@ class _ToolContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colour,
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (context) => ResourceScreen(colour: colour, tool: tool),
+          ),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: colour,
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
 
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(children: [Text(title), Text(subTitle)]),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(children: [Text(title), Text(subTitle)]),
+        ),
       ),
     );
   }

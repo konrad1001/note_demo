@@ -19,7 +19,7 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
     return StudyContentState.empty();
   }
 
-  StudyContentState prevState = StudyContentState.empty();
+  StudyContentState _prevState = StudyContentState.empty();
 
   void _subscribeToPrinciple() {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
@@ -53,14 +53,10 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
       final appNotifer = ref.read(appNotifierProvider.notifier);
       appNotifer.setStudyDesign(design);
 
-      if (design.valid) {
-        state = StudyContentState.idle(design: design);
-      } else {
-        state = StudyContentState.empty();
-      }
+      state = StudyContentState.idle(design: design);
     } catch (e) {
       print("Error $e");
-      state = prevState;
+      state = _prevState;
     }
   }
 
@@ -72,7 +68,7 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
   }
 
   StudyContentState get _loading {
-    prevState = state;
+    _prevState = state;
     switch (state) {
       case StudyContentStateIdle idle:
         return idle.copyWith(isLoading: true);

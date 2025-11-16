@@ -30,3 +30,11 @@ abstract class AppState with _$AppState {
     @Default([]) List<StudyTools> tools,
   }) = _AppState;
 }
+
+extension AppStateX on AppState {
+  String get toolsOverview => tools.fold(
+    "",
+    (overview, resource) =>
+        "$overview,${resource.map(flashcards: (_) => "Flashcards:", qas: (_) => "QAs:", keywords: (_) => "Keywords:")}${resource.title}",
+  );
+}

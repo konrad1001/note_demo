@@ -27,39 +27,38 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     final diffTool = DiffTool();
     final diff = diffTool.diff(prev, next);
 
-    print(diff);
-
-    if (diff.$1 > 300) {
+    if (diff.size > 150) {
       noteContentNotifier.setPreviousContent(next);
-
-      diffTool.diff(prev, next);
-
-      _runPrinciple(diff.$2);
+      _runPrinciple(diff);
     }
   }
 
-  void _runPrinciple(String noteContent) async {
+  void _runPrinciple(UserDiff diff) async {
     final model = GPTAgent<PrincipleResponse>(role: AgentRole.principle);
 
     try {
-      final response = await model.fetch(_buildPrompt());
+      final response = await model.fetch(_buildPrompt(diff));
       print("${response.agentNotes}, tools: ${response.tool}");
 
       state = PrincipleAgentState.idle(
         valid: response.valid,
         tool: response.tool,
         agentNotes: response.agentNotes,
+        diff: diff,
       );
     } catch (e) {
       print("Error $e");
     }
   }
 
-  String _buildPrompt() {
-    final noteContent = ref.read(noteContentProvider);
-    final studyDesign = ref.read(appNotifierProvider);
+  String _buildPrompt(UserDiff diff) {
+    final appState = ref.read(appNotifierProvider);
 
-    return "<AgentNotes> ${state.agentNotes} <Studyplan> ${studyDesign.design ?? StudyDesign.empty()} <Resources> ${studyDesign.tools} <User> ${noteContent.text}";
+    print(
+      "<AgentNotes> ${state.agentNotes} <Studyplan> ${appState.design ?? StudyDesign.empty()} <Resources> ${appState.toolsOverview} <UserAdded> ${diff.additions} <UserDeleted> ${diff.deletions}",
+    );
+
+    return "<AgentNotes> ${state.agentNotes} <Studyplan> ${appState.design ?? StudyDesign.empty()} <Resources> ${appState.toolsOverview} <UserAdded> ${diff.additions} <UserDeleted> ${diff.deletions}";
   }
 }
 
@@ -70,11 +69,14 @@ final principleAgentProvider =
 
 @freezed
 abstract class PrincipleAgentState with _$PrincipleAgentState {
-  const factory PrincipleAgentState.initial({@Default("") String agentNotes}) =
-      PrincipleAgentStateInitial;
+  const factory PrincipleAgentState.initial({
+    @Default("") String agentNotes,
+    UserDiff? diff,
+  }) = PrincipleAgentStateInitial;
   const factory PrincipleAgentState.idle({
     required bool valid,
     required List<String> tool,
     @Default("") String agentNotes,
+    UserDiff? diff,
   }) = PrincipleAgentStateIdle;
 }

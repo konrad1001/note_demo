@@ -11,7 +11,7 @@ class StudyScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final studyContent = ref.watch(studyContentProvider);
-    final studyTools = ref.watch(studyToolsProvider);
+    final studyTools = ref.watch(studyResourcesProvider);
 
     return SingleChildScrollView(
       child: Column(
@@ -62,12 +62,6 @@ class Dashboard extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                 ),
                 Text(design.summary, style: TextStyle(fontSize: 16)),
-                Container(
-                  height: 300,
-                  child: SingleChildScrollView(
-                    child: StudyPlanList(design: design),
-                  ),
-                ),
               ],
             ),
           ),

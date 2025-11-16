@@ -26,24 +26,19 @@ abstract class StudyDesign extends AgentResponse with _$StudyDesign {
   const StudyDesign._();
 
   const factory StudyDesign({
-    required bool valid,
     required String title,
     required String summary,
-    @JsonKey(name: "study_plan") required List<String> studyPlan,
+    @JsonKey(name: "study_plan") @Default([]) List<String> studyPlan,
   }) = _StudyDesign;
 
   factory StudyDesign.fromJson(Map<String, Object?> json) =>
       _$StudyDesignFromJson(json);
 
-  static StudyDesign error(Object e) => StudyDesign(
-    valid: true,
-    title: e.toString(),
-    summary: e.toString(),
-    studyPlan: [],
-  );
+  static StudyDesign error(Object e) =>
+      StudyDesign(title: e.toString(), summary: e.toString(), studyPlan: []);
 
   static StudyDesign empty() =>
-      StudyDesign(valid: true, title: '', summary: '', studyPlan: []);
+      StudyDesign(title: '', summary: '', studyPlan: []);
 }
 
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
