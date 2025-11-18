@@ -85,6 +85,8 @@ extension NoteContentStateX on NoteContentState {
 }
 
 extension AppStateX on AppState {
+  bool get hasMetaData => currentFileMetaData.design != null;
+
   String get toolsOverview => currentFileMetaData.tools.fold(
     "",
     (overview, resource) =>

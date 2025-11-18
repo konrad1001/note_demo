@@ -13,7 +13,7 @@ import 'package:note_demo/providers/principle_agent_provider.dart';
 class StudyResourcesNotifier extends Notifier<StudyToolsState> {
   @override
   StudyToolsState build() {
-    // _subscribeToPrinciple();
+    _subscribeToPrinciple();
     _subscribeToAppState();
 
     final tools = ref.read(appNotifierProvider).currentFileMetaData.tools;

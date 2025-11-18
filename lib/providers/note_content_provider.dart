@@ -31,10 +31,14 @@ class NoteContentNotifier extends Notifier<NoteContentState> {
             final box = Hive.box<NMetaData>(kHashedFilesBoxName);
 
             final appState = box.get(hash);
+            appStateNotifier.setCurrentFileName(
+              _getFileNameFromPath(file.path),
+            );
+
             if (appState != null) {
               print("Load file: found existing record of ${file.absolute}");
+
               appStateNotifier.loadMetaData(appState);
-              appStateNotifier.setCurrentFileName(file.path);
 
               state = state.copyWith(
                 editingController: TextEditingController(text: result),
@@ -43,7 +47,6 @@ class NoteContentNotifier extends Notifier<NoteContentState> {
             } else {
               print("Load file: no existing record of ${file.absolute} found");
               appStateNotifier.loadMetaData(NMetaData());
-              appStateNotifier.setCurrentFileName(file.path);
 
               ref.read(principleAgentProvider.notifier).runPrinciple();
               state = state.copyWith(
@@ -60,14 +63,19 @@ class NoteContentNotifier extends Notifier<NoteContentState> {
 
   void saveFile() async {
     final appState = ref.read(appNotifierProvider);
-    final hash = NoteContentHasher.hash(state.text);
 
-    final box = Hive.box<NMetaData>(kHashedFilesBoxName);
-    box.put(hash, appState.currentFileMetaData).then((onValue) {
-      print("successfully saved $hash");
-    }, onError: (e) => print("error saving $hash: $e"));
+    if (appState.hasMetaData) {
+      final hash = NoteContentHasher.hash(state.text);
 
-    ref.watch(fileServiceProvider).saveFile(state.text);
+      final box = Hive.box<NMetaData>(kHashedFilesBoxName);
+      box.put(hash, appState.currentFileMetaData).then((onValue) {
+        print("successfully saved $hash");
+      }, onError: (e) => print("error saving $hash: $e"));
+    }
+
+    ref
+        .watch(fileServiceProvider)
+        .saveFile(state.text, appState.currentFileName);
   }
 
   void setText(String newText) {
@@ -79,6 +87,8 @@ class NoteContentNotifier extends Notifier<NoteContentState> {
   void setPreviousContent(String text) {
     state = state.copyWith(previousContent: text);
   }
+
+  String _getFileNameFromPath(String path) => path.split("\\").last;
 }
 
 final noteContentProvider =

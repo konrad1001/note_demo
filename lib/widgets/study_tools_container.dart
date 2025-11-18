@@ -32,6 +32,7 @@ class StudyToolsContainer extends StatelessWidget {
           child: Opacity(
             opacity: state.isLoading ? 1.0 : 1.0,
             child: Row(
+              mainAxisSize: MainAxisSize.max,
               spacing: 12,
               key: ValueKey(state.tools.length),
               children: state.tools
