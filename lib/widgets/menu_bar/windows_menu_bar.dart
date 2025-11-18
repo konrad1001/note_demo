@@ -42,6 +42,13 @@ class WindowsMenuBar extends StatelessWidget {
                     child: Text("File", style: TextStyle(fontSize: 12.0)),
                     menuChildren: [
                       MenuItemButton(
+                        onPressed: functions.newFile,
+                        child: const Text(
+                          "New",
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                      ),
+                      MenuItemButton(
                         onPressed: functions.openFile,
                         child: const Text(
                           "Open...",

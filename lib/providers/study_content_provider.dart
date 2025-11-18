@@ -17,7 +17,7 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
     _subscribeToPrinciple();
     _subscribeToAppState();
 
-    final design = ref.read(appNotifierProvider).design;
+    final design = ref.read(appNotifierProvider).currentFileMetaData.design;
     if (design != null) {
       state = StudyContentState.idle(design: design);
     } else {
@@ -35,12 +35,15 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
         print("Event $event fired");
         event.maybeWhen(
           loadedFromFile: (appState) {
-            final design = appState.design;
+            final design = appState.currentFileMetaData.design;
             if (design != null) {
               state = StudyContentState.idle(design: design);
             } else {
               state = StudyContentState.empty();
             }
+          },
+          newFile: () {
+            state = StudyContentState.empty();
           },
           orElse: () {},
         );
@@ -91,7 +94,7 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
     final noteContent = ref.read(noteContentProvider);
     final studyDesign = ref.read(appNotifierProvider);
 
-    return "<Studyplan> ${studyDesign.design ?? StudyDesign.empty()} <User> ${noteContent.text}";
+    return "<Studyplan> ${studyDesign.currentFileMetaData.design ?? StudyDesign.empty()} <User> ${noteContent.text}";
   }
 
   StudyContentState get _loading {

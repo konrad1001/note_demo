@@ -4,17 +4,20 @@ import 'package:note_demo/agents/agent_utils.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/providers/app_event_provider.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/providers/principle_agent_provider.dart';
-import 'package:note_demo/providers/study_content_provider.dart';
 
 class StudyResourcesNotifier extends Notifier<StudyToolsState> {
   @override
   StudyToolsState build() {
-    _subscribeToPrinciple();
-    return StudyToolsState();
+    // _subscribeToPrinciple();
+    _subscribeToAppState();
+
+    final tools = ref.read(appNotifierProvider).currentFileMetaData.tools;
+    return StudyToolsState(tools: tools);
   }
 
   void _subscribeToPrinciple() {
@@ -26,6 +29,23 @@ class StudyResourcesNotifier extends Notifier<StudyToolsState> {
           }
         default: // continue
       }
+    });
+  }
+
+  void _subscribeToAppState() {
+    ref.listen<AsyncValue<AppEvent>>(appEventStreamProvider, (prev, next) {
+      next.whenData((event) {
+        event.maybeWhen(
+          loadedFromFile: (appState) {
+            final tools = appState.currentFileMetaData.tools;
+            state = StudyToolsState(tools: tools);
+          },
+          newFile: () {
+            state = StudyToolsState();
+          },
+          orElse: () {},
+        );
+      });
     });
   }
 
@@ -59,7 +79,7 @@ class StudyResourcesNotifier extends Notifier<StudyToolsState> {
     final diff = ref.read(principleAgentProvider).diff?.additions ?? "";
     final studyDesign = ref.read(appNotifierProvider);
 
-    return "<Resources> ${studyDesign.tools} <User> $diff";
+    return "<Resources> ${studyDesign.currentFileMetaData.tools} <User> $diff";
   }
 }
 

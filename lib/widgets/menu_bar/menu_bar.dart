@@ -7,6 +7,7 @@ part 'mac_menu_bar.dart';
 part 'windows_menu_bar.dart';
 
 typedef MenuBarFunctions = ({
+  Function() newFile,
   Function() openFile,
   Function() saveFile,
   Function() openDebugView,

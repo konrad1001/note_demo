@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/util/diff.dart';
+import 'package:note_demo/util/error/errors.dart';
 
 part 'models.freezed.dart';
 part 'models.g.dart';
@@ -9,9 +10,8 @@ part 'models.g.dart';
 @freezed
 abstract class AppState with _$AppState {
   const factory AppState({
-    StudyDesign? design,
-    @Default([]) List<StudyTools> tools,
-    @Default("") String agentNotes,
+    required NMetaData currentFileMetaData,
+    @Default("") String currentFileName,
   }) = _AppState;
 
   factory AppState.fromJson(Map<String, dynamic> json) =>
@@ -19,10 +19,23 @@ abstract class AppState with _$AppState {
 }
 
 @freezed
+abstract class NMetaData with _$NMetaData {
+  const factory NMetaData({
+    StudyDesign? design,
+    @Default([]) List<StudyTools> tools,
+    @Default("") String agentNotes,
+  }) = _NMetaData;
+
+  factory NMetaData.fromJson(Map<String, dynamic> json) =>
+      _$NMetaDataFromJson(json);
+}
+
+@freezed
 abstract class NoteContentState with _$NoteContentState {
   const factory NoteContentState({
     required TextEditingController editingController,
     required String previousContent,
+    NError? error,
   }) = _NoteContentState;
 }
 
@@ -62,7 +75,9 @@ abstract class StudyToolsState with _$StudyToolsState {
 
 @freezed
 abstract class AppEvent with _$AppEvent {
-  const factory AppEvent.loadedFromFile({required AppState state}) = _AppEvent;
+  const factory AppEvent.loadedFromFile({required AppState state}) =
+      _AppEventLoadedFromFile;
+  const factory AppEvent.newFile() = _AppEventNewFile;
 }
 
 extension NoteContentStateX on NoteContentState {
@@ -70,7 +85,7 @@ extension NoteContentStateX on NoteContentState {
 }
 
 extension AppStateX on AppState {
-  String get toolsOverview => tools.fold(
+  String get toolsOverview => currentFileMetaData.tools.fold(
     "",
     (overview, resource) =>
         "$overview,${resource.map(flashcards: (_) => "Flashcards:", qas: (_) => "QAs:", keywords: (_) => "Keywords:")}${resource.title}",

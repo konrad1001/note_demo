@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:note_demo/app/app.dart';
 import 'package:note_demo/db/models/app_state_adapter.dart';
+import 'package:note_demo/db/models/meta_data_adapter.dart';
 import 'package:note_demo/db/util.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,9 +16,9 @@ void main() async {
   // Init hive DB
   final dir = await getApplicationDocumentsDirectory();
   Hive.init(dir.path);
-  final _ = Hive.openBox<AppState>(kHashedFilesBoxName);
+  final _ = Hive.openBox<NMetaData>(kHashedFilesBoxName);
 
-  Hive.registerAdapter(AppStateAdapter());
+  Hive.registerAdapter(MetaDataAdapter());
 
   // Init window
   WindowOptions windowOptions = WindowOptions(

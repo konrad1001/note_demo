@@ -13,7 +13,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     return PrincipleAgentState.initial();
   }
 
-  void runPrinciple() {
+  void runPrinciple() async {
     final noteContent = ref.read(noteContentProvider);
     final noteContentNotifier = ref.read(noteContentProvider.notifier);
 
@@ -25,11 +25,15 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
 
     if (diff.size > 150) {
       noteContentNotifier.setPreviousContent(next);
-      _runPrinciple(diff);
+      try {
+        await _runPrinciple(diff);
+      } catch (e) {
+        noteContentNotifier.setPreviousContent(prev);
+      }
     }
   }
 
-  void _runPrinciple(UserDiff diff) async {
+  Future<void> _runPrinciple(UserDiff diff) async {
     final model = GPTAgent<PrincipleResponse>(role: AgentRole.principle);
 
     try {
@@ -44,6 +48,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
       );
     } catch (e) {
       print("Error $e");
+      rethrow;
     }
   }
 
@@ -51,10 +56,10 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     final appState = ref.read(appNotifierProvider);
 
     print(
-      "<AgentNotes> ${state.agentNotes} <Studyplan> ${appState.design ?? StudyDesign.empty()} <Resources> ${appState.toolsOverview} <UserAdded> ${diff.additions} <UserDeleted> ${diff.deletions}",
+      "<AgentNotes> ${state.agentNotes} <Studyplan> ${appState.currentFileMetaData.design ?? StudyDesign.empty()} <Resources> ${appState.toolsOverview} <UserAdded> ${diff.additions} <UserDeleted> ${diff.deletions}",
     );
 
-    return "<AgentNotes> ${state.agentNotes} <Studyplan> ${appState.design ?? StudyDesign.empty()} <Resources> ${appState.toolsOverview} <UserAdded> ${diff.additions} <UserDeleted> ${diff.deletions}";
+    return "<AgentNotes> ${state.agentNotes} <Studyplan> ${appState.currentFileMetaData.design ?? StudyDesign.empty()} <Resources> ${appState.toolsOverview} <UserAdded> ${diff.additions} <UserDeleted> ${diff.deletions}";
   }
 }
 

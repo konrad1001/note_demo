@@ -25,7 +25,7 @@ enum AgentRole {
 
           You will receive:
           - A document containing possible study notes.
-          - A JSON object with previously generated information.
+          - Sections with previously generated information.
 
           Your job:
           1. Validate whether the document is appropriate as student study notes.

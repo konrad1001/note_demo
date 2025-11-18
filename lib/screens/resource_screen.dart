@@ -10,6 +10,7 @@ class ResourceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: colour,
         leading: IconButton(
@@ -33,67 +34,69 @@ class _ResourceWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-      child: Column(
-        spacing: 16,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            tool.title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-          ),
-          Column(
-            spacing: 8,
-            crossAxisAlignment: CrossAxisAlignment.start,
-
-            children: tool.map(
-              flashcards: (flashcards) => [
-                ...flashcards.items.map(
-                  (item) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-
-                    children: [
-                      Text(item.front),
-                      Text(
-                        item.back,
-                        style: TextStyle(fontStyle: FontStyle.italic),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              qas: (qas) => [
-                ...qas.items.map(
-                  (item) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-
-                    children: [
-                      Text(item.question),
-                      Text(
-                        item.answer,
-                        style: TextStyle(fontStyle: FontStyle.italic),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              keywords: (keywords) => [
-                ...keywords.items.map(
-                  (item) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-
-                    children: [
-                      Text(item.keyword),
-                      Text(
-                        item.definition,
-                        style: TextStyle(fontStyle: FontStyle.italic),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+      child: SingleChildScrollView(
+        child: Column(
+          spacing: 16,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              tool.title,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
-          ),
-        ],
+            Column(
+              spacing: 8,
+              crossAxisAlignment: CrossAxisAlignment.start,
+
+              children: tool.map(
+                flashcards: (flashcards) => [
+                  ...flashcards.items.map(
+                    (item) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                      children: [
+                        Text(item.front),
+                        Text(
+                          item.back,
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                qas: (qas) => [
+                  ...qas.items.map(
+                    (item) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                      children: [
+                        Text(item.question),
+                        Text(
+                          item.answer,
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                keywords: (keywords) => [
+                  ...keywords.items.map(
+                    (item) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                      children: [
+                        Text(item.keyword),
+                        Text(
+                          item.definition,
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

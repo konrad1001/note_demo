@@ -13,7 +13,7 @@ class DebugScreen extends StatefulWidget {
 class _DebugScreenState extends State<DebugScreen> {
   @override
   Widget build(BuildContext context) {
-    final box = Hive.box<AppState>(kHashedFilesBoxName);
+    final box = Hive.box<NMetaData>(kHashedFilesBoxName);
 
     return Scaffold(
       backgroundColor: Colors.white,
