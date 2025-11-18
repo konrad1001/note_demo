@@ -6,7 +6,11 @@ import 'package:flutter/widgets.dart';
 part 'mac_menu_bar.dart';
 part 'windows_menu_bar.dart';
 
-typedef MenuBarFunctions = ({Function() openFile, Function() saveFile});
+typedef MenuBarFunctions = ({
+  Function() openFile,
+  Function() saveFile,
+  Function() openDebugView,
+});
 
 class OSMenuBar extends StatelessWidget {
   final MenuBarFunctions functions;

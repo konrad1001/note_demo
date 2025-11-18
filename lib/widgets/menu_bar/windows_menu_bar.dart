@@ -57,6 +57,25 @@ class WindowsMenuBar extends StatelessWidget {
                       ),
                     ],
                   ),
+                  SubmenuButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(Colors.white),
+                    ),
+                    menuStyle: MenuStyle(
+                      backgroundColor: WidgetStatePropertyAll(Colors.white),
+                    ),
+                    // ignore: sort_child_properties_last
+                    child: Text("Debug", style: TextStyle(fontSize: 12.0)),
+                    menuChildren: [
+                      MenuItemButton(
+                        onPressed: functions.openDebugView,
+                        child: const Text(
+                          "Open Debug View",
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
