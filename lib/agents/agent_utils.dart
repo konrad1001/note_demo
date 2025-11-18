@@ -1,20 +1,41 @@
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/models/gemini_response.dart';
 
 enum AgentRole {
   principle,
   designer,
-  toolBuilder;
+  toolBuilder,
+  researcher;
 
   Type get responseType => switch (this) {
     AgentRole.principle => PrincipleResponse,
     AgentRole.designer => StudyDesign,
     AgentRole.toolBuilder => StudyTools,
+    AgentRole.researcher => ExternalResearchResponse,
   };
 
   Function(Map<String, Object?> json) get fromJson => switch (this) {
     AgentRole.principle => PrincipleResponse.fromJson,
     AgentRole.designer => StudyDesign.fromJson,
     AgentRole.toolBuilder => StudyTools.fromJson,
+    // TODO: Handle this case.
+    AgentRole.researcher => throw UnimplementedError(),
+  };
+
+  Function(GeminiResponse response) get convert => switch (this) {
+    AgentRole.principle => (response) => PrincipleResponse.fromJson(
+      response.firstCandidateJSON,
+    ),
+    AgentRole.designer => (response) => StudyDesign.fromJson(
+      response.firstCandidateJSON,
+    ),
+    AgentRole.toolBuilder => (response) => StudyTools.fromJson(
+      response.firstCandidateJSON,
+    ),
+    // TODO: Handle this case.
+    AgentRole.researcher => (response) => ExternalResearchResponse(
+      content: response.firstCandidateText,
+    ),
   };
 
   String get systemInstructions {
@@ -108,6 +129,19 @@ enum AgentRole {
             ]
           }
           </System Instructions>
+        """;
+      case AgentRole.researcher:
+        return """<System Instructions>
+        You are a researcher for a study assistant tool.
+        Your task is to search the internet and return a valid resource to supplement the given notes. 
+        The resource is allowed to be loosly related to the content (i.e further reading)
+
+        Respond in valid .md format. 
+        Respond with a valid .md formatted hyperlink, as well as a short sentence about how the content relates.
+        Find either one of the following:
+        - A popular youtube video
+        - A popular online article.
+        </System Instructions>
         """;
     }
   }

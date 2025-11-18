@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/providers/external_research_provider.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
 import 'package:note_demo/providers/study_tools_provider.dart';
 import 'package:note_demo/widgets/study_tools_container.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 
 class StudyScreen extends ConsumerWidget {
   const StudyScreen({super.key});
@@ -13,6 +15,7 @@ class StudyScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final studyContent = ref.watch(studyContentProvider);
     final studyTools = ref.watch(studyResourcesProvider);
+    final externalResearch = ref.watch(externalResearchProvider);
 
     return SingleChildScrollView(
       child: Column(
@@ -30,11 +33,30 @@ class StudyScreen extends ConsumerWidget {
                 Dashboard(design: design, isLoading: isLoading),
             error: (error) => Center(child: Text(error.toString())),
           ),
+          // ExternalResearchWidget(externalResearch: externalResearch),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: StudyToolsContainer(state: studyTools),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ExternalResearchWidget extends StatelessWidget {
+  const ExternalResearchWidget({super.key, required this.externalResearch});
+
+  final String externalResearch;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+      child: Container(
+        color: const Color.fromARGB(108, 158, 158, 158),
+        height: 100,
+        child: MarkdownWidget(data: externalResearch),
       ),
     );
   }

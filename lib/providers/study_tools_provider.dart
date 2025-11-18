@@ -52,7 +52,7 @@ class StudyResourcesNotifier extends Notifier<StudyToolsState> {
   void _updateTools() async {
     state = state.copyWith(isLoading: true);
 
-    await Future.delayed(Duration(seconds: 1));
+    // await Future.delayed(Duration(seconds: 1));
 
     final appNotifer = ref.read(appNotifierProvider.notifier);
 
@@ -75,7 +75,6 @@ class StudyResourcesNotifier extends Notifier<StudyToolsState> {
   }
 
   String _buildPrompt() {
-    final noteContent = ref.read(noteContentProvider);
     final diff = ref.read(principleAgentProvider).diff?.additions ?? "";
     final studyDesign = ref.read(appNotifierProvider);
 

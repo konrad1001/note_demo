@@ -76,3 +76,38 @@ Case folding, convert everything to lowercase
 Good for collecting stats and behaviours of words
 Good for search engine
 Can lose a lot of data. Proper nouns for names etc.
+Week 4. Word Meaning
+Transformation Based Learning
+Start with a simple solution to the problem
+Apply transformations to get best results, eg correcting mistakes
+Repeat until no more improvement
+
+Two phases, learning phase then application phase. 
+Use a rule based approach to decide when to change tag x to y. 
+
+Initially, give words their most likely tag. This wont be fully right
+Learn transformations (rules) that correct errors from tagged data.
+
+Word Senses
+Word sense refers to one of the meanings of a word
+(WSD) Word sense disambiguation is the task of selecting the correct sense for a given word
+Useful for machine translation
+
+Approaches could be knowledge based, like using an external lexical resource such as a dictionary, or supervised machine learning approaches, using labelled training examples
+
+The simplified lesk algorithm examines overlap between sense definition of a word and its current context. 
+Retrieve from the dictionary all sense definitions of a word to be analysed
+Calculate the overlap (words in common) between sense definition and words in its surrounding context
+
+Week 5. Deep Learning
+DL mostly refers to NN based techniques for building end to end systems, and are able to take raw objects as the input. 
+No manual preprocessing 
+State of the art in NLP tasks
+
+Recurrent Neural Network
+An RNN is any network that contains a cycle within its network connections, the value of some unit is directly, or indirectly dependent on its own earlier outputs as an input. 
+
+Lend themselves greatly to the sequential nature of language. The hidden layer from the previous time step provides a form of memory/context that encodes earlier processing and informs decision making in later points in time. 
+
+Well introduce a new set of weights U that connect the hidden layer from the previous time step to the current hidden layer. 
+

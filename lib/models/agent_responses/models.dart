@@ -22,6 +22,14 @@ abstract class PrincipleResponse extends AgentResponse
 }
 
 @freezed
+abstract class ExternalResearchResponse extends AgentResponse
+    with _$ExternalResearchResponse {
+  const ExternalResearchResponse._();
+  const factory ExternalResearchResponse({required String content}) =
+      _ExternalResearchResponse;
+}
+
+@freezed
 abstract class StudyDesign extends AgentResponse with _$StudyDesign {
   const StudyDesign._();
 

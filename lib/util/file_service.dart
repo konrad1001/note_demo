@@ -16,12 +16,14 @@ class FileService {
     }
   }
 
-  Future<String?> saveFile(String content) async {
+  Future<String?> saveFile(String content, String? expectedName) async {
+    print(expectedName);
     return await FilePicker.platform.saveFile(
       dialogTitle: 'Please select an output file:',
       type: FileType.custom,
       allowedExtensions: ['txt', 'md'],
       bytes: Uint8List.fromList(content.codeUnits),
+      fileName: expectedName,
     );
   }
 }

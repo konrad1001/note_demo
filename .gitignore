@@ -45,6 +45,7 @@ app.*.map.json
 /android/app/release
 
 config.json
+*.md
 
 # Auto-generated
 *.g.dart
