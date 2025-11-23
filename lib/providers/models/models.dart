@@ -44,13 +44,24 @@ abstract class PrincipleAgentState with _$PrincipleAgentState {
   const factory PrincipleAgentState.initial({
     @Default("") String agentNotes,
     UserDiff? diff,
+    @Default(false) bool isLoading,
   }) = PrincipleAgentStateInitial;
   const factory PrincipleAgentState.idle({
     required bool valid,
     required List<String> tool,
     @Default("") String agentNotes,
     UserDiff? diff,
+    @Default(false) bool isLoading,
   }) = PrincipleAgentStateIdle;
+}
+
+@freezed
+abstract class ExternalResearchState with _$ExternalResearchState {
+  const factory ExternalResearchState({
+    String? content,
+    @Default(0) int pipeLevel,
+    @Default(false) bool isLoading,
+  }) = _ExternalResearchState;
 }
 
 @freezed

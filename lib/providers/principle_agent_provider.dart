@@ -36,6 +36,8 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
   Future<void> _runPrinciple(UserDiff diff) async {
     final model = GPTAgent<PrincipleResponse>(role: AgentRole.principle);
 
+    state = state.copyWith(isLoading: true);
+
     try {
       final response = await model.fetch(_buildPrompt(diff));
       print("${response.agentNotes}, tools: ${response.tool}");

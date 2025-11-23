@@ -7,6 +7,7 @@ import 'package:note_demo/providers/study_content_provider.dart';
 import 'package:note_demo/screens/debug_screen.dart';
 import 'package:note_demo/screens/notes_screen.dart';
 import 'package:note_demo/screens/study_screen.dart';
+import 'package:note_demo/widgets/agent_status_bar.dart';
 import 'package:note_demo/widgets/menu_bar/menu_bar.dart';
 
 class App extends StatefulWidget {
@@ -65,11 +66,28 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                 ],
               ),
             ),
-            body: TabBarView(
-              controller: _tabController,
-              children: <Widget>[
-                NotesScreen(controller: _notesController),
-                StudyScreen(),
+            body: Column(
+              children: [
+                Expanded(
+                  flex: 7,
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: <Widget>[
+                      NotesScreen(controller: _notesController),
+                      StudyScreen(),
+                    ],
+                  ),
+                ),
+                Flexible(
+                  flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 8,
+                    ),
+                    child: AgentStatusBar(),
+                  ),
+                ),
               ],
             ),
           ),

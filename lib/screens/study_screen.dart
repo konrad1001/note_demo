@@ -34,8 +34,8 @@ class StudyScreen extends ConsumerWidget {
                 Dashboard(design: design, isLoading: isLoading),
             error: (error) => Center(child: Text(error.toString())),
           ),
-          if (externalResearch != null)
-            ExternalResearchWidget(externalResearch: externalResearch),
+          if (externalResearch.content != null)
+            ExternalResearchWidget(externalResearch: externalResearch.content!),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: StudyToolsContainer(state: studyTools),
