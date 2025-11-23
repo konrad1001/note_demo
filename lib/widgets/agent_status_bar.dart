@@ -40,7 +40,7 @@ class AgentStatusBar extends ConsumerWidget {
       opacity: isLoading ? 0.5 : 1.0,
       child: Container(
         decoration: BoxDecoration(
-          color: const Color.fromARGB(146, 33, 149, 243),
+          color: const Color.fromARGB(255, 113, 190, 253),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Padding(
@@ -80,7 +80,7 @@ class AgentStatusBar extends ConsumerWidget {
       opacity: isLoading ? 0.5 : 1.0,
       child: Container(
         decoration: BoxDecoration(
-          color: const Color.fromARGB(146, 33, 149, 243),
+          color: const Color.fromARGB(255, 113, 190, 253),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Padding(

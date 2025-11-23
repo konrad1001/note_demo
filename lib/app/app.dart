@@ -66,26 +66,37 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                 ],
               ),
             ),
-            body: Column(
+            body: Stack(
+              alignment: AlignmentGeometry.bottomCenter,
               children: [
-                Expanded(
-                  flex: 7,
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: <Widget>[
-                      NotesScreen(controller: _notesController),
-                      StudyScreen(),
-                    ],
-                  ),
+                TabBarView(
+                  controller: _tabController,
+                  children: <Widget>[
+                    NotesScreen(controller: _notesController),
+                    StudyScreen(),
+                  ],
                 ),
-                Flexible(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 8,
+                Container(
+                  height: 120,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0),
+                        Colors.black.withValues(alpha: 0.2),
+                      ],
                     ),
-                    child: AgentStatusBar(),
+                  ),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 16,
+                      ),
+                      child: AgentStatusBar(),
+                    ),
                   ),
                 ),
               ],

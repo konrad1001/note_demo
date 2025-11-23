@@ -40,6 +40,7 @@ class StudyScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: StudyToolsContainer(state: studyTools),
           ),
+          SizedBox(height: 64),
         ],
       ),
     );

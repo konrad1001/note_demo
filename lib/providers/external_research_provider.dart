@@ -26,7 +26,6 @@ class ExternalResearchNotifier extends Notifier<ExternalResearchState> {
   }
 
   void _updateResearch() async {
-    print("updating research");
     state = state.copyWith(isLoading: true, pipeLevel: 0);
 
     final diff = ref.read(principleAgentProvider).diff?.additions ?? "";

@@ -36,6 +36,7 @@ class AgentPipeline {
         yield (index: i + 1, object: next.content, finished: false);
       } catch (e) {
         responseChain.add(e.toString());
+        yield (index: 0, object: e.toString(), finished: true);
       }
     }
     yield (index: 0, object: responseChain.last, finished: true);
