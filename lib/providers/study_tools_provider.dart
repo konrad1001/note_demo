@@ -24,7 +24,7 @@ class StudyResourcesNotifier extends Notifier<StudyToolsState> {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
       switch (next) {
         case PrincipleAgentStateIdle idle:
-          if (idle.valid && idle.tool.contains('resource')) {
+          if (idle.valid && idle.tool.contains('tools')) {
             _updateTools();
           }
         default: // continue

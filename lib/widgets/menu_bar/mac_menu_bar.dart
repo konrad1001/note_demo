@@ -42,6 +42,19 @@ class MacMenuBar extends StatelessWidget {
             ),
           ],
         ),
+        PlatformMenu(
+          label: "Debug",
+          menus: <PlatformMenuItem>[
+            PlatformMenuItemGroup(
+              members: [
+                PlatformMenuItem(
+                  label: "Open Debug View",
+                  onSelected: functions.openDebugView,
+                ),
+              ],
+            ),
+          ],
+        ),
       ],
       child: child,
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/external_research_provider.dart';
 import 'package:note_demo/providers/models/models.dart';
@@ -33,7 +34,8 @@ class StudyScreen extends ConsumerWidget {
                 Dashboard(design: design, isLoading: isLoading),
             error: (error) => Center(child: Text(error.toString())),
           ),
-          // ExternalResearchWidget(externalResearch: externalResearch),
+          if (externalResearch != null)
+            ExternalResearchWidget(externalResearch: externalResearch),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: StudyToolsContainer(state: studyTools),
@@ -54,9 +56,24 @@ class ExternalResearchWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
       child: Container(
-        color: const Color.fromARGB(108, 158, 158, 158),
-        height: 100,
-        child: MarkdownWidget(data: externalResearch),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(65, 158, 158, 158),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                "Next Steps...",
+                style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+              ),
+              MarkdownWidget(data: externalResearch, shrinkWrap: true),
+            ],
+          ),
+        ),
       ),
     );
   }

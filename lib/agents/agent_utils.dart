@@ -5,21 +5,15 @@ enum AgentRole {
   principle,
   designer,
   toolBuilder,
-  researcher;
+  researcher,
+  pipeline;
 
   Type get responseType => switch (this) {
     AgentRole.principle => PrincipleResponse,
     AgentRole.designer => StudyDesign,
     AgentRole.toolBuilder => StudyTools,
     AgentRole.researcher => ExternalResearchResponse,
-  };
-
-  Function(Map<String, Object?> json) get fromJson => switch (this) {
-    AgentRole.principle => PrincipleResponse.fromJson,
-    AgentRole.designer => StudyDesign.fromJson,
-    AgentRole.toolBuilder => StudyTools.fromJson,
-    // TODO: Handle this case.
-    AgentRole.researcher => throw UnimplementedError(),
+    _ => BaseResponse,
   };
 
   Function(GeminiResponse response) get convert => switch (this) {
@@ -32,10 +26,10 @@ enum AgentRole {
     AgentRole.toolBuilder => (response) => StudyTools.fromJson(
       response.firstCandidateJSON,
     ),
-    // TODO: Handle this case.
     AgentRole.researcher => (response) => ExternalResearchResponse(
       content: response.firstCandidateText,
     ),
+    _ => (response) => BaseResponse(content: response.firstCandidateText),
   };
 
   String get systemInstructions {
@@ -50,7 +44,7 @@ enum AgentRole {
 
           Your job:
           1. Validate whether the document is appropriate as student study notes.
-          2. Decide whether to trigger the “plan” and/or “resource” tool.
+          2. Decide whether to trigger the “plan” and/or “tools” and/or "research" tool.
           3. Output strictly valid JSON matching the schema.
 
           <Validation Criteria>
@@ -68,9 +62,12 @@ enum AgentRole {
           - The new notes introduce ≥2 new concepts not in the existing plan, OR
           - The summary no longer matches ≥20% of the introduced content.
 
-          Use **"resource"** if:
+          Use **"“tools”"** if:
           - The new notes add ≥2 new subtopics, OR
           - The user is building detail that would benefit from flashcards/Q&A/keywords.
+
+          Use **""research""** if:
+          - The new notes introduce content that would benefit from explanatory youtube videos or online articles. 
 
           <Schema>
           {
@@ -132,17 +129,15 @@ enum AgentRole {
         """;
       case AgentRole.researcher:
         return """<System Instructions>
-        You are a researcher for a study assistant tool.
-        Your task is to search the internet and return a valid resource to supplement the given notes. 
-        The resource is allowed to be loosly related to the content (i.e further reading)
+        You are the first step in a resource fetching and evaluating pipeline. 
+        Your job is to return up to 5 links for online content related to the provided content.
+        It can be blog posts, articles or youtube videos. 
 
-        Respond in valid .md format. 
-        Respond with a valid .md formatted hyperlink, as well as a short sentence about how the content relates.
-        Find either one of the following:
-        - A popular youtube video
-        - A popular online article.
+        Respond in a comma seperated list.
         </System Instructions>
         """;
+      case AgentRole.pipeline:
+        return "";
     }
   }
 }

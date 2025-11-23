@@ -43,5 +43,8 @@ class GeminiService {
       "maxOutputTokens": 600,
       "thinkingConfig": {"thinkingBudget": 0},
     },
+    "tools": [
+      {"urlContext": {}},
+    ],
   });
 }

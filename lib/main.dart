@@ -25,7 +25,7 @@ void main() async {
     title: "Note GPT",
     size: Size(1000, 600),
     minimumSize: Size(400, 300),
-    center: true,
+    // center: true,
     skipTaskbar: false,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
