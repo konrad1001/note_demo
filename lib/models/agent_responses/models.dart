@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:note_demo/models/gemini_response.dart';
 
 part 'models.freezed.dart';
 part 'models.g.dart';
@@ -12,13 +13,9 @@ abstract class PrincipleResponse extends AgentResponse
     with _$PrincipleResponse {
   const PrincipleResponse._();
   const factory PrincipleResponse({
-    required bool valid,
-    required List<String> tool,
-    @JsonKey(name: "agent_notes") required String agentNotes,
+    String? content,
+    @Default([]) List<GeminiFunctionResponse> calls,
   }) = _PrincipleResponse;
-
-  factory PrincipleResponse.fromJson(Map<String, dynamic> json) =>
-      _$PrincipleResponseFromJson(json);
 }
 
 @freezed

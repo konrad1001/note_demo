@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/util/diff.dart';
 import 'package:note_demo/util/error/errors.dart';
 
@@ -46,13 +47,26 @@ abstract class PrincipleAgentState with _$PrincipleAgentState {
     UserDiff? diff,
     @Default(false) bool isLoading,
   }) = PrincipleAgentStateInitial;
+
   const factory PrincipleAgentState.idle({
     required bool valid,
-    required List<String> tool,
+    @Default([]) List<GeminiFunctionResponse> calls,
     @Default("") String agentNotes,
     UserDiff? diff,
     @Default(false) bool isLoading,
   }) = PrincipleAgentStateIdle;
+}
+
+extension PrincipleAgentStateX on PrincipleAgentState {
+  GeminiFunctionResponse? callsMe(String name) => map(
+    initial: (_) => null,
+    idle: (idle) {
+      for (var call in idle.calls) {
+        if (call.name == name) return call;
+      }
+      return null;
+    },
+  );
 }
 
 @freezed

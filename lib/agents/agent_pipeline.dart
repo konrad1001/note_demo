@@ -32,7 +32,6 @@ class AgentPipeline {
       try {
         final next = await agent.fetch('$prompt ${responseChain.last}');
         responseChain.add(next.content);
-        print("pipeline ${i + 1} success, returned: ${next.content}");
         yield (index: i + 1, object: next.content, finished: false);
       } catch (e) {
         responseChain.add(e.toString());

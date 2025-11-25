@@ -40,12 +40,13 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
 
     try {
       final response = await model.fetch(_buildPrompt(diff));
-      print("${response.agentNotes}, tools: ${response.tool}");
+
+      print("Principle called: ${response.calls.map((call) => call.name)}");
 
       state = PrincipleAgentState.idle(
-        valid: response.valid,
-        tool: response.tool,
-        agentNotes: response.agentNotes,
+        valid: true,
+        calls: response.calls,
+        agentNotes: "",
         diff: diff,
       );
     } catch (e) {
@@ -56,11 +57,6 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
 
   String _buildPrompt(UserDiff diff) {
     final appState = ref.read(appNotifierProvider);
-
-    print(
-      "<AgentNotes> ${state.agentNotes} <Studyplan> ${appState.currentFileMetaData.design ?? StudyDesign.empty()} <Resources> ${appState.toolsOverview} <UserAdded> ${diff.additions} <UserDeleted> ${diff.deletions}",
-    );
-
     return "<AgentNotes> ${state.agentNotes} <Studyplan> ${appState.currentFileMetaData.design ?? StudyDesign.empty()} <Resources> ${appState.toolsOverview} <UserAdded> ${diff.additions} <UserDeleted> ${diff.deletions}";
   }
 }

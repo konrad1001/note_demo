@@ -5,15 +5,19 @@ import 'package:note_demo/util/gemini_service.dart';
 
 class GPTAgent<T extends AgentResponse> {
   final AgentRole role;
-  final GeminiService _geminiService = GeminiService();
+  late GeminiService _geminiService;
 
-  GPTAgent({required this.role});
+  GPTAgent({required this.role}) {
+    _geminiService = GeminiService(canCallTools: role.canCallTools);
+  }
 
   Future<T> fetch(String message) async {
     final prompt = '${role.systemInstructions}. $message';
 
     try {
       final response = await _geminiService.fetch(prompt);
+
+      print("fetched: $response");
 
       return role.convert(response);
     } catch (e) {

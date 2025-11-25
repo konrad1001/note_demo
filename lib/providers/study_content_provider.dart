@@ -11,6 +11,8 @@ import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/mock_service_provider.dart';
 import 'package:note_demo/providers/principle_agent_provider.dart';
 
+const kStudyContentNotifierToolName = "overview";
+
 class StudyContentNotifier extends Notifier<StudyContentState> {
   @override
   StudyContentState build() {
@@ -55,7 +57,8 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
       switch (next) {
         case PrincipleAgentStateIdle idle:
-          if (idle.valid && idle.tool.contains('plan')) {
+          if (idle.valid &&
+              idle.callsMe(kStudyContentNotifierToolName) != null) {
             _updateDesign();
           }
         default: // continue
@@ -68,13 +71,13 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
 
     final useMock = ref.watch(mockServiceProvider);
 
-    if (useMock) {
-      await Future.delayed(const Duration(seconds: 1));
-      state = StudyContentState.idle(
-        design: MockBuilder.geminiResponse.getStudyDesign(),
-      );
-      return;
-    }
+    // if (useMock) {
+    //   await Future.delayed(const Duration(seconds: 1));
+    //   state = StudyContentState.idle(
+    //     design: MockBuilder.geminiResponse.getStudyDesign(),
+    //   );
+    //   return;
+    // }
 
     final model = GPTAgent<StudyDesign>(role: AgentRole.designer);
 

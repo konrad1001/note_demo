@@ -10,6 +10,8 @@ import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/providers/principle_agent_provider.dart';
 
+const kStudyToolsNotifierToolName = "resources";
+
 class StudyResourcesNotifier extends Notifier<StudyToolsState> {
   @override
   StudyToolsState build() {
@@ -24,9 +26,13 @@ class StudyResourcesNotifier extends Notifier<StudyToolsState> {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
       switch (next) {
         case PrincipleAgentStateIdle idle:
-          if (idle.valid && idle.tool.contains('tools')) {
-            _updateTools();
+          {
+            final call = idle.callsMe(kStudyToolsNotifierToolName);
+            if (idle.valid && call != null) {
+              _updateTools();
+            }
           }
+
         default: // continue
       }
     });

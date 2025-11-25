@@ -6,6 +6,10 @@ import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/principle_agent_provider.dart';
 
+const kExternalResearchNotifierToolName = "research";
+
+final on = false;
+
 class ExternalResearchNotifier extends Notifier<ExternalResearchState> {
   @override
   ExternalResearchState build() {
@@ -17,7 +21,9 @@ class ExternalResearchNotifier extends Notifier<ExternalResearchState> {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
       switch (next) {
         case PrincipleAgentStateIdle idle:
-          if (idle.valid && idle.tool.contains('research')) {
+          if (idle.valid &&
+              idle.callsMe(kExternalResearchNotifierToolName) != null &&
+              on) {
             _updateResearch();
           }
         default: // continue

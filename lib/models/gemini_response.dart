@@ -20,7 +20,9 @@ abstract class GeminiResponse with _$GeminiResponse {
 }
 
 extension GeminiResponseX on GeminiResponse {
-  String get firstCandidateText => candidates.first.content.parts.first.text;
+  String get firstCandidateText =>
+      candidates.first.content.parts.first.text ??
+      ""; // TODO: This will break things!
 
   Map<String, dynamic> get firstCandidateJSON {
     final cleaned = firstCandidateText
@@ -29,16 +31,20 @@ extension GeminiResponseX on GeminiResponse {
     return json.decode(cleaned) as Map<String, dynamic>;
   }
 
-  StudyDesign getStudyDesign() {
-    try {
-      final cleaned = firstCandidateText
-          .replaceAll(RegExp(r'```json|```'), '')
-          .trim();
-      final jsonMap = json.decode(cleaned) as Map<String, dynamic>;
-      return StudyDesign.fromJson(jsonMap);
-    } catch (e) {
-      return StudyDesign.error(e);
-    }
+  // TODO: should test this really
+  List<GeminiFunctionResponse> get functionCalls {
+    final allCalls = candidates.first.content.parts
+        .map((part) => part.functionCall)
+        .nonNulls;
+
+    return allCalls
+        .map(
+          (call) => GeminiFunctionResponse(
+            name: call.name,
+            args: call.args.values.map((arg) => arg.toString()).toList(),
+          ),
+        )
+        .toList();
   }
 }
 
@@ -64,7 +70,7 @@ abstract class Content with _$Content {
 
 @freezed
 abstract class Part with _$Part {
-  const factory Part({required String text}) = _Part;
+  const factory Part({String? text, FunctionCall? functionCall}) = _Part;
 
   factory Part.fromJson(Map<String, dynamic> json) => _$PartFromJson(json);
 }
@@ -79,4 +85,23 @@ abstract class UsageMetadata with _$UsageMetadata {
 
   factory UsageMetadata.fromJson(Map<String, dynamic> json) =>
       _$UsageMetadataFromJson(json);
+}
+
+@freezed
+abstract class FunctionCall with _$FunctionCall {
+  const factory FunctionCall({
+    required String name,
+    required Map<String, dynamic> args,
+  }) = _FunctionCall;
+
+  factory FunctionCall.fromJson(Map<String, dynamic> json) =>
+      _$FunctionCallFromJson(json);
+}
+
+@freezed
+abstract class GeminiFunctionResponse with _$GeminiFunctionResponse {
+  const factory GeminiFunctionResponse({
+    required String name,
+    @Default([]) List<String> args,
+  }) = _GeminiFunctionResponse;
 }

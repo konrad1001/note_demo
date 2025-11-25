@@ -8,6 +8,11 @@ enum AgentRole {
   researcher,
   pipeline;
 
+  bool get canCallTools => switch (this) {
+    AgentRole.principle => true,
+    _ => false,
+  };
+
   Type get responseType => switch (this) {
     AgentRole.principle => PrincipleResponse,
     AgentRole.designer => StudyDesign,
@@ -17,8 +22,9 @@ enum AgentRole {
   };
 
   Function(GeminiResponse response) get convert => switch (this) {
-    AgentRole.principle => (response) => PrincipleResponse.fromJson(
-      response.firstCandidateJSON,
+    AgentRole.principle => (response) => PrincipleResponse(
+      content: response.firstCandidateText,
+      calls: response.functionCalls,
     ),
     AgentRole.designer => (response) => StudyDesign.fromJson(
       response.firstCandidateJSON,
@@ -37,47 +43,17 @@ enum AgentRole {
       case AgentRole.principle:
         return """<System Instructions>
           You are the principal agent in a study-assistant system.
-
+    
           You will receive:
           - A document containing possible study notes.
-          - Sections with previously generated information.
+          - Additional information from previous iterations
 
-          Your job:
-          1. Validate whether the document is appropriate as student study notes.
-          2. Decide whether to trigger the “plan” and/or “tools” and/or "research" tool.
-          3. Output strictly valid JSON matching the schema.
-
-          <Validation Criteria>
-          Return valid = false if ANY of the following:
-          - The text is empty or consists of fewer than 10 meaningful words.
-          - It contains no identifiable topic or subject.
-          - It is purely narrative fiction, unrelated code, chat, or random text.
-          - It cannot be used to generate a study plan.
-
-          <Tool-Calling Rules>
-          You may include at most ONE of each tool per iteration.  
-          You may choose none.
-
-          Use **"plan"** if:
-          - The new notes introduce ≥2 new concepts not in the existing plan, OR
-          - The summary no longer matches ≥20% of the introduced content.
-
-          Use **"“tools”"** if:
-          - The new notes add ≥2 new subtopics, OR
-          - The user is building detail that would benefit from flashcards/Q&A/keywords.
-
-          Use **""research""** if:
-          - The new notes introduce content that would benefit from explanatory youtube videos or online articles. 
-
-          <Schema>
-          {
-            "valid": boolean,
-            "tool": string[], 
-            "agent_notes": string
-          }
-          </System Instructions>
-
-          """;
+          <Tool-Calling Guidance>
+          **You must save you thought process as well as which tools you have used at each turn, to aid future iterations.**
+          **You are highly encouraged to use the provided tools if they can help fulfill the user's request, especially for generating resources, research, or an overview.**
+          You may choose multiple tools.
+          </Tool-Calling Guidance>
+      """;
       case AgentRole.designer:
         return """<System Instructions>
           You update the study-plan metadata based on student notes.
