@@ -26,7 +26,7 @@ class StudyScreen extends ConsumerWidget {
             empty: () => Center(
               child: Padding(
                 padding: const EdgeInsets.all(32.0),
-                child: Text('...'),
+                child: const SizedBox.shrink(),
               ),
             ),
             loading: () => Center(child: CircularProgressIndicator()),

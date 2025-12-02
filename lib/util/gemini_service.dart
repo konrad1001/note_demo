@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:note_demo/agents/utils/tool_utils.dart';
 import 'package:note_demo/models/gemini_response.dart';
 
 const kModelId = "gemini-2.5-flash";
@@ -58,57 +59,9 @@ class GeminiService {
 
   Map get _tools => {
     "functionDeclarations": [
-      {
-        "name": "save",
-        "description":
-            """(internal) This function saves to your agent memory that you will use in future iterations. Use this
-            function to save information you deem important, such as what tools you have already called, to prevent overuse.
-            """,
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "agent_notes": {"type": "string"},
-          },
-          "propertyOrdering": ["agent_notes"],
-          "required": ["agent_notes"],
-        },
-      },
-      {
-        "name": "overview",
-        "description":
-            "This function updates the title and short summary of the full notes document. ",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "additional_instructions": {"type": "string"},
-          },
-          "propertyOrdering": ["additional_instructions"],
-        },
-      },
-      {
-        "name": "resources",
-        "description":
-            "This function generates resources to supplement the users study. They can be one of flashcards, q&as or keywords. Use the additional instructions parameter to specify further instructions as to which of these should be generated.",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "additional_instructions": {"type": "string"},
-          },
-          "propertyOrdering": ["additional_instructions"],
-        },
-      },
-      {
-        "name": "research",
-        "description":
-            "This function triggers a search for additional material online to supplement the users notes.",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "additional_instructions": {"type": "string"},
-          },
-          "propertyOrdering": ["additional_instructions"],
-        },
-      },
+      overviewToolAsMap,
+      resourcesToolAsMap,
+      researchToolAsMap,
     ],
   };
 }

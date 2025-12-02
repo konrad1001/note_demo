@@ -31,6 +31,7 @@ dev_dependencies:
   custom_lint: ^0.8.0
   build_runner: ^2.7.1
   json_serializable: ^6.11.1
+  gemini_agent_tools: ^0.0.3
 
 flutter:
   uses-material-design: true

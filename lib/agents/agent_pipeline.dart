@@ -1,4 +1,4 @@
-import 'package:note_demo/agents/agent_utils.dart';
+import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 

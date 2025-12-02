@@ -400,6 +400,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.0"
+  gemini_agent_tools:
+    dependency: "direct dev"
+    description:
+      name: gemini_agent_tools
+      sha256: f2c1fc39dc774e5eef6c77586ea8407b7c84b70862574bcf599d724dc28185a0
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   glob:
     dependency: transitive
     description:

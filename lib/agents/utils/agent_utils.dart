@@ -1,5 +1,6 @@
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:gemini_agent_tools/tool_annotation.dart';
 
 enum AgentRole {
   principle,
