@@ -4,6 +4,7 @@ import 'package:hive_ce/hive.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/external_research_provider.dart';
 import 'package:note_demo/providers/models/models.dart';
+import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
 import 'package:note_demo/providers/study_tools_provider.dart';
 import 'package:note_demo/widgets/study_tools_container.dart';
@@ -14,33 +15,40 @@ class StudyScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final noteContent = ref.watch(noteContentProvider);
     final studyContent = ref.watch(studyContentProvider);
     final studyTools = ref.watch(studyResourcesProvider);
     final externalResearch = ref.watch(externalResearchProvider);
 
     return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          studyContent.when(
-            empty: () => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: const SizedBox.shrink(),
+          Align(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 700),
+              child: MarkdownWidget(
+                padding: const EdgeInsets.all(8.0),
+                shrinkWrap: true,
+                config: MarkdownConfig(
+                  configs: [PConfig(textStyle: TextStyle(fontSize: 16))],
+                ),
+                data: noteContent.text,
               ),
             ),
-            loading: () => Center(child: CircularProgressIndicator()),
-            idle: (design, isLoading) =>
-                Dashboard(design: design, isLoading: isLoading),
-            error: (error) => Center(child: Text(error.toString())),
           ),
-          if (externalResearch.content != null)
-            ExternalResearchWidget(externalResearch: externalResearch.content!),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: StudyToolsContainer(state: studyTools),
-          ),
-          SizedBox(height: 64),
+          // Align(
+          //   alignment: AlignmentGeometry.topRight,
+          //   child: Positioned(
+          //     child: Container(height: 100, width: 100, color: Colors.red),
+          //   ),
+          // ),
+          // Align(
+          //   alignment: Alignment.bottomCenter,
+          //   child: Padding(
+          //     padding: const EdgeInsets.symmetric(horizontal: 32),
+          //     child: ExternalResearchWidget(externalResearch: ""),
+          //   ),
+          // ),
         ],
       ),
     );
