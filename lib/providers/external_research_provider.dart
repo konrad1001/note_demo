@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/agent_pipeline.dart';
+import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/principle_agent_provider.dart';
 
@@ -29,6 +30,8 @@ class ExternalResearchNotifier extends Notifier<ExternalResearchState> {
   }
 
   void _updateResearch() async {
+    final appNotifer = ref.read(appNotifierProvider.notifier);
+
     state = state.copyWith(isLoading: true, pipeLevel: 0);
 
     final diff = ref.read(principleAgentProvider).diff?.additions ?? "";
@@ -38,7 +41,9 @@ class ExternalResearchNotifier extends Notifier<ExternalResearchState> {
     await for (final result in pipeline.fetch(diff)) {
       state = state.copyWith(pipeLevel: result.index);
       if (result.finished) {
+        print("fetched research: ${result.object}");
         state = state.copyWith(isLoading: false, content: result.object);
+        appNotifer.setExternalResearchString(result.object);
       }
     }
   }

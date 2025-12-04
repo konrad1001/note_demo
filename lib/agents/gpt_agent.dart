@@ -15,9 +15,6 @@ class GPTAgent<T extends AgentResponse> {
 
     try {
       final response = await _geminiService.fetch(prompt);
-
-      print("fetched: $response");
-
       return role.convert(response);
     } catch (e) {
       rethrow;

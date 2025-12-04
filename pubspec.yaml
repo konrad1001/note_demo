@@ -22,6 +22,7 @@ dependencies:
   window_manager: ^0.5.1
   hive_ce: ^2.15.1
   crypto: ^3.0.7
+  shimmer_animation: ^2.1.0
 
 dev_dependencies:
   flutter_test:

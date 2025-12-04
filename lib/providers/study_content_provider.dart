@@ -43,6 +43,7 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
             }
           },
           newFile: () {
+            print("content recieved new file");
             state = StudyContentState.empty();
           },
           orElse: () {},

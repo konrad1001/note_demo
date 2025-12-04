@@ -13,6 +13,7 @@ abstract class AppState with _$AppState {
   const factory AppState({
     required NMetaData currentFileMetaData,
     @Default("") String currentFileName,
+    @Default("") String enhancedNotes,
   }) = _AppState;
 
   factory AppState.fromJson(Map<String, dynamic> json) =>
@@ -25,6 +26,7 @@ abstract class NMetaData with _$NMetaData {
     StudyDesign? design,
     @Default([]) List<StudyTools> tools,
     @Default("") String agentNotes,
+    String? externalResearch,
   }) = _NMetaData;
 
   factory NMetaData.fromJson(Map<String, dynamic> json) =>

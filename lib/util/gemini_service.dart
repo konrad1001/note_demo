@@ -22,7 +22,6 @@ class GeminiService {
     );
 
     if (response.statusCode == 200) {
-      print(response.body);
       final data = jsonDecode(response.body);
 
       final modelResponse = GeminiResponse.fromJson(data);

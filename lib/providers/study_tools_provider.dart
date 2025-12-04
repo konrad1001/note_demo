@@ -38,6 +38,8 @@ class StudyResourcesNotifier extends Notifier<StudyToolsState> {
   void _subscribeToAppState() {
     ref.listen<AsyncValue<AppEvent>>(appEventStreamProvider, (prev, next) {
       next.whenData((event) {
+        print("Event $event");
+
         event.maybeWhen(
           loadedFromFile: (appState) {
             final tools = appState.currentFileMetaData.tools;
@@ -54,9 +56,6 @@ class StudyResourcesNotifier extends Notifier<StudyToolsState> {
 
   void _updateTools() async {
     state = state.copyWith(isLoading: true);
-
-    // await Future.delayed(Duration(seconds: 1));
-
     final appNotifer = ref.read(appNotifierProvider.notifier);
 
     final model = GPTAgent<StudyTools>(role: AgentRole.toolBuilder);

@@ -1,10 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:note_demo/app/app_bar.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
-import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
 import 'package:note_demo/screens/debug_screen.dart';
@@ -12,6 +10,7 @@ import 'package:note_demo/screens/notes_screen.dart';
 import 'package:note_demo/screens/study_screen.dart';
 import 'package:note_demo/widgets/agent_status_bar.dart';
 import 'package:note_demo/widgets/menu_bar/menu_bar.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -41,6 +40,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
     return Consumer(
       builder: (context, ref, child) {
         final studyContent = ref.watch(studyContentProvider);
+        final principle = ref.watch(principleAgentProvider);
 
         return Scaffold(
           backgroundColor: Colors.white,
@@ -49,8 +49,8 @@ class _AppState extends State<App> with TickerProviderStateMixin {
             child: SidePanelWidget(
               functions: (
                 newFile: ref.watch(appNotifierProvider.notifier).newFile,
-                openFile: ref.watch(noteContentProvider.notifier).loadFromFile,
-                saveFile: ref.watch(noteContentProvider.notifier).saveFile,
+                openFile: ref.watch(appNotifierProvider.notifier).loadFromFile,
+                saveFile: ref.watch(appNotifierProvider.notifier).saveFile,
                 openDebugView: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => DebugScreen()),
@@ -59,62 +59,15 @@ class _AppState extends State<App> with TickerProviderStateMixin {
               ),
             ),
           ),
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            toolbarHeight: 64,
-            flexibleSpace: PreferredSize(
-              preferredSize: Size(0, 8),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: [
-                      const SizedBox(width: 48),
-                      SizedBox(
-                        width: 100,
-                        child: TabBar(
-                          controller: _tabController,
-                          dividerHeight: 0,
-                          onTap: (index) {
-                            if (index == 1) {
-                              ref
-                                  .watch(principleAgentProvider.notifier)
-                                  .runPrinciple();
-                            }
-                          },
-                          indicatorWeight: 1,
-                          tabs: const <Widget>[
-                            Tab(icon: Icon(Icons.edit, size: 16)),
-                            Tab(icon: Icon(Icons.auto_awesome, size: 16)),
-                          ],
-                        ),
-                      ),
-                      studyContent.maybeWhen(
-                        idle: (design, isLoading) => Flexible(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Opacity(
-                              opacity: isLoading ? 0.5 : 1.0,
-                              child: Text(
-                                design.title,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        orElse: () => const SizedBox.shrink(),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+          appBar: NoteAppBar(
+            tabController: _tabController,
+            studyContent: studyContent,
+            isLoading: principle.isLoading,
+            onTap: (index) {
+              if (index == 1) {
+                ref.watch(principleAgentProvider.notifier).runPrinciple();
+              }
+            },
           ),
           body: Stack(
             alignment: AlignmentGeometry.bottomCenter,
@@ -133,29 +86,29 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                 ],
               ),
 
-              Container(
-                height: 120,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withValues(alpha: 0),
-                      Colors.black.withValues(alpha: 0.2),
-                    ],
-                  ),
-                ),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 16,
-                    ),
-                    child: AgentStatusBar(),
-                  ),
-                ),
-              ),
+              // Container(
+              //   height: 120,
+              //   decoration: BoxDecoration(
+              //     gradient: LinearGradient(
+              //       begin: Alignment.topCenter,
+              //       end: Alignment.bottomCenter,
+              //       colors: [
+              //         Colors.black.withValues(alpha: 0),
+              //         Colors.black.withValues(alpha: 0.2),
+              //       ],
+              //     ),
+              //   ),
+              //   child: Align(
+              //     alignment: Alignment.bottomCenter,
+              //     child: Padding(
+              //       padding: const EdgeInsets.symmetric(
+              //         horizontal: 32,
+              //         vertical: 16,
+              //       ),
+              //       child: AgentStatusBar(),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         );
