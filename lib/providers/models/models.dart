@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/util/diff.dart';
 import 'package:note_demo/util/error/errors.dart';
 
@@ -21,12 +22,30 @@ abstract class AppState with _$AppState {
 }
 
 @freezed
+abstract class Insight with _$Insight {
+  const factory Insight.summary({required String title, required String body}) =
+      _SummaryInsight;
+
+  const factory Insight.resource({required StudyTools resource}) =
+      _ResourceInsight;
+
+  const factory Insight.research({required String research}) = _ResearchInsight;
+
+  // Use for agent responses that shouldn't be displayed to the user, like steps in agent pipeline
+  const factory Insight.meta({String? notes}) = _MetaInsight;
+
+  factory Insight.fromJson(Map<String, dynamic> json) =>
+      _$InsightFromJson(json);
+}
+
+@freezed
 abstract class NMetaData with _$NMetaData {
   const factory NMetaData({
     StudyDesign? design,
     @Default([]) List<StudyTools> tools,
     @Default("") String agentNotes,
     String? externalResearch,
+    @Default([]) Insights insights,
   }) = _NMetaData;
 
   factory NMetaData.fromJson(Map<String, dynamic> json) =>
@@ -105,6 +124,15 @@ abstract class AppEvent with _$AppEvent {
   const factory AppEvent.loadedFromFile({required AppState state}) =
       _AppEventLoadedFromFile;
   const factory AppEvent.newFile() = _AppEventNewFile;
+}
+
+extension InsightX on Insight {
+  String get name => map(
+    summary: (_) => "Summary",
+    resource: (_) => "Resource",
+    research: (_) => "Research",
+    meta: (_) => "Meta step",
+  );
 }
 
 extension NoteContentStateX on NoteContentState {

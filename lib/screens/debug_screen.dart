@@ -13,6 +13,7 @@ class DebugScreen extends StatefulWidget {
 class _DebugScreenState extends State<DebugScreen> {
   @override
   Widget build(BuildContext context) {
+    print("Fetchingbox");
     final box = Hive.box<NMetaData>(kHashedFilesBoxName);
 
     return Scaffold(

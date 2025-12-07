@@ -7,6 +7,7 @@ import 'package:note_demo/db/util.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/app_event_provider.dart';
 import 'package:note_demo/providers/file_service_provider.dart';
+import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/providers/principle_agent_provider.dart';
@@ -17,20 +18,6 @@ class AppNotifier extends Notifier<AppState> {
     return AppState(currentFileMetaData: NMetaData());
   }
 
-  String get enhancedNotes {
-    final noteContentNotifer = ref.read(noteContentProvider);
-    final metaData = state.currentFileMetaData;
-    var enhanced = noteContentNotifer.text;
-
-    if (metaData.design?.summary != null) {
-      enhanced = "*${metaData.design!.summary}*\n\n$enhanced";
-    }
-
-    // enhance here?
-
-    return noteContentNotifer.text;
-  }
-
   void enhanceNotes(String Function(String currentNotes) enhancement) {
     state = state.copyWith(enhancedNotes: enhancement(state.enhancedNotes));
   }
@@ -38,6 +25,7 @@ class AppNotifier extends Notifier<AppState> {
   void loadFromFile() async {
     final File? file = await ref.watch(fileServiceProvider).pickFile();
     final noteContentNotifer = ref.read(noteContentProvider.notifier);
+    final insightsNotifier = ref.read(insightProvider.notifier);
 
     if (file != null) {
       file
@@ -46,17 +34,18 @@ class AppNotifier extends Notifier<AppState> {
             final hash = NoteContentHasher.hash(result);
             final box = Hive.box<NMetaData>(kHashedFilesBoxName);
 
-            final appState = box.get(hash);
+            final metadata = box.get(hash);
             state = state.copyWith(
               currentFileName: _getFileNameFromPath(file.path),
               enhancedNotes: result,
             );
 
-            if (appState != null) {
+            if (metadata != null) {
               print("Load file: found existing record of ${file.absolute}");
 
-              loadMetaData(appState);
-              _enhanceNotesFromMetaData(appState, result);
+              loadMetaData(metadata);
+              _enhanceNotesFromMetaData(metadata, result);
+              insightsNotifier.set(metadata.insights);
 
               // Assign loaded text to edit controller.
               noteContentNotifer.setText(result, previousText: result);
@@ -79,20 +68,22 @@ class AppNotifier extends Notifier<AppState> {
   }
 
   void saveFile() async {
-    final noteContentNotifer = ref.read(noteContentProvider);
+    final noteContent = ref.read(noteContentProvider);
+    final insights = ref.read(insightProvider);
 
     if (state.hasMetaData) {
-      final hash = NoteContentHasher.hash(noteContentNotifer.text);
-
+      final hash = NoteContentHasher.hash(noteContent.text);
       final box = Hive.box<NMetaData>(kHashedFilesBoxName);
-      box.put(hash, state.currentFileMetaData).then((onValue) {
+      final metadata = state.currentFileMetaData.copyWith(insights: insights);
+
+      box.put(hash, metadata).then((onValue) {
         print("successfully saved $hash");
       }, onError: (e) => print("error saving $hash: $e"));
     }
 
     ref
         .watch(fileServiceProvider)
-        .saveFile(noteContentNotifer.text, state.currentFileName);
+        .saveFile(noteContent.text, state.currentFileName);
   }
 
   // Call on file load. Raw text needs to be enhanced
@@ -146,6 +137,14 @@ class AppNotifier extends Notifier<AppState> {
     state = state.copyWith(
       currentFileMetaData: state.currentFileMetaData.copyWith(
         externalResearch: next,
+      ),
+    );
+  }
+
+  void setInsights(Insights insights) {
+    state = state.copyWith(
+      currentFileMetaData: state.currentFileMetaData.copyWith(
+        insights: insights,
       ),
     );
   }

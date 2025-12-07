@@ -4,6 +4,7 @@ import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/app_event_provider.dart';
 import 'package:note_demo/providers/app_notifier.dart';
+import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/principle_agent_provider.dart';
 
@@ -38,8 +39,6 @@ class StudyResourcesNotifier extends Notifier<StudyToolsState> {
   void _subscribeToAppState() {
     ref.listen<AsyncValue<AppEvent>>(appEventStreamProvider, (prev, next) {
       next.whenData((event) {
-        print("Event $event");
-
         event.maybeWhen(
           loadedFromFile: (appState) {
             final tools = appState.currentFileMetaData.tools;
@@ -65,6 +64,8 @@ class StudyResourcesNotifier extends Notifier<StudyToolsState> {
       appNotifer.setTools(state.tools + [response]);
 
       state = state.copyWith(tools: state.tools + [response], isLoading: false);
+
+      ref.read(insightProvider.notifier).append(insight: response.toInsight());
     } catch (e) {
       print(e);
       state = state.copyWith(

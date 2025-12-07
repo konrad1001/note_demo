@@ -1,11 +1,14 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/providers/models/models.dart';
 
 part 'models.freezed.dart';
 part 'models.g.dart';
 
 abstract class AgentResponse {
   const AgentResponse();
+
+  Insight toInsight();
 }
 
 @freezed
@@ -16,6 +19,9 @@ abstract class PrincipleResponse extends AgentResponse
     String? content,
     @Default([]) List<GeminiFunctionResponse> calls,
   }) = _PrincipleResponse;
+
+  @override
+  Insight toInsight() => Insight.meta();
 }
 
 @freezed
@@ -24,12 +30,18 @@ abstract class ExternalResearchResponse extends AgentResponse
   const ExternalResearchResponse._();
   const factory ExternalResearchResponse({required String content}) =
       _ExternalResearchResponse;
+
+  @override
+  Insight toInsight() => Insight.research(research: content);
 }
 
 @freezed
 abstract class BaseResponse extends AgentResponse with _$BaseResponse {
   const BaseResponse._();
   const factory BaseResponse({required String content}) = _BaseResponse;
+
+  @override
+  Insight toInsight() => Insight.meta();
 }
 
 @freezed
@@ -46,6 +58,9 @@ abstract class StudyDesign extends AgentResponse with _$StudyDesign {
       StudyDesign(title: e.toString(), summary: e.toString());
 
   static StudyDesign empty() => StudyDesign(title: '', summary: '');
+
+  @override
+  Insight toInsight() => Insight.summary(title: title, body: summary);
 }
 
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
@@ -75,6 +90,9 @@ abstract class StudyTools extends AgentResponse with _$StudyTools {
 
   factory StudyTools.fromJson(Map<String, dynamic> json) =>
       _$StudyToolsFromJson(json);
+
+  @override
+  Insight toInsight() => Insight.resource(resource: this);
 }
 
 @freezed

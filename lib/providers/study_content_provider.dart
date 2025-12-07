@@ -4,6 +4,7 @@ import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/app_event_provider.dart';
 import 'package:note_demo/providers/app_notifier.dart';
+import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/providers/mock_service_provider.dart';
@@ -32,7 +33,6 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
   void _subscribeToAppState() {
     ref.listen<AsyncValue<AppEvent>>(appEventStreamProvider, (prev, next) {
       next.whenData((event) {
-        print("Event $event fired");
         event.maybeWhen(
           loadedFromFile: (appState) {
             final design = appState.currentFileMetaData.design;
@@ -68,16 +68,6 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
   _updateDesign() async {
     state = _loading;
 
-    final useMock = ref.watch(mockServiceProvider);
-
-    // if (useMock) {
-    //   await Future.delayed(const Duration(seconds: 1));
-    //   state = StudyContentState.idle(
-    //     design: MockBuilder.geminiResponse.getStudyDesign(),
-    //   );
-    //   return;
-    // }
-
     final model = GPTAgent<StudyDesign>(role: AgentRole.designer);
 
     try {
@@ -86,8 +76,10 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
       appNotifer.setStudyDesign(design);
 
       state = StudyContentState.idle(design: design);
+
+      ref.read(insightProvider.notifier).append(insight: design.toInsight());
     } catch (e) {
-      print("Error $e");
+      // print("Error $e");
       state = _prevState;
     }
   }

@@ -6,6 +6,7 @@ import 'package:hive_ce/hive.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/external_research_provider.dart';
+import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
@@ -58,7 +59,7 @@ class StudyScreen extends ConsumerWidget {
                   config: MarkdownConfig(
                     configs: [PConfig(textStyle: TextStyle(fontSize: 16))],
                   ),
-                  data: appNotifier.enhancedNotes,
+                  data: enhancedNotes,
                 ),
               ),
             ),
@@ -80,7 +81,7 @@ class StudyScreen extends ConsumerWidget {
   }
 }
 
-class InsightOverlay extends StatefulWidget {
+class InsightOverlay extends ConsumerStatefulWidget {
   const InsightOverlay({
     super.key,
     required this.externalResearch,
@@ -91,14 +92,16 @@ class InsightOverlay extends StatefulWidget {
   final String? externalResearch;
 
   @override
-  State<InsightOverlay> createState() => _InsightOverlayState();
+  ConsumerState<InsightOverlay> createState() => _InsightOverlayState();
 }
 
-class _InsightOverlayState extends State<InsightOverlay> {
+class _InsightOverlayState extends ConsumerState<InsightOverlay> {
   var isOpen = false;
 
   @override
   Widget build(BuildContext context) {
+    final insights = ref.watch(insightProvider);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
       child: Column(
@@ -121,37 +124,11 @@ class _InsightOverlayState extends State<InsightOverlay> {
           if (isOpen)
             Column(
               spacing: 8.0,
-              children: [
-                BlurredContainer(child: Text("Content")),
-                BlurredContainer(child: Text("Content")),
-                BlurredContainer(child: Text("Content")),
-              ],
+              children: insights
+                  .map((i) => BlurredContainer(child: Text(i.name)))
+                  .toList(),
             ),
         ],
-      ),
-    );
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: 70, maxWidth: 400),
-        child: BlurredContainer(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("🚀"),
-                ),
-              ),
-              Flexible(
-                child: MarkdownWidget(data: "Next Steps...", shrinkWrap: true),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

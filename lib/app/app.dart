@@ -52,6 +52,8 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                 openFile: ref.watch(appNotifierProvider.notifier).loadFromFile,
                 saveFile: ref.watch(appNotifierProvider.notifier).saveFile,
                 openDebugView: () {
+                  print("pushing");
+
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => DebugScreen()),
                   );
@@ -143,6 +145,12 @@ class SidePanelWidget extends StatelessWidget {
             _menuButton("Open File", functions.openFile, context),
             _menuButton("Save", functions.saveFile, context),
             _menuButton("New", functions.newFile, context),
+            _menuButton(
+              "Open Debug",
+              functions.openDebugView,
+              context,
+              dontAutoPop: true,
+            ),
           ],
         ),
       ),
@@ -152,12 +160,13 @@ class SidePanelWidget extends StatelessWidget {
   Widget _menuButton(
     String name,
     VoidCallback onPressed,
-    BuildContext context,
-  ) {
+    BuildContext context, {
+    bool dontAutoPop = false,
+  }) {
     return MenuItemButton(
       onPressed: () {
         onPressed();
-        Navigator.of(context).pop();
+        if (!dontAutoPop) Navigator.of(context).pop();
       },
       child: Text(name),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/agent_pipeline.dart';
 import 'package:note_demo/providers/app_notifier.dart';
+import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/principle_agent_provider.dart';
 
@@ -44,6 +45,10 @@ class ExternalResearchNotifier extends Notifier<ExternalResearchState> {
         print("fetched research: ${result.object}");
         state = state.copyWith(isLoading: false, content: result.object);
         appNotifer.setExternalResearchString(result.object);
+
+        ref
+            .read(insightProvider.notifier)
+            .append(insight: Insight.research(research: result.object));
       }
     }
   }
