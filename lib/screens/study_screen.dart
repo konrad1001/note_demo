@@ -12,6 +12,7 @@ import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/providers/study_content_provider.dart';
 import 'package:note_demo/providers/study_tools_provider.dart';
 import 'package:note_demo/widgets/blurred_container.dart';
+import 'package:note_demo/widgets/insights/insight_overlay.dart';
 import 'package:note_demo/widgets/study_tools_container.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 
@@ -78,58 +79,5 @@ class StudyScreen extends ConsumerWidget {
         ],
       );
     }
-  }
-}
-
-class InsightOverlay extends ConsumerStatefulWidget {
-  const InsightOverlay({
-    super.key,
-    required this.externalResearch,
-    required this.studyTools,
-  });
-
-  final StudyToolsState studyTools;
-  final String? externalResearch;
-
-  @override
-  ConsumerState<InsightOverlay> createState() => _InsightOverlayState();
-}
-
-class _InsightOverlayState extends ConsumerState<InsightOverlay> {
-  var isOpen = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final insights = ref.watch(insightProvider);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-      child: Column(
-        verticalDirection: VerticalDirection.up,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        spacing: 16,
-        children: [
-          TapRegion(
-            onTapInside: (_) => setState(() {
-              isOpen = !isOpen;
-            }),
-            onTapOutside: (_) => setState(() {
-              isOpen = false;
-            }),
-            child: BlurredContainer(
-              circular: true,
-              child: isOpen ? Text("Close") : Text("Open"),
-            ),
-          ),
-          if (isOpen)
-            Column(
-              spacing: 8.0,
-              children: insights
-                  .map((i) => BlurredContainer(child: Text(i.name)))
-                  .toList(),
-            ),
-        ],
-      ),
-    );
   }
 }

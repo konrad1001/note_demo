@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:note_demo/agents/utils/tool_utils.dart';
 import 'package:note_demo/models/gemini_response.dart';
 
-const kModelId = "gemini-2.5-flash";
+const kModelId = "gemini-2.5-flash-lite";
 
 const kUrl =
     'https://generativelanguage.googleapis.com/v1beta/models/$kModelId:generateContent';
@@ -23,6 +23,8 @@ class GeminiService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+
+      print(response.body);
 
       final modelResponse = GeminiResponse.fromJson(data);
 

@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/models/models.dart';
@@ -124,4 +127,12 @@ abstract class KeywordItem with _$KeywordItem {
 
   factory KeywordItem.fromJson(Map<String, dynamic> json) =>
       _$KeywordItemFromJson(json);
+}
+
+extension StudyToolsX on StudyTools {
+  Color get colour => map(
+    flashcards: (_) => const Color.fromARGB(255, 255, 156, 123),
+    qas: (_) => const Color.fromARGB(255, 77, 210, 150),
+    keywords: (_) => const Color.fromARGB(255, 123, 198, 255),
+  );
 }

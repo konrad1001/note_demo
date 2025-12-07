@@ -85,8 +85,7 @@ enum AgentRole {
           - Use "flashcards" for fact-based or term–explanation pairs.
           - Use "qas" when the notes can naturally form questions.
 
-          Variety Rule:
-          Prefer a tool type not yet used. Avoid repeating the same type consecutively unless the content strongly demands it.
+          Generate a maximum of 4 items for each type of resource.
 
           <Schema>
           {
