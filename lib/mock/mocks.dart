@@ -1,6 +1,46 @@
+import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/providers/insight_notifier.dart';
+import 'package:note_demo/providers/models/models.dart';
 
 abstract class MockBuilder {
+  static Insights get mockInsights => [
+    Insight.summary(
+      title:
+          "Introduction to Natural Language Processing and Preprocessing Techniques",
+      body:
+          """This study plan covers the fundamentals of NLP, including data representation, 
+          text preprocessing methods like tokenization and normalization, and an introduction
+           to word meaning and deep learning concepts like RNNs for sequential data.""",
+    ),
+    Insight.resource(
+      resource: StudyTools.flashcards(
+        id: "id",
+        title: "Mock flashcards",
+        items: [
+          FlashcardItem(front: "Front 1", back: "Back 1"),
+          FlashcardItem(front: "Front 2", back: "Back 2"),
+          FlashcardItem(front: "Front 3", back: "Back 3"),
+        ],
+      ),
+    ),
+    Insight.research(
+      research:
+          "Heres an interesting video that will summarise this concept...",
+    ),
+    Insight.resource(
+      resource: StudyTools.qas(
+        id: "id",
+        title: "Mock flashcards",
+        items: [
+          QuestionAnswerItem(question: "Question 1", answer: "Answer 1"),
+          QuestionAnswerItem(question: "Question 2", answer: "Answer 2"),
+          QuestionAnswerItem(question: "Question 3", answer: "Answer 3"),
+        ],
+      ),
+    ),
+  ];
+
   static GeminiResponse get geminiResponse => GeminiResponse(
     candidates: [
       Candidate(
