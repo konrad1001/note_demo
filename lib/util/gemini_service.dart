@@ -4,10 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:note_demo/agents/utils/tool_utils.dart';
 import 'package:note_demo/models/gemini_response.dart';
 
-const kModelId = "gemini-2.5-flash-lite";
+const kGeminiFlashId = "gemini-2.5-flash";
+const kGeminiFlashLiteId = "gemini-2.5-flash-lite";
 
 const kUrl =
-    'https://generativelanguage.googleapis.com/v1beta/models/$kModelId:generateContent';
+    'https://generativelanguage.googleapis.com/v1beta/models/$kGeminiFlashId:generateContent';
 
 class GeminiService {
   final bool canCallTools;

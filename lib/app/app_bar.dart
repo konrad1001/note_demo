@@ -13,7 +13,7 @@ class NoteAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   final bool isLoading;
   final TabController _tabController;
-  final StudyContentState studyContent;
+  final SummaryAgentState studyContent;
   final Function(int) onTap;
 
   @override
@@ -63,7 +63,7 @@ class NoteAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   orElse: () {
                     return (isLoading ||
-                            studyContent is StudyContentStateLoading)
+                            studyContent is SummaryAgentStateLoading)
                         ? Flexible(
                             child: Container(
                               child: Shimmer(

@@ -16,7 +16,7 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
 class StudyToolsContainer extends StatelessWidget {
   const StudyToolsContainer({super.key, required this.state});
 
-  final StudyToolsState state;
+  final ResourceAgentState state;
 
   @override
   Widget build(BuildContext context) {

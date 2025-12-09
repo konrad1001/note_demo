@@ -13,7 +13,7 @@ class InsightOverlay extends ConsumerStatefulWidget {
     required this.studyTools,
   });
 
-  final StudyToolsState studyTools;
+  final ResourceAgentState studyTools;
   final String? externalResearch;
 
   @override

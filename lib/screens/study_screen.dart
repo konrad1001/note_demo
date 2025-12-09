@@ -1,19 +1,13 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_ce/hive.dart';
-import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/app_notifier.dart';
-import 'package:note_demo/providers/external_research_provider.dart';
-import 'package:note_demo/providers/insight_notifier.dart';
+import 'package:note_demo/providers/agent_providers/research_agent_provider.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
-import 'package:note_demo/providers/study_content_provider.dart';
-import 'package:note_demo/providers/study_tools_provider.dart';
-import 'package:note_demo/widgets/blurred_container.dart';
+import 'package:note_demo/providers/agent_providers/summary_agent_provider.dart';
+import 'package:note_demo/providers/agent_providers/resource_agent_provider.dart';
 import 'package:note_demo/widgets/insights/insight_overlay.dart';
-import 'package:note_demo/widgets/study_tools_container.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 
 class StudyScreen extends ConsumerWidget {
@@ -22,9 +16,9 @@ class StudyScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final noteContent = ref.watch(noteContentProvider);
-    final studyContent = ref.watch(studyContentProvider);
-    final studyTools = ref.watch(studyResourcesProvider);
-    final externalResearch = ref.watch(externalResearchProvider).content;
+    final studyContent = ref.watch(summaryAgentProvider);
+    final studyTools = ref.watch(resourceAgentProvider);
+    final externalResearch = ref.watch(researchAgentProvider).content;
 
     final appNotifier = ref.watch(appNotifierProvider.notifier);
 

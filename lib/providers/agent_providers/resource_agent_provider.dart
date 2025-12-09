@@ -6,18 +6,18 @@ import 'package:note_demo/providers/app_event_provider.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
-import 'package:note_demo/providers/principle_agent_provider.dart';
+import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 
 const kStudyToolsNotifierToolName = "resources";
 
-class StudyResourcesNotifier extends Notifier<StudyToolsState> {
+class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
   @override
-  StudyToolsState build() {
+  ResourceAgentState build() {
     _subscribeToPrinciple();
     _subscribeToAppState();
 
     final tools = ref.read(appNotifierProvider).currentFileMetaData.tools;
-    return StudyToolsState(tools: tools);
+    return ResourceAgentState(tools: tools);
   }
 
   void _subscribeToPrinciple() {
@@ -42,10 +42,10 @@ class StudyResourcesNotifier extends Notifier<StudyToolsState> {
         event.maybeWhen(
           loadedFromFile: (appState) {
             final tools = appState.currentFileMetaData.tools;
-            state = StudyToolsState(tools: tools);
+            state = ResourceAgentState(tools: tools);
           },
           newFile: () {
-            state = StudyToolsState();
+            state = ResourceAgentState();
           },
           orElse: () {},
         );
@@ -85,7 +85,7 @@ class StudyResourcesNotifier extends Notifier<StudyToolsState> {
   }
 }
 
-final studyResourcesProvider =
-    NotifierProvider<StudyResourcesNotifier, StudyToolsState>(
-      () => StudyResourcesNotifier(),
+final resourceAgentProvider =
+    NotifierProvider<ResourceAgentNotifier, ResourceAgentState>(
+      () => ResourceAgentNotifier(),
     );

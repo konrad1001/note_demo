@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:note_demo/providers/external_research_provider.dart';
+import 'package:note_demo/providers/agent_providers/research_agent_provider.dart';
 import 'package:note_demo/providers/models/models.dart';
-import 'package:note_demo/providers/principle_agent_provider.dart';
-import 'package:note_demo/providers/study_content_provider.dart';
-import 'package:note_demo/providers/study_tools_provider.dart';
+import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
+import 'package:note_demo/providers/agent_providers/summary_agent_provider.dart';
+import 'package:note_demo/providers/agent_providers/resource_agent_provider.dart';
 
 class AgentStatusBar extends ConsumerWidget {
   const AgentStatusBar({super.key});
@@ -12,9 +12,9 @@ class AgentStatusBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final principe = ref.watch(principleAgentProvider);
-    final content = ref.watch(studyContentProvider);
-    final tools = ref.watch(studyResourcesProvider);
-    final research = ref.watch(externalResearchProvider);
+    final content = ref.watch(summaryAgentProvider);
+    final tools = ref.watch(resourceAgentProvider);
+    final research = ref.watch(researchAgentProvider);
 
     return Row(
       spacing: 16,

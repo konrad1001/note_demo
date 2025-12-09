@@ -91,32 +91,32 @@ extension PrincipleAgentStateX on PrincipleAgentState {
 }
 
 @freezed
-abstract class ExternalResearchState with _$ExternalResearchState {
-  const factory ExternalResearchState({
+abstract class ResearchAgentState with _$ResearchAgentState {
+  const factory ResearchAgentState({
     String? content,
     @Default(0) int pipeLevel,
     @Default(false) bool isLoading,
-  }) = _ExternalResearchState;
+  }) = _ResearchAgentState;
 }
 
 @freezed
-abstract class StudyContentState with _$StudyContentState {
-  const factory StudyContentState.empty() = StudyContentStateEmpty;
-  const factory StudyContentState.loading() = StudyContentStateLoading;
-  const factory StudyContentState.idle({
+abstract class SummaryAgentState with _$SummaryAgentState {
+  const factory SummaryAgentState.empty() = SummaryAgentStateEmpty;
+  const factory SummaryAgentState.loading() = SummaryAgentStateLoading;
+  const factory SummaryAgentState.idle({
     required StudyDesign design,
     @Default(false) bool isLoading,
-  }) = StudyContentStateIdle;
-  const factory StudyContentState.error({required Object error}) =
-      StudyContentStateError;
+  }) = SummaryAgentStateIdle;
+  const factory SummaryAgentState.error({required Object error}) =
+      SummaryAgentStateError;
 }
 
 @freezed
-abstract class StudyToolsState with _$StudyToolsState {
-  const factory StudyToolsState({
+abstract class ResourceAgentState with _$ResourceAgentState {
+  const factory ResourceAgentState({
     @Default([]) List<StudyTools> tools,
     @Default(false) bool isLoading,
-  }) = _StudyToolsState;
+  }) = _ResourceAgentState;
 }
 
 @freezed

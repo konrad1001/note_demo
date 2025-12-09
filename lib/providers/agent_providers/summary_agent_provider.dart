@@ -7,28 +7,27 @@ import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
-import 'package:note_demo/providers/mock_service_provider.dart';
-import 'package:note_demo/providers/principle_agent_provider.dart';
+import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 
 const kStudyContentNotifierToolName = "overview";
 
-class StudyContentNotifier extends Notifier<StudyContentState> {
+class SummaryAgentNotifier extends Notifier<SummaryAgentState> {
   @override
-  StudyContentState build() {
+  SummaryAgentState build() {
     _subscribeToPrinciple();
     _subscribeToAppState();
 
     final design = ref.read(appNotifierProvider).currentFileMetaData.design;
     if (design != null) {
-      state = StudyContentState.idle(design: design);
+      state = SummaryAgentState.idle(design: design);
     } else {
-      state = StudyContentState.empty();
+      state = SummaryAgentState.empty();
     }
 
     return state;
   }
 
-  StudyContentState _prevState = StudyContentState.empty();
+  SummaryAgentState _prevState = SummaryAgentState.empty();
 
   void _subscribeToAppState() {
     ref.listen<AsyncValue<AppEvent>>(appEventStreamProvider, (prev, next) {
@@ -37,14 +36,13 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
           loadedFromFile: (appState) {
             final design = appState.currentFileMetaData.design;
             if (design != null) {
-              state = StudyContentState.idle(design: design);
+              state = SummaryAgentState.idle(design: design);
             } else {
-              state = StudyContentState.empty();
+              state = SummaryAgentState.empty();
             }
           },
           newFile: () {
-            print("content recieved new file");
-            state = StudyContentState.empty();
+            state = SummaryAgentState.empty();
           },
           orElse: () {},
         );
@@ -75,7 +73,7 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
       final appNotifer = ref.read(appNotifierProvider.notifier);
       appNotifer.setStudyDesign(design);
 
-      state = StudyContentState.idle(design: design);
+      state = SummaryAgentState.idle(design: design);
 
       ref.read(insightProvider.notifier).append(insight: design.toInsight());
     } catch (e) {
@@ -91,18 +89,18 @@ class StudyContentNotifier extends Notifier<StudyContentState> {
     return "<Studyplan> ${studyDesign.currentFileMetaData.design ?? StudyDesign.empty()} <User> ${noteContent.text}";
   }
 
-  StudyContentState get _loading {
+  SummaryAgentState get _loading {
     _prevState = state;
     switch (state) {
-      case StudyContentStateIdle idle:
+      case SummaryAgentStateIdle idle:
         return idle.copyWith(isLoading: true);
       default:
-        return StudyContentState.loading();
+        return SummaryAgentState.loading();
     }
   }
 }
 
-final studyContentProvider =
-    NotifierProvider<StudyContentNotifier, StudyContentState>(
-      () => StudyContentNotifier(),
+final summaryAgentProvider =
+    NotifierProvider<SummaryAgentNotifier, SummaryAgentState>(
+      () => SummaryAgentNotifier(),
     );

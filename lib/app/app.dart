@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/app/app_bar.dart';
 import 'package:note_demo/providers/app_notifier.dart';
-import 'package:note_demo/providers/models/models.dart';
-import 'package:note_demo/providers/principle_agent_provider.dart';
-import 'package:note_demo/providers/study_content_provider.dart';
+import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
+import 'package:note_demo/providers/agent_providers/summary_agent_provider.dart';
 import 'package:note_demo/screens/debug_screen.dart';
 import 'package:note_demo/screens/notes_screen.dart';
 import 'package:note_demo/screens/study_screen.dart';
-import 'package:note_demo/widgets/agent_status_bar.dart';
 import 'package:note_demo/widgets/menu_bar/menu_bar.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -39,7 +36,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final studyContent = ref.watch(studyContentProvider);
+        final studyContent = ref.watch(summaryAgentProvider);
         final principle = ref.watch(principleAgentProvider);
 
         return Scaffold(

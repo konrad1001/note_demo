@@ -10,7 +10,7 @@ import 'package:note_demo/providers/file_service_provider.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
-import 'package:note_demo/providers/principle_agent_provider.dart';
+import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 
 class AppNotifier extends Notifier<AppState> {
   @override

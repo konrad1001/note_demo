@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 part 'mac_menu_bar.dart';
 part 'windows_menu_bar.dart';

@@ -1,6 +1,5 @@
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
-import 'package:gemini_agent_tools/tool_annotation.dart';
 
 enum AgentRole {
   principle,
@@ -117,3 +116,28 @@ enum AgentRole {
     }
   }
 }
+
+const kExternalResearchPromptPipe = [
+  """<System Instructions>
+        You are the first step in a resource fetching and synthesising pipeline. 
+        Your job is to return up to 4 links for online content related to the provided content.
+        It can be blog posts, articles or youtube videos. 
+
+        Respond in a comma seperated list.
+        </System Instructions> """,
+  """
+      <System Instructions> You are the second step in a resource fetching and synthesising pipeline. 
+      Based on this list of resources, visit each one, then rank them in order of usefulness. make sure the links are valid.
+      </System Instructions>""",
+  """
+      <System Instructions> You are the final step in a resource fetching and synthesising pipeline.
+      The final step is to synthesise the list of evaluated resources.
+      Your output will be displayed to a student using an ai study companion app, under a helpful "Next Steps" section, 
+      so it must follow the following criteria:
+
+      - Under 20 words
+      - Must include the link
+      - .md format
+     </System Instructions>
+    """,
+];
