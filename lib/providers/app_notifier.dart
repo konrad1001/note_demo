@@ -96,6 +96,7 @@ class AppNotifier extends Notifier<AppState> {
     ref.read(noteContentProvider.notifier).setPreviousContent("");
 
     ref.read(appEventControllerProvider).add(AppEvent.newFile());
+    ref.read(insightProvider.notifier).set([]);
   }
 
   void loadMetaData(NMetaData next) {

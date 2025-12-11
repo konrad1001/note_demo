@@ -11,12 +11,18 @@ class NotesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final noteContent = ref.watch(noteContentProvider);
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextField(
-        maxLines: 50,
-        controller: noteContent.editingController,
-        scrollPadding: EdgeInsets.only(bottom: 32),
+    return TextField(
+      maxLines: null,
+      controller: noteContent.editingController,
+      clipBehavior: Clip.none,
+      textAlignVertical: TextAlignVertical.top,
+      style: TextStyle(fontSize: 16.0),
+      expands: true,
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.fromLTRB(50, 0, 50, 0),
+        constraints: BoxConstraints(maxWidth: 700),
+        isDense: true,
+        border: InputBorder.none,
       ),
     );
   }

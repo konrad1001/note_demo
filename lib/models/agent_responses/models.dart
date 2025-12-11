@@ -22,7 +22,7 @@ abstract class PrincipleResponse extends AgentResponse
   }) = _PrincipleResponse;
 
   @override
-  Insight toInsight() => Insight.meta();
+  Insight toInsight() => Insight.meta(created: DateTime.now());
 }
 
 @freezed
@@ -33,7 +33,8 @@ abstract class ExternalResearchResponse extends AgentResponse
       _ExternalResearchResponse;
 
   @override
-  Insight toInsight() => Insight.research(research: content);
+  Insight toInsight() =>
+      Insight.research(research: content, created: DateTime.now());
 }
 
 @freezed
@@ -42,7 +43,7 @@ abstract class TextResponse extends AgentResponse with _$TextResponse {
   const factory TextResponse({required String content}) = _TextResponse;
 
   @override
-  Insight toInsight() => Insight.meta();
+  Insight toInsight() => Insight.meta(created: DateTime.now());
 }
 
 @freezed
@@ -61,7 +62,8 @@ abstract class StudyDesign extends AgentResponse with _$StudyDesign {
   static StudyDesign empty() => StudyDesign(title: '', summary: '');
 
   @override
-  Insight toInsight() => Insight.summary(title: title, body: summary);
+  Insight toInsight() =>
+      Insight.summary(title: title, body: summary, created: DateTime.now());
 }
 
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
@@ -93,7 +95,8 @@ abstract class StudyTools extends AgentResponse with _$StudyTools {
       _$StudyToolsFromJson(json);
 
   @override
-  Insight toInsight() => Insight.resource(resource: this);
+  Insight toInsight() =>
+      Insight.resource(resource: this, created: DateTime.now());
 }
 
 @freezed

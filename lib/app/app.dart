@@ -11,6 +11,8 @@ import 'package:note_demo/providers/agent_providers/summary_agent_provider.dart'
 import 'package:note_demo/screens/debug_screen.dart';
 import 'package:note_demo/screens/notes_screen.dart';
 import 'package:note_demo/screens/study_screen.dart';
+import 'package:note_demo/widgets/insights/insight_panel.dart';
+import 'package:note_demo/widgets/insights/insight_overlay.dart';
 import 'package:note_demo/widgets/menu_bar/menu_bar.dart';
 
 class App extends StatefulWidget {
@@ -23,6 +25,9 @@ class App extends StatefulWidget {
 class _AppState extends State<App> with TickerProviderStateMixin {
   late final TabController _tabController;
   late final TextEditingController _notesController = TextEditingController();
+
+  var isRightPanelOpen = false;
+  static const rightPanelAnimationDuration = 300;
 
   @override
   void initState() {
@@ -67,34 +72,39 @@ class _AppState extends State<App> with TickerProviderStateMixin {
             ),
           ),
           appBar: NoteAppBar(
-            tabController: _tabController,
             studyContent: studyContent,
             isLoading: principle.isLoading,
-            onTap: (index) {
-              if (index == 1) {
-                ref.invalidate(principleAgentProvider);
-                ref.watch(principleAgentProvider.notifier).runPrinciple();
-              }
+            isRightPanelOpen: isRightPanelOpen,
+            onTap: () {
+              setState(() {
+                isRightPanelOpen = !isRightPanelOpen;
+              });
             },
           ),
-          body: Stack(
-            alignment: AlignmentGeometry.bottomCenter,
+          body: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TabBarView(
-                controller: _tabController,
-                children: <Widget>[
-                  Align(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 700),
-                      child: NotesScreen(controller: _notesController),
-                    ),
-                  ),
-
-                  StudyScreen(),
-                ],
+              SizedBox(width: 1),
+              Flexible(
+                flex: 2,
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: rightPanelAnimationDuration),
+                  curve: Curves.easeInOut, // animate width factor
+                  margin: EdgeInsets.only(right: isRightPanelOpen ? 0 : 0),
+                  child: NotesScreen(controller: _notesController),
+                ),
               ),
-
-              AppStatusBar(),
+              Flexible(
+                flex: isRightPanelOpen ? 1 : 0,
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: rightPanelAnimationDuration),
+                  curve: Curves.easeInOut,
+                  width: isRightPanelOpen
+                      ? MediaQuery.of(context).size.width / 3
+                      : 0,
+                  child: InsightPanel(),
+                ),
+              ),
             ],
           ),
         );

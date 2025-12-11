@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:note_demo/db/util.dart';
 import 'package:note_demo/providers/agent_providers/observer_agent_provider.dart';
+import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 
 class DebugScreen extends StatefulWidget {
@@ -13,11 +14,10 @@ class DebugScreen extends StatefulWidget {
 }
 
 class _DebugScreenState extends State<DebugScreen> {
+  final box = Hive.box<NMetaData>(kHashedFilesBoxName);
+
   @override
   Widget build(BuildContext context) {
-    print("Fetchingbox");
-    final box = Hive.box<NMetaData>(kHashedFilesBoxName);
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -66,11 +66,17 @@ class _DebugResponseInfo extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final history = ref.watch(observerAgentProvider);
+    final insights = ref.watch(insightProvider);
 
     return SizedBox(
       height: 300,
       child: ListView(
-        children: history.history.map((item) => Text(item)).toList(),
+        children: [
+          Text("Insights:"),
+          ...insights.map((item) => Text(item.name)),
+          Text("History:"),
+          ...history.history.map((item) => Text(item)),
+        ],
       ),
     );
   }

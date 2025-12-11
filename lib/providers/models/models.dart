@@ -23,16 +23,24 @@ abstract class AppState with _$AppState {
 
 @freezed
 abstract class Insight with _$Insight {
-  const factory Insight.summary({required String title, required String body}) =
-      _SummaryInsight;
+  const factory Insight.summary({
+    required String title,
+    required String body,
+    DateTime? created,
+  }) = _SummaryInsight;
 
-  const factory Insight.resource({required StudyTools resource}) =
-      _ResourceInsight;
+  const factory Insight.resource({
+    required StudyTools resource,
+    DateTime? created,
+  }) = _ResourceInsight;
 
-  const factory Insight.research({required String research}) = _ResearchInsight;
+  const factory Insight.research({
+    required String research,
+    DateTime? created,
+  }) = _ResearchInsight;
 
   // Use for agent responses that shouldn't be displayed to the user, like steps in agent pipeline
-  const factory Insight.meta({String? notes}) = _MetaInsight;
+  const factory Insight.meta({String? notes, DateTime? created}) = _MetaInsight;
 
   factory Insight.fromJson(Map<String, dynamic> json) =>
       _$InsightFromJson(json);
