@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/models/gemini_response.dart';
@@ -38,9 +37,9 @@ abstract class ExternalResearchResponse extends AgentResponse
 }
 
 @freezed
-abstract class BaseResponse extends AgentResponse with _$BaseResponse {
-  const BaseResponse._();
-  const factory BaseResponse({required String content}) = _BaseResponse;
+abstract class TextResponse extends AgentResponse with _$TextResponse {
+  const TextResponse._();
+  const factory TextResponse({required String content}) = _TextResponse;
 
   @override
   Insight toInsight() => Insight.meta();

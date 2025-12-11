@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/app/app_bar.dart';
+import 'package:note_demo/app/app_status_bar.dart';
+import 'package:note_demo/providers/agent_providers/observer_agent_provider.dart';
+import 'package:note_demo/providers/agent_providers/research_agent_provider.dart';
+import 'package:note_demo/providers/agent_providers/resource_agent_provider.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/summary_agent_provider.dart';
@@ -39,6 +43,10 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         final studyContent = ref.watch(summaryAgentProvider);
         final principle = ref.watch(principleAgentProvider);
 
+        final _ = ref.watch(observerAgentProvider);
+        final _ = ref.watch(researchAgentProvider);
+        final _ = ref.watch(resourceAgentProvider);
+
         return Scaffold(
           backgroundColor: Colors.white,
           drawer: ConstrainedBox(
@@ -64,6 +72,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
             isLoading: principle.isLoading,
             onTap: (index) {
               if (index == 1) {
+                ref.invalidate(principleAgentProvider);
                 ref.watch(principleAgentProvider.notifier).runPrinciple();
               }
             },
@@ -85,29 +94,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                 ],
               ),
 
-              // Container(
-              //   height: 120,
-              //   decoration: BoxDecoration(
-              //     gradient: LinearGradient(
-              //       begin: Alignment.topCenter,
-              //       end: Alignment.bottomCenter,
-              //       colors: [
-              //         Colors.black.withValues(alpha: 0),
-              //         Colors.black.withValues(alpha: 0.2),
-              //       ],
-              //     ),
-              //   ),
-              //   child: Align(
-              //     alignment: Alignment.bottomCenter,
-              //     child: Padding(
-              //       padding: const EdgeInsets.symmetric(
-              //         horizontal: 32,
-              //         vertical: 16,
-              //       ),
-              //       child: AgentStatusBar(),
-              //     ),
-              //   ),
-              // ),
+              AppStatusBar(),
             ],
           ),
         );

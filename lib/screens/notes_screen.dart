@@ -13,7 +13,11 @@ class NotesScreen extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: TextField(maxLines: 50, controller: noteContent.editingController),
+      child: TextField(
+        maxLines: 50,
+        controller: noteContent.editingController,
+        scrollPadding: EdgeInsets.only(bottom: 32),
+      ),
     );
   }
 }

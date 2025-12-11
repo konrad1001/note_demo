@@ -7,27 +7,32 @@ typedef PipelineStatus<T> = ({int index, T object, bool finished});
 class AgentPipeline {
   int pipeLength;
   List<String> promptPipe;
+  String? additionalPromptInput;
 
-  final role = AgentRole.pipeline;
+  final agent = GPTAgent<TextResponse>(role: AgentRole.pipeline);
 
-  AgentPipeline(this.pipeLength, {required this.promptPipe}) {
+  AgentPipeline(
+    this.pipeLength, {
+    required this.promptPipe,
+    this.additionalPromptInput,
+  }) {
     assert(
       pipeLength == promptPipe.length,
       "Pipelength must be equal to prompt number in pipe!",
     );
+
     promptPipe = promptPipe;
   }
 
   Stream<PipelineStatus<String>> fetch(String initial) async* {
-    final agents = List.generate(
-      pipeLength,
-      (_) => GPTAgent<BaseResponse>(role: role),
-    );
     var responseChain = [initial];
 
     for (var i in Iterable.generate(pipeLength)) {
-      final agent = agents[i];
-      final prompt = promptPipe[i];
+      var prompt = promptPipe[i];
+
+      if (i == 0 && additionalPromptInput != null) {
+        prompt = "$additionalPromptInput $prompt";
+      }
 
       try {
         final next = await agent.fetch('$prompt ${responseChain.last}');

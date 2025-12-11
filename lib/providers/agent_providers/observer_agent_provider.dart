@@ -24,11 +24,16 @@ class ObserverAgentNotifier extends Notifier<ObserverAgentState> {
   }
 
   void _runObserver(PrincipleAgentState principleState) async {
-    if (principleState.isLoading == true || principleState.calls == []) return;
-    final content = _buildPrompt(principleState);
-
     final isMock = ref.read(mockServiceProvider);
-    if (isMock) return;
+
+    if (principleState.isLoading == true ||
+        principleState.calls == [] ||
+        isMock) {
+      return;
+    }
+
+    state = state.copyWith(isLoading: true);
+    final content = _buildPrompt(principleState);
 
     final appNotifier = ref.read(appNotifierProvider.notifier);
 
@@ -38,6 +43,7 @@ class ObserverAgentNotifier extends Notifier<ObserverAgentState> {
       state = state.copyWith(
         history:
             state.history + ["T[${state.history.length}] ${response.content}"],
+        isLoading: false,
       );
       appNotifier.setAppHistory(state.history);
     } catch (e) {
@@ -46,9 +52,7 @@ class ObserverAgentNotifier extends Notifier<ObserverAgentState> {
   }
 
   String _buildPrompt(PrincipleAgentState state) {
-    print(
-      "building prompt for observer: ${state.calls.map((e) => "Tool: ${e.name} Args:${e.args}")}",
-    );
+    print("building prompt for observer: $state}");
 
     return "${state.calls.map((e) => "Tool: ${e.name} Args:${e.args}")}";
   }

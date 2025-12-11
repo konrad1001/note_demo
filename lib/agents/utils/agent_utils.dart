@@ -4,8 +4,9 @@ import 'package:note_demo/models/gemini_response.dart';
 enum AgentRole {
   principle,
   designer,
-  toolBuilder,
+  resourcer,
   researcher,
+  observer,
   pipeline;
 
   bool get canCallTools => switch (this) {
@@ -16,9 +17,9 @@ enum AgentRole {
   Type get responseType => switch (this) {
     AgentRole.principle => PrincipleResponse,
     AgentRole.designer => StudyDesign,
-    AgentRole.toolBuilder => StudyTools,
+    AgentRole.resourcer => StudyTools,
     AgentRole.researcher => ExternalResearchResponse,
-    _ => BaseResponse,
+    _ => TextResponse,
   };
 
   Function(GeminiResponse response) get convert => switch (this) {
@@ -29,13 +30,13 @@ enum AgentRole {
     AgentRole.designer => (response) => StudyDesign.fromJson(
       response.firstCandidateJSON,
     ),
-    AgentRole.toolBuilder => (response) => StudyTools.fromJson(
+    AgentRole.resourcer => (response) => StudyTools.fromJson(
       response.firstCandidateJSON,
     ),
     AgentRole.researcher => (response) => ExternalResearchResponse(
       content: response.firstCandidateText,
     ),
-    _ => (response) => BaseResponse(content: response.firstCandidateText),
+    _ => (response) => TextResponse(content: response.firstCandidateText),
   };
 
   String get systemInstructions {
@@ -46,12 +47,12 @@ enum AgentRole {
     
           You will receive:
           - A document containing possible study notes.
-          - Additional information from previous iterations
+          - Additional history from previous iterations.
 
           <Tool-Calling Guidance>
-          **You must save you thought process as well as which tools you have used at each turn, to aid future iterations.**
-          **You are highly encouraged to use the provided tools if they can help fulfill the user's request, especially for generating resources, research, or an overview.**
-          You may choose multiple tools.
+          - You may choose multiple tools.
+          - Always call overview when there is no agent history, afterwards, call it rarely.
+          - Look at agent history to avoid over calling the same tools. 
           </Tool-Calling Guidance>
       """;
       case AgentRole.designer:
@@ -73,7 +74,7 @@ enum AgentRole {
           If the text is not recognizable as study notes (see principal agent criteria), set valid=false in the JSON.
           </System Instructions>
         """;
-      case AgentRole.toolBuilder:
+      case AgentRole.resourcer:
         return """<System Instructions>
           Your task is to generate the most appropriate study tool from notes.
 
@@ -103,12 +104,19 @@ enum AgentRole {
           </System Instructions>
         """;
       case AgentRole.researcher:
-        return """<System Instructions>
-        You are the first step in a resource fetching and evaluating pipeline. 
-        Your job is to return up to 5 links for online content related to the provided content.
-        It can be blog posts, articles or youtube videos. 
+        return """
+        """;
+      case AgentRole.observer:
+        return """
+        <System Instructions>
+        You are a member of an agentic workflow. 
+        You will recieve an event that has occured in the system, which you will summarise into a 
+        short format that will form a historic timeline of events within the systems run time.
 
-        Respond in a comma seperated list.
+        Events will be one of 
+        - A tool call, with optional additional arguments. State the name of the tool and its arguments. 
+
+        Use no more than 40 words. Don't include any formatting
         </System Instructions>
         """;
       case AgentRole.pipeline:

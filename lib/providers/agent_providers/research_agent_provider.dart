@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/agent_pipeline.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
+import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
@@ -8,7 +9,7 @@ import 'package:note_demo/providers/agent_providers/principle_agent_provider.dar
 
 const kExternalResearchNotifierToolName = "research";
 
-final on = false;
+final on = true;
 
 class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
   @override
@@ -20,18 +21,18 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
   void _subscribeToPrinciple() {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
       switch (next) {
-        case PrincipleAgentStateIdle idle:
-          if (idle.valid &&
-              idle.callsMe(kExternalResearchNotifierToolName) != null &&
-              on) {
-            _updateResearch();
+        case PrincipleAgentState idle:
+          final call = idle.callsMe(kExternalResearchNotifierToolName);
+
+          if (idle.valid && call != null && on) {
+            _updateResearch(call);
           }
         default: // continue
       }
     });
   }
 
-  void _updateResearch() async {
+  void _updateResearch(GeminiFunctionResponse call) async {
     state = state.copyWith(isLoading: true, pipeLevel: 0);
 
     final appNotifer = ref.read(appNotifierProvider.notifier);
@@ -39,7 +40,13 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
 
     if (diff == null) return;
 
-    final pipeline = AgentPipeline(3, promptPipe: kExternalResearchPromptPipe);
+    final pipeline = AgentPipeline(
+      3,
+      promptPipe: kExternalResearchPromptPipe,
+      additionalPromptInput: call
+          .args
+          .first, // Cheeky but I know this type of call will only have one argument.
+    );
 
     await for (final result in pipeline.fetch(diff)) {
       state = state.copyWith(pipeLevel: result.index);

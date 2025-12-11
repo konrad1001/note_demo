@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/providers/app_notifier.dart';
@@ -54,7 +53,7 @@ class StudyScreen extends ConsumerWidget {
                   config: MarkdownConfig(
                     configs: [PConfig(textStyle: TextStyle(fontSize: 16))],
                   ),
-                  data: enhancedNotes,
+                  data: noteContent.text,
                 ),
               ),
             ),

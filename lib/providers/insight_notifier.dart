@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/mock/mocks.dart';
+import 'package:note_demo/providers/app_event_provider.dart';
 import 'package:note_demo/providers/mock_service_provider.dart';
 import 'package:note_demo/providers/models/models.dart';
 
@@ -16,11 +17,10 @@ class InsightNotifier extends Notifier<Insights> {
 
   void set(Insights insights) {
     state = insights;
-    print("set state to $state");
   }
 
   void append({required Insight insight}) {
-    state.add(insight);
+    state = state + [insight];
   }
 
   void clear() {

@@ -44,7 +44,6 @@ class AppNotifier extends Notifier<AppState> {
               print("Load file: found existing record of ${file.absolute}");
 
               loadMetaData(metadata);
-              _enhanceNotesFromMetaData(metadata, result);
               insightsNotifier.set(metadata.insights);
 
               // Assign loaded text to edit controller.
@@ -53,12 +52,13 @@ class AppNotifier extends Notifier<AppState> {
               print("Load file: no existing record of ${file.absolute} found");
 
               loadMetaData(NMetaData());
-
-              // Run principle on new content
-              ref.read(principleAgentProvider.notifier).runPrinciple();
+              insightsNotifier.set([]);
 
               // Assign loaded text to edit controller.
               noteContentNotifer.setText(result, previousText: "");
+
+              // Run principle on new content
+              ref.read(principleAgentProvider.notifier).runPrinciple();
             }
           })
           .onError((e, st) {
@@ -84,17 +84,6 @@ class AppNotifier extends Notifier<AppState> {
     ref
         .watch(fileServiceProvider)
         .saveFile(noteContent.text, state.currentFileName);
-  }
-
-  // Call on file load. Raw text needs to be enhanced
-  String _enhanceNotesFromMetaData(NMetaData metaData, String raw) {
-    var enhanced = raw;
-    if (metaData.design?.summary != null) {
-      enhanced = "*${metaData.design!.summary}*\n\n$enhanced";
-    }
-
-    state = state.copyWith(enhancedNotes: enhanced);
-    return enhanced;
   }
 
   void newFile() async {
@@ -145,6 +134,14 @@ class AppNotifier extends Notifier<AppState> {
     state = state.copyWith(
       currentFileMetaData: state.currentFileMetaData.copyWith(
         insights: insights,
+      ),
+    );
+  }
+
+  void setAppHistory(List<String> history) {
+    state = state.copyWith(
+      currentFileMetaData: state.currentFileMetaData.copyWith(
+        appHistory: history,
       ),
     );
   }

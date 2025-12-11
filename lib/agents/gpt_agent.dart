@@ -10,11 +10,11 @@ class GPTAgent<T extends AgentResponse> {
     _geminiService = GeminiService(canCallTools: role.canCallTools);
   }
 
-  Future<T> fetch(String message) async {
+  Future<T> fetch(String message, {bool verbose = false}) async {
     final prompt = '${role.systemInstructions}. $message';
 
     try {
-      final response = await _geminiService.fetch(prompt);
+      final response = await _geminiService.fetch(prompt, verbose: verbose);
       return role.convert(response);
     } catch (e) {
       rethrow;

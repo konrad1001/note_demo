@@ -2,15 +2,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/app_event_provider.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
+import 'package:note_demo/util/future.dart';
 
 const kStudyToolsNotifierToolName = "resources";
 
 class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
+  final retryLimit = 1;
+
   @override
   ResourceAgentState build() {
     _subscribeToPrinciple();
@@ -23,11 +27,11 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
   void _subscribeToPrinciple() {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
       switch (next) {
-        case PrincipleAgentStateIdle idle:
+        case PrincipleAgentState idle:
           {
             final call = idle.callsMe(kStudyToolsNotifierToolName);
             if (idle.valid && call != null) {
-              _updateTools();
+              _updateTools(call);
             }
           }
 
@@ -53,35 +57,37 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
     });
   }
 
-  void _updateTools() async {
+  void _updateTools(GeminiFunctionResponse call) async {
     state = state.copyWith(isLoading: true);
     final appNotifer = ref.read(appNotifierProvider.notifier);
 
-    final model = GPTAgent<StudyTools>(role: AgentRole.toolBuilder);
+    final model = GPTAgent<StudyTools>(role: AgentRole.resourcer);
+
+    print("fetching resources for $call");
 
     try {
-      final response = await model.fetch(_buildPrompt());
-      appNotifer.setTools(state.tools + [response]);
+      retry(() async {
+        final response = await model.fetch(_buildPrompt(call));
+        appNotifer.setTools(state.tools + [response]);
 
-      state = state.copyWith(tools: state.tools + [response], isLoading: false);
+        state = state.copyWith(
+          tools: state.tools + [response],
+          isLoading: false,
+        );
 
-      ref.read(insightProvider.notifier).append(insight: response.toInsight());
+        ref
+            .read(insightProvider.notifier)
+            .append(insight: response.toInsight());
+      }, onRetry: (e, i) => print("_updateTools failed $i : $e"));
     } catch (e) {
-      print(e);
-      state = state.copyWith(
-        isLoading: false,
-        tools:
-            state.tools +
-            [StudyTools.flashcards(id: "id", title: "$e", items: [])],
-      );
+      print("Resource agent _updateTools error: $e");
     }
   }
 
-  String _buildPrompt() {
+  String _buildPrompt(GeminiFunctionResponse call) {
     final diff = ref.read(principleAgentProvider).diff?.additions ?? "";
-    final studyDesign = ref.read(appNotifierProvider);
 
-    return "<Resources> ${studyDesign.currentFileMetaData.tools} <User> $diff";
+    return "<Additional instructions> ${call.args} <User> $diff";
   }
 }
 

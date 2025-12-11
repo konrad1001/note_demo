@@ -46,6 +46,7 @@ abstract class NMetaData with _$NMetaData {
     @Default("") String agentNotes,
     String? externalResearch,
     @Default([]) Insights insights,
+    @Default([]) List<String> appHistory,
   }) = _NMetaData;
 
   factory NMetaData.fromJson(Map<String, dynamic> json) =>
@@ -63,31 +64,22 @@ abstract class NoteContentState with _$NoteContentState {
 
 @freezed
 abstract class PrincipleAgentState with _$PrincipleAgentState {
-  const factory PrincipleAgentState.initial({
-    @Default("") String agentNotes,
-    UserDiff? diff,
-    @Default(false) bool isLoading,
-  }) = PrincipleAgentStateInitial;
-
-  const factory PrincipleAgentState.idle({
+  const factory PrincipleAgentState({
     required bool valid,
     @Default([]) List<GeminiFunctionResponse> calls,
     @Default("") String agentNotes,
     UserDiff? diff,
     @Default(false) bool isLoading,
-  }) = PrincipleAgentStateIdle;
+  }) = _PrincipleAgentState;
 }
 
 extension PrincipleAgentStateX on PrincipleAgentState {
-  GeminiFunctionResponse? callsMe(String name) => map(
-    initial: (_) => null,
-    idle: (idle) {
-      for (var call in idle.calls) {
-        if (call.name == name) return call;
-      }
-      return null;
-    },
-  );
+  GeminiFunctionResponse? callsMe(String name) {
+    for (var call in calls) {
+      if (call.name == name) return call;
+    }
+    return null;
+  }
 }
 
 @freezed
@@ -117,6 +109,14 @@ abstract class ResourceAgentState with _$ResourceAgentState {
     @Default([]) List<StudyTools> tools,
     @Default(false) bool isLoading,
   }) = _ResourceAgentState;
+}
+
+@freezed
+abstract class ObserverAgentState with _$ObserverAgentState {
+  const factory ObserverAgentState({
+    @Default([]) List<String> history,
+    @Default(false) bool isLoading,
+  }) = _ObserverAgentState;
 }
 
 @freezed

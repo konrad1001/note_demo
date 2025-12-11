@@ -15,7 +15,7 @@ class GeminiService {
 
   GeminiService({this.canCallTools = false});
 
-  Future<GeminiResponse> fetch(String prompt) async {
+  Future<GeminiResponse> fetch(String prompt, {bool verbose = false}) async {
     final response = await http.post(
       Uri.parse(kUrl),
       headers: _headers,
@@ -25,7 +25,7 @@ class GeminiService {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
 
-      print(response.body);
+      if (verbose) print(response.body);
 
       final modelResponse = GeminiResponse.fromJson(data);
 
