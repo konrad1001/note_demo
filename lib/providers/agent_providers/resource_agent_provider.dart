@@ -66,20 +66,28 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
     print("fetching resources for $call");
 
     try {
-      retry(() async {
-        final response = await model.fetch(_buildPrompt(call));
-        appNotifer.setTools(state.tools + [response]);
+      await retry(
+        () async {
+          final response = await model.fetch(
+            _buildPrompt(call),
+            verbose: false,
+          );
+          appNotifer.setTools(state.tools + [response]);
 
-        state = state.copyWith(
-          tools: state.tools + [response],
-          isLoading: false,
-        );
+          state = state.copyWith(
+            tools: state.tools + [response],
+            isLoading: false,
+          );
 
-        ref
-            .read(insightProvider.notifier)
-            .append(insight: response.toInsight());
-      }, onRetry: (e, i) => print("_updateTools failed $i : $e"));
+          ref
+              .read(insightProvider.notifier)
+              .append(insight: response.toInsight());
+        },
+        retries: 3,
+        onRetry: (e, i) => print("_updateTools failed $i : $e"),
+      );
     } catch (e) {
+      state = state.copyWith(isLoading: false);
       print("Resource agent _updateTools error: $e");
     }
   }

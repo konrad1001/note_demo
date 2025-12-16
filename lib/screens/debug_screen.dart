@@ -73,7 +73,10 @@ class _DebugResponseInfo extends ConsumerWidget {
       child: ListView(
         children: [
           Text("Insights:"),
-          ...insights.map((item) => Text(item.name)),
+          Row(
+            spacing: 8.0,
+            children: [...insights.map((item) => Text(item.name))],
+          ),
           Text("History:"),
           ...history.history.map((item) => Text(item)),
         ],

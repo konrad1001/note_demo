@@ -26,7 +26,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   late final TabController _tabController;
   late final TextEditingController _notesController = TextEditingController();
 
-  var isRightPanelOpen = false;
+  var isRightPanelOpen = true;
   static const rightPanelAnimationDuration = 300;
 
   @override

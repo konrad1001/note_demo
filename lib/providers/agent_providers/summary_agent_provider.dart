@@ -72,8 +72,8 @@ class SummaryAgentNotifier extends Notifier<SummaryAgentState> {
     final model = GPTAgent<StudyDesign>(role: AgentRole.designer);
 
     try {
-      retry(() async {
-        final design = await model.fetch(_buildPrompt(call));
+      await retry(() async {
+        final design = await model.fetch(_buildPrompt(call), verbose: false);
         final appNotifer = ref.read(appNotifierProvider.notifier);
         appNotifer.setStudyDesign(design);
 

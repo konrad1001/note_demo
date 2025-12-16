@@ -27,7 +27,7 @@ class ResourcesTool {
 @Tool(
   name: "research",
   description:
-      "This function triggers a search for additional material online to supplement the users notes.",
+      "This function triggers a search for additional material online to supplement the users notes. Use the additional instructions parameter to give further detail as to what is required.",
 )
 class ResearchTool {
   final String? additionalInstructions;

@@ -11,10 +11,9 @@ Future<T> retry<T>(
     try {
       return await fn();
     } on Exception catch (e) {
-      if (attempts >= retries) {
+      if (attempts > retries) {
         rethrow;
       }
-
       if (onRetry != null) {
         await onRetry(e, attempts);
       }

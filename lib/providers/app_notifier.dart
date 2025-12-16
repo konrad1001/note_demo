@@ -18,8 +18,8 @@ class AppNotifier extends Notifier<AppState> {
     return AppState(currentFileMetaData: NMetaData());
   }
 
-  void enhanceNotes(String Function(String currentNotes) enhancement) {
-    state = state.copyWith(enhancedNotes: enhancement(state.enhancedNotes));
+  void onType(String value) {
+    ref.read(principleAgentProvider.notifier).runPrinciple(value);
   }
 
   void loadFromFile() async {
@@ -58,7 +58,7 @@ class AppNotifier extends Notifier<AppState> {
               noteContentNotifer.setText(result, previousText: "");
 
               // Run principle on new content
-              ref.read(principleAgentProvider.notifier).runPrinciple();
+              ref.read(principleAgentProvider.notifier).runPrinciple(hash);
             }
           })
           .onError((e, st) {

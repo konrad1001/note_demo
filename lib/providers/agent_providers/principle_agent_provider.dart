@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/agent_providers/observer_agent_provider.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
@@ -9,6 +10,7 @@ import 'package:note_demo/providers/mock_service_provider.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/util/diff.dart';
+import 'package:note_demo/util/future.dart';
 
 class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
   @override
@@ -16,7 +18,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     return PrincipleAgentState(valid: true);
   }
 
-  void runPrinciple() async {
+  void runPrinciple(Object? param) async {
     final noteContent = ref.read(noteContentProvider);
     final noteContentNotifier = ref.read(noteContentProvider.notifier);
 
@@ -45,18 +47,22 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     state = state.copyWith(isLoading: true, calls: []);
 
     try {
-      final response = await model.fetch(_buildPrompt(diff), verbose: false);
+      await retry(() async {
+        final response = await model.fetch(_buildPrompt(diff), verbose: false);
 
-      print("Principle called: ${response.calls.map((call) => call.name)}");
+        print("Principle called: ${response.calls.map((call) => call.name)}");
 
-      state = PrincipleAgentState(
-        valid: true,
-        calls: response.calls,
-        agentNotes: "",
-        diff: diff,
-      );
+        state = PrincipleAgentState(
+          valid: true,
+          calls: [GeminiFunctionResponse(name: "resources")],
+          // calls: response.calls,
+          agentNotes: "",
+          diff: diff,
+        );
+      }, onRetry: (e, i) => print("_runPrinciple failed $i : $e"));
     } catch (e) {
       print("_runPrinciple: Error $e");
+      state = state.copyWith(isLoading: false);
       rethrow;
     }
   }

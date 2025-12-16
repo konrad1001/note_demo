@@ -7,7 +7,10 @@ class GPTAgent<T extends AgentResponse> {
   late GeminiService _geminiService;
 
   GPTAgent({required this.role}) {
-    _geminiService = GeminiService(canCallTools: role.canCallTools);
+    _geminiService = GeminiService(
+      canCallTools: role.canCallTools,
+      responseSchema: role.responseSchema,
+    );
   }
 
   Future<T> fetch(String message, {bool verbose = false}) async {

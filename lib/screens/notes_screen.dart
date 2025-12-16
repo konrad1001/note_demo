@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 
 class NotesScreen extends ConsumerWidget {
@@ -24,6 +25,9 @@ class NotesScreen extends ConsumerWidget {
         isDense: true,
         border: InputBorder.none,
       ),
+      onChanged: (value) {
+        ref.watch(appNotifierProvider.notifier).onType(value);
+      },
     );
   }
 }

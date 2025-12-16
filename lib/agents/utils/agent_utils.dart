@@ -14,6 +14,12 @@ enum AgentRole {
     _ => false,
   };
 
+  Map? get responseSchema => switch (this) {
+    AgentRole.resourcer => kResourceSchema,
+    AgentRole.designer => kOverviewSchema,
+    _ => null,
+  };
+
   Type get responseType => switch (this) {
     AgentRole.principle => PrincipleResponse,
     AgentRole.designer => StudyDesign,
@@ -49,10 +55,16 @@ enum AgentRole {
           - A document containing possible study notes.
           - Additional history from previous iterations.
 
+          First ensure the content can validly be interpreted as study notes. If the content
+          is in any other format, call zero tools.
+
           <Tool-Calling Guidance>
           - You may choose multiple tools.
-          - Always call overview when there is no agent history, afterwards, call it rarely.
-          - Look at agent history to avoid over calling the same tools. 
+          - You may choose zero tools.
+          - Always call overview for valid notes when there is no agent history, afterwards, call it rarely.
+          - Use additional information arguments to breifly instruct sub agent tools on specific aspects of the notes. <20 words.
+          - Look at agent history to avoid over calling the same tools.
+          - Never call the same tool more than 2 times in a row. 
           </Tool-Calling Guidance>
       """;
       case AgentRole.designer:
@@ -149,3 +161,36 @@ const kExternalResearchPromptPipe = [
      </System Instructions>
     """,
 ];
+
+const kOverviewSchema = {
+  "type": "object",
+  "properties": {
+    "title": {"type": "string"},
+    "summary": {"type": "string"},
+  },
+  "required": ["title", "summary"],
+  "propertyOrdering": ["title", "summary"],
+};
+
+const kResourceSchema = {
+  "type": "object",
+  "properties": {
+    "type": {"type": "string"},
+    "id": {"type": "string"},
+    "title": {"type": "string"},
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "front": {"type": "string"},
+          "back": {"type": "string"},
+        },
+        "required": ["front", "back"],
+        "propertyOrdering": ["front", "back"],
+      },
+    },
+  },
+  "required": ["type", "id", "title", "items"],
+  "propertyOrdering": ["type", "id", "title", "items"],
+};

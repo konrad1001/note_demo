@@ -24,7 +24,7 @@ class AgentPipeline {
     promptPipe = promptPipe;
   }
 
-  Stream<PipelineStatus<String>> fetch(String initial) async* {
+  Stream<PipelineResult<String>> fetch(String initial) async* {
     var responseChain = [initial];
 
     for (var i in Iterable.generate(pipeLength)) {
@@ -37,12 +37,15 @@ class AgentPipeline {
       try {
         final next = await agent.fetch('$prompt ${responseChain.last}');
         responseChain.add(next.content);
-        yield (index: i + 1, object: next.content, finished: false);
+        // yield (index: i + 1, object: next.content, finished: false);
+        yield PipelineResult.step(object: next.content, index: i + 1);
       } catch (e) {
         responseChain.add(e.toString());
-        yield (index: 0, object: e.toString(), finished: true);
+        // yield (index: 0, object: e.toString(), finished: true);
+        yield PipelineResult.error(error: e);
       }
     }
-    yield (index: 0, object: responseChain.last, finished: true);
+    // yield (index: 0, object: responseChain.last, finished: true);
+    yield PipelineResult.finished(object: responseChain.last, index: 0);
   }
 }

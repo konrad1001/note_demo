@@ -130,6 +130,20 @@ abstract class KeywordItem with _$KeywordItem {
       _$KeywordItemFromJson(json);
 }
 
+@freezed
+abstract class PipelineResult<T> with _$PipelineResult<T> {
+  const factory PipelineResult.step({T? object, @Default(0) int index}) =
+      PipelineStepResult;
+
+  const factory PipelineResult.finished({
+    required T object,
+    @Default(0) int index,
+  }) = PipelineFinishedResult;
+
+  const factory PipelineResult.error({Object? error, @Default(0) int index}) =
+      PipelineErrorResult;
+}
+
 extension StudyToolsX on StudyTools {
   Color get colour => map(
     flashcards: (_) => const Color.fromARGB(255, 255, 156, 123),

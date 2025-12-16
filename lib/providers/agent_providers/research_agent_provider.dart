@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/agent_pipeline.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
+import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
@@ -50,15 +51,31 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
 
     await for (final result in pipeline.fetch(diff)) {
       state = state.copyWith(pipeLevel: result.index);
-      if (result.finished) {
-        print("fetched research: ${result.object}");
-        state = state.copyWith(isLoading: false, content: result.object);
-        appNotifer.setExternalResearchString(result.object);
+      result.maybeMap(
+        finished: (finished) {
+          print("fetched research: ${finished.object}");
+          state = state.copyWith(isLoading: false, content: finished.object);
+          appNotifer.setExternalResearchString(finished.object);
 
-        ref
-            .read(insightProvider.notifier)
-            .append(insight: Insight.research(research: result.object));
-      }
+          ref
+              .read(insightProvider.notifier)
+              .append(insight: Insight.research(research: finished.object));
+        },
+        error: (error) {
+          print("failed to fetch research: ${error.toString()}");
+          state = state.copyWith(isLoading: false);
+        },
+        orElse: () {},
+      );
+      // if (result is Pipe) {
+      // print("fetched research: ${result.object}");
+      // state = state.copyWith(isLoading: false, content: result.object);
+      // appNotifer.setExternalResearchString(result.object);
+
+      // ref
+      //     .read(insightProvider.notifier)
+      //     .append(insight: Insight.research(research: result.object));
+      // }
     }
   }
 }

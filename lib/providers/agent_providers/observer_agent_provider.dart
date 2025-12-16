@@ -18,13 +18,13 @@ class ObserverAgentNotifier extends Notifier<ObserverAgentState> {
 
   void _subscribeToPrinciple() {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
-      print("Observer notes: $next is principle state.");
       _runObserver(next);
     });
   }
 
   void _runObserver(PrincipleAgentState principleState) async {
     final isMock = ref.read(mockServiceProvider);
+    final appNotifier = ref.read(appNotifierProvider.notifier);
 
     if (principleState.isLoading == true ||
         principleState.calls == [] ||
@@ -32,28 +32,17 @@ class ObserverAgentNotifier extends Notifier<ObserverAgentState> {
       return;
     }
 
-    state = state.copyWith(isLoading: true);
-    final content = _buildPrompt(principleState);
+    final timePoint = "T[${state.history.length}]";
+    final tools = principleState.calls.map((call) => "Tool: ${call.name}");
 
-    final appNotifier = ref.read(appNotifierProvider.notifier);
-
-    try {
-      final response = await model.fetch(content);
-
-      state = state.copyWith(
-        history:
-            state.history + ["T[${state.history.length}] ${response.content}"],
-        isLoading: false,
-      );
-      appNotifier.setAppHistory(state.history);
-    } catch (e) {
-      print("_runObserver: Error $e");
-    }
+    state = state.copyWith(
+      history: state.history + ["$timePoint. $tools"],
+      isLoading: false,
+    );
+    appNotifier.setAppHistory(state.history);
   }
 
   String _buildPrompt(PrincipleAgentState state) {
-    print("building prompt for observer: $state}");
-
     return "${state.calls.map((e) => "Tool: ${e.name} Args:${e.args}")}";
   }
 }

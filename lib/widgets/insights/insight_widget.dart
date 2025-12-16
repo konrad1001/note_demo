@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:note_demo/app/theme.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/screens/resource_screen.dart';
@@ -15,20 +17,22 @@ class InsightWidget extends StatelessWidget {
 
     return insight.maybeMap(
       summary: (summary) => _InsightContainer(
-        colour: colour,
+        colour: NTheme.primary,
         title: "I generated you a summary...",
         subtitle: summary.title,
         body: summary.body,
         date: summary.created,
       ),
       research: (research) => _InsightContainer(
-        colour: colour,
+        colour: NTheme.primary,
         title: "I found you a resource...",
         body: research.research,
         date: research.created,
       ),
-      resource: (resource) =>
-          _ResourceInsight(resource: resource.resource, colour: colour),
+      resource: (resource) => _ResourceInsight(
+        resource: resource.resource,
+        colour: resource.resource.colour,
+      ),
       orElse: () => const SizedBox.shrink(),
     );
   }
@@ -89,7 +93,7 @@ class _InsightContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: colour,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Padding(
@@ -102,14 +106,30 @@ class _InsightContainer extends StatelessWidget {
               Row(
                 spacing: 12.0,
                 children: [
-                  Icon(Icons.auto_awesome, size: 14.0, color: Colors.black54),
-                  Text(title!, style: TextStyle(fontWeight: FontWeight.bold)),
+                  Icon(Icons.auto_awesome, size: 14.0, color: colour),
+                  Flexible(
+                    child: Text(
+                      title!,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ],
               ),
             if (subtitle != null)
               Text(subtitle!, style: TextStyle(fontStyle: FontStyle.italic)),
-            Text(body, style: TextStyle(color: Colors.black87)),
 
+            // Text(body, style: TextStyle(color: Colors.black87)),
+            MarkdownWidget(
+              data: body,
+              shrinkWrap: true,
+              config: MarkdownConfig(
+                configs: [
+                  PConfig(
+                    textStyle: TextStyle(fontSize: 14.0, color: Colors.black87),
+                  ),
+                ],
+              ),
+            ),
             Row(
               children: [
                 Spacer(),

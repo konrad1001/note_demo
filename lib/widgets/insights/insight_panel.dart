@@ -25,19 +25,43 @@ class InsightPanel extends ConsumerWidget {
       child: Stack(
         alignment: AlignmentGeometry.bottomCenter,
         children: [
-          ListView(
-            physics: AlwaysScrollableScrollPhysics(),
-            reverse: true,
-            padding: EdgeInsets.fromLTRB(12, 12, 12, 64),
-            children: [
-              ...(insights).map(
-                (insight) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: InsightWidget(insight: insight),
+          insights.isEmpty
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: DefaultTextStyle(
+                      style: TextStyle(color: Colors.black54),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        spacing: 12.0,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Nothing here yet...",
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            "Start writing to automatically generate AI insights.",
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              : ListView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  reverse: true,
+                  padding: EdgeInsets.fromLTRB(12, 12, 12, 64),
+                  children: [
+                    ...(insights.reversed).map(
+                      (insight) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: InsightWidget(insight: insight),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
           Padding(
             padding: const EdgeInsets.symmetric(
               vertical: 16.0,
@@ -72,11 +96,13 @@ class _AgentFeedback extends ConsumerWidget {
       text = "Resourcing...";
     }
 
-    return Text(
-      text,
-      style: TextStyle(
-        color: text == "Idle" ? Colors.black : NTheme.greyed,
-        fontSize: 14.0,
+    return Flexible(
+      child: Text(
+        text,
+        style: TextStyle(
+          color: text == "Idle" ? Colors.black : NTheme.greyed,
+          fontSize: 14.0,
+        ),
       ),
     );
   }

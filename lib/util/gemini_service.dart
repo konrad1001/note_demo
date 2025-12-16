@@ -12,8 +12,9 @@ const kUrl =
 
 class GeminiService {
   final bool canCallTools;
+  final Map? responseSchema;
 
-  GeminiService({this.canCallTools = false});
+  GeminiService({this.canCallTools = false, this.responseSchema});
 
   Future<GeminiResponse> fetch(String prompt, {bool verbose = false}) async {
     final response = await http.post(
@@ -21,6 +22,8 @@ class GeminiService {
       headers: _headers,
       body: _body(prompt),
     );
+
+    // print("calling: ${_body(prompt)}");
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -41,29 +44,73 @@ class GeminiService {
     return {'Content-Type': 'application/json', 'x-goog-api-key': apiKey};
   }
 
-  String _body(String prompt) => jsonEncode({
-    'contents': [
-      {
-        "role": "user",
-        'parts': [
-          {'text': prompt},
-        ],
-      },
-    ],
-    "generationConfig": {
+  String _body(String prompt) {
+    final body = {
+      'contents': [
+        {
+          "role": "user",
+          'parts': [
+            {'text': prompt},
+          ],
+        },
+      ],
+      "generationConfig": _generationConfig,
+      // "tools": [
+      //   canCallTools ? _tools : {"urlContext": {}},
+      // ],
+    };
+
+    if (responseSchema == null) {
+      body["tools"] = _tools;
+    }
+
+    return jsonEncode(body);
+  }
+
+  List get _tools {
+    final tools = [
+      canCallTools
+          ? {
+              "functionDeclarations": [
+                overviewToolAsMap,
+                resourcesToolAsMap,
+                researchToolAsMap,
+              ],
+            }
+          : {"urlContext": {}},
+    ];
+
+    return tools;
+  }
+
+  Map get _generationConfig {
+    final generationConfig = {
       "maxOutputTokens": 600,
       "thinkingConfig": {"thinkingBudget": 0},
-    },
-    "tools": [
-      canCallTools ? _tools : {"urlContext": {}},
-    ],
-  });
+      // "responseMimeType": "application/json",
+      // "responseSchema": {
+      //   "type": "object",
+      //   "properties": {
+      //     "summary": {
+      //       "type": "object",
+      //       "properties": {
+      //         "title": {"type": "string"},
+      //         "summary": {"type": "string"},
+      //       },
+      //       "required": ["title", "summary"],
+      //       "propertyOrdering": ["title", "summary"],
+      //     },
+      //   },
+      //   "required": ["summary"],
+      //   "propertyOrdering": ["summary"],
+      // },
+    };
 
-  Map get _tools => {
-    "functionDeclarations": [
-      overviewToolAsMap,
-      resourcesToolAsMap,
-      researchToolAsMap,
-    ],
-  };
+    if (responseSchema != null) {
+      generationConfig["responseMimeType"] = "application/json";
+      generationConfig["responseSchema"] = responseSchema!;
+    }
+
+    return generationConfig;
+  }
 }
