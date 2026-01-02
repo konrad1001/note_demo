@@ -28,9 +28,9 @@ extension GeminiResponseX on GeminiResponse {
         .replaceAll(RegExp(r'```json|```'), '')
         .trim();
 
-    print(
-      "first candidate json: ${json.decode(cleaned) as Map<String, dynamic>}",
-    );
+    // print(
+    //   "first candidate json: ${json.decode(cleaned) as Map<String, dynamic>}",
+    // );
 
     return json.decode(cleaned) as Map<String, dynamic>;
   }

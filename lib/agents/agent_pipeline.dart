@@ -35,17 +35,19 @@ class AgentPipeline {
       }
 
       try {
-        final next = await agent.fetch('$prompt ${responseChain.last}');
+        final next = await agent.fetch(
+          '$prompt ${responseChain.last}',
+          verbose: false,
+        );
         responseChain.add(next.content);
-        // yield (index: i + 1, object: next.content, finished: false);
         yield PipelineResult.step(object: next.content, index: i + 1);
       } catch (e) {
         responseChain.add(e.toString());
-        // yield (index: 0, object: e.toString(), finished: true);
         yield PipelineResult.error(error: e);
+        return;
       }
     }
-    // yield (index: 0, object: responseChain.last, finished: true);
+
     yield PipelineResult.finished(object: responseChain.last, index: 0);
   }
 }

@@ -13,8 +13,13 @@ const kUrl =
 class GeminiService {
   final bool canCallTools;
   final Map? responseSchema;
+  final int thinkingBudget;
 
-  GeminiService({this.canCallTools = false, this.responseSchema});
+  GeminiService({
+    this.canCallTools = false,
+    this.responseSchema,
+    this.thinkingBudget = 0,
+  });
 
   Future<GeminiResponse> fetch(String prompt, {bool verbose = false}) async {
     final response = await http.post(
@@ -55,9 +60,6 @@ class GeminiService {
         },
       ],
       "generationConfig": _generationConfig,
-      // "tools": [
-      //   canCallTools ? _tools : {"urlContext": {}},
-      // ],
     };
 
     if (responseSchema == null) {
@@ -84,26 +86,8 @@ class GeminiService {
   }
 
   Map get _generationConfig {
-    final generationConfig = {
-      "maxOutputTokens": 600,
-      "thinkingConfig": {"thinkingBudget": 0},
-      // "responseMimeType": "application/json",
-      // "responseSchema": {
-      //   "type": "object",
-      //   "properties": {
-      //     "summary": {
-      //       "type": "object",
-      //       "properties": {
-      //         "title": {"type": "string"},
-      //         "summary": {"type": "string"},
-      //       },
-      //       "required": ["title", "summary"],
-      //       "propertyOrdering": ["title", "summary"],
-      //     },
-      //   },
-      //   "required": ["summary"],
-      //   "propertyOrdering": ["summary"],
-      // },
+    final Map generationConfig = {
+      "thinkingConfig": {"thinkingBudget": thinkingBudget},
     };
 
     if (responseSchema != null) {

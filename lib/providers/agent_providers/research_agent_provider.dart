@@ -28,12 +28,12 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
           if (idle.valid && call != null && on) {
             _updateResearch(call);
           }
-        default: // continue
       }
     });
   }
 
   void _updateResearch(GeminiFunctionResponse call) async {
+    print("updating research");
     state = state.copyWith(isLoading: true, pipeLevel: 0);
 
     final appNotifer = ref.read(appNotifierProvider.notifier);
@@ -54,12 +54,21 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
       result.maybeMap(
         finished: (finished) {
           print("fetched research: ${finished.object}");
-          state = state.copyWith(isLoading: false, content: finished.object);
-          appNotifer.setExternalResearchString(finished.object);
 
-          ref
-              .read(insightProvider.notifier)
-              .append(insight: Insight.research(research: finished.object));
+          if (finished.object.contains("https://")) {
+            appNotifer.setExternalResearchString(finished.object);
+
+            ref
+                .read(insightProvider.notifier)
+                .append(
+                  insight: Insight.research(
+                    research: finished.object,
+                    created: DateTime.now(),
+                  ),
+                );
+          }
+
+          state = state.copyWith(isLoading: false, content: finished.object);
         },
         error: (error) {
           print("failed to fetch research: ${error.toString()}");
@@ -67,15 +76,6 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
         },
         orElse: () {},
       );
-      // if (result is Pipe) {
-      // print("fetched research: ${result.object}");
-      // state = state.copyWith(isLoading: false, content: result.object);
-      // appNotifer.setExternalResearchString(result.object);
-
-      // ref
-      //     .read(insightProvider.notifier)
-      //     .append(insight: Insight.research(research: result.object));
-      // }
     }
   }
 }

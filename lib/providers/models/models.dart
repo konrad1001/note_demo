@@ -26,17 +26,17 @@ abstract class Insight with _$Insight {
   const factory Insight.summary({
     required String title,
     required String body,
-    DateTime? created,
+    required DateTime created,
   }) = _SummaryInsight;
 
   const factory Insight.resource({
     required StudyTools resource,
-    DateTime? created,
+    required DateTime created,
   }) = _ResourceInsight;
 
   const factory Insight.research({
     required String research,
-    DateTime? created,
+    required DateTime created,
   }) = _ResearchInsight;
 
   // Use for agent responses that shouldn't be displayed to the user, like steps in agent pipeline

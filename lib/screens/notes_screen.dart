@@ -12,22 +12,25 @@ class NotesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final noteContent = ref.watch(noteContentProvider);
 
-    return TextField(
-      maxLines: null,
-      controller: noteContent.editingController,
-      clipBehavior: Clip.none,
-      textAlignVertical: TextAlignVertical.top,
-      style: TextStyle(fontSize: 16.0),
-      expands: true,
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.fromLTRB(50, 0, 50, 0),
-        constraints: BoxConstraints(maxWidth: 700),
-        isDense: true,
-        border: InputBorder.none,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextField(
+        maxLines: null,
+        controller: noteContent.editingController,
+        clipBehavior: Clip.none,
+        textAlignVertical: TextAlignVertical.top,
+        style: TextStyle(fontSize: 16.0),
+        expands: true,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(50, 0, 50, 0),
+          constraints: BoxConstraints(maxWidth: 700),
+          isDense: true,
+          border: InputBorder.none,
+        ),
+        onChanged: (value) {
+          ref.watch(appNotifierProvider.notifier).onType(value);
+        },
       ),
-      onChanged: (value) {
-        ref.watch(appNotifierProvider.notifier).onType(value);
-      },
     );
   }
 }

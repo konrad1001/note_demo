@@ -72,6 +72,7 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
             _buildPrompt(call),
             verbose: false,
           );
+
           appNotifer.setTools(state.tools + [response]);
 
           state = state.copyWith(

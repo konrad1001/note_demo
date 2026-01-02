@@ -32,6 +32,7 @@ class InsightWidget extends StatelessWidget {
       resource: (resource) => _ResourceInsight(
         resource: resource.resource,
         colour: resource.resource.colour,
+        date: resource.created,
       ),
       orElse: () => const SizedBox.shrink(),
     );
@@ -41,8 +42,13 @@ class InsightWidget extends StatelessWidget {
 class _ResourceInsight extends StatelessWidget {
   final StudyTools resource;
   final Color colour;
+  final DateTime date;
 
-  const _ResourceInsight({required this.resource, required this.colour});
+  const _ResourceInsight({
+    required this.resource,
+    required this.colour,
+    required this.date,
+  });
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -57,6 +63,7 @@ class _ResourceInsight extends StatelessWidget {
         title: "I generated you a resource...",
         subtitle: resource.title,
         body: "Tap to view",
+        date: date,
       ),
     );
   }
@@ -68,7 +75,7 @@ class _InsightContainer extends StatelessWidget {
     this.title,
     this.subtitle,
     required this.body,
-    this.date,
+    required this.date,
   });
 
   final Color colour;
@@ -76,7 +83,7 @@ class _InsightContainer extends StatelessWidget {
   final String? title;
   final String? subtitle;
   final String body;
-  final DateTime? date;
+  final DateTime date;
 
   String _formatDateTime(DateTime date) {
     String two(int n) => n.toString().padLeft(2, '0');
@@ -134,7 +141,7 @@ class _InsightContainer extends StatelessWidget {
               children: [
                 Spacer(),
                 Text(
-                  _formatDateTime(date ?? DateTime.now()),
+                  _formatDateTime(date),
                   style: TextStyle(fontSize: 11.0, color: Colors.black54),
                 ),
               ],

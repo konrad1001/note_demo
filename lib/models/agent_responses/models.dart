@@ -111,8 +111,8 @@ abstract class FlashcardItem with _$FlashcardItem {
 @freezed
 abstract class QuestionAnswerItem with _$QuestionAnswerItem {
   const factory QuestionAnswerItem({
-    required String question,
-    required String answer,
+    @JsonKey(name: "front") required String question,
+    @JsonKey(name: "back") required String answer,
   }) = _QuestionAnswerItem;
 
   factory QuestionAnswerItem.fromJson(Map<String, dynamic> json) =>
@@ -122,8 +122,8 @@ abstract class QuestionAnswerItem with _$QuestionAnswerItem {
 @freezed
 abstract class KeywordItem with _$KeywordItem {
   const factory KeywordItem({
-    required String keyword,
-    required String definition,
+    @JsonKey(name: "front") required String keyword,
+    @JsonKey(name: "back") required String definition,
   }) = _KeywordItem;
 
   factory KeywordItem.fromJson(Map<String, dynamic> json) =>

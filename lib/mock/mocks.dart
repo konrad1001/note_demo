@@ -12,8 +12,11 @@ abstract class MockBuilder {
           """This study plan covers the fundamentals of NLP, including data representation, 
           text preprocessing methods like tokenization and normalization, and an introduction
            to word meaning and deep learning concepts like RNNs for sequential data.""",
+      created: DateTime(2003),
     ),
     Insight.resource(
+      created: DateTime(2003),
+
       resource: StudyTools.flashcards(
         id: "id",
         title: "Mock flashcards",
@@ -25,10 +28,12 @@ abstract class MockBuilder {
       ),
     ),
     Insight.research(
+      created: DateTime(2003),
       research:
           "Heres an interesting video that will summarise this concept...",
     ),
     Insight.resource(
+      created: DateTime(2003),
       resource: StudyTools.qas(
         id: "id",
         title: "Mock flashcards",

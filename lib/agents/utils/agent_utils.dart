@@ -14,6 +14,11 @@ enum AgentRole {
     _ => false,
   };
 
+  int get thinkingBudget => switch (this) {
+    AgentRole.principle => 1024,
+    _ => 0,
+  };
+
   Map? get responseSchema => switch (this) {
     AgentRole.resourcer => kResourceSchema,
     AgentRole.designer => kOverviewSchema,
@@ -58,6 +63,8 @@ enum AgentRole {
           First ensure the content can validly be interpreted as study notes. If the content
           is in any other format, call zero tools.
 
+          Next, consult the agent history to see which tools have been called in previous iterations.
+
           <Tool-Calling Guidance>
           - You may choose multiple tools.
           - You may choose zero tools.
@@ -65,6 +72,8 @@ enum AgentRole {
           - Use additional information arguments to breifly instruct sub agent tools on specific aspects of the notes. <20 words.
           - Look at agent history to avoid over calling the same tools.
           - Never call the same tool more than 2 times in a row. 
+          - Never call overview two times in a row.
+          - Every 2 or 3 iterations call no tools.
           </Tool-Calling Guidance>
       """;
       case AgentRole.designer:
@@ -89,30 +98,13 @@ enum AgentRole {
       case AgentRole.resourcer:
         return """<System Instructions>
           Your task is to generate the most appropriate study tool from notes.
+          
+          One of flashcards | qas | keywords
 
-          Output only valid JSON.
-
-          Tool Selection:
-          - Use "keywords" for concept-heavy or definition-like content.
-          - Use "flashcards" for fact-based or term–explanation pairs.
-          - Use "qas" when the notes can naturally form questions.
+          You may be provided with additional instructions you must follow.
 
           Generate a maximum of 4 items for each type of resource.
 
-          <Schema>
-          {
-            "type": "flashcards" | "qas" | "keywords",
-            "id": string,
-            "title": string,
-            "items": [
-              // For "flashcards":
-              { "front": string, "back": string },
-              // For "qas":
-              { "question": string, "answer": string },
-              // For "keywords":
-              { "keyword": string, "definition": string }
-            ]
-          }
           </System Instructions>
         """;
       case AgentRole.researcher:
@@ -175,7 +167,10 @@ const kOverviewSchema = {
 const kResourceSchema = {
   "type": "object",
   "properties": {
-    "type": {"type": "string"},
+    "type": {
+      "type": "string",
+      "description": "One of flashcards | qas | keywords",
+    },
     "id": {"type": "string"},
     "title": {"type": "string"},
     "items": {
