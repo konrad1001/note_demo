@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/widgets/flashcard_carousel.dart';
 
 class ResourceScreen extends StatelessWidget {
   const ResourceScreen({super.key, required this.colour, required this.tool});
@@ -49,17 +50,17 @@ class _ResourceWidget extends StatelessWidget {
 
               children: tool.map(
                 flashcards: (flashcards) => [
-                  ...flashcards.items.map(
-                    (item) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
-                      children: [
-                        Text(item.front),
-                        Text(
-                          item.back,
-                          style: TextStyle(fontStyle: FontStyle.italic),
-                        ),
-                      ],
+                  SizedBox(
+                    height: 400,
+                    child: FlashcardCarousel(
+                      items: flashcards.items
+                          .map(
+                            (item) => FlashcardItem(
+                              front: item.front,
+                              back: item.back,
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
                 ],
@@ -67,7 +68,6 @@ class _ResourceWidget extends StatelessWidget {
                   ...qas.items.map(
                     (item) => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-
                       children: [
                         Text(item.question),
                         Text(
@@ -82,7 +82,6 @@ class _ResourceWidget extends StatelessWidget {
                   ...keywords.items.map(
                     (item) => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-
                       children: [
                         Text(item.keyword),
                         Text(
