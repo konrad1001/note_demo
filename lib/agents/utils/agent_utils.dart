@@ -7,6 +7,7 @@ enum AgentRole {
   resourcer,
   researcher,
   observer,
+  mapper,
   pipeline;
 
   bool get canCallTools => switch (this) {
@@ -20,8 +21,9 @@ enum AgentRole {
   };
 
   Map? get responseSchema => switch (this) {
-    AgentRole.resourcer => kResourceSchema,
-    AgentRole.designer => kOverviewSchema,
+    .resourcer => kResourceSchema,
+    .designer => kOverviewSchema,
+    .mapper => kMindMapSchema,
     _ => null,
   };
 
@@ -30,6 +32,7 @@ enum AgentRole {
     AgentRole.designer => StudyDesign,
     AgentRole.resourcer => StudyTools,
     AgentRole.researcher => ExternalResearchResponse,
+    AgentRole.mapper => MindMapResponse,
     _ => TextResponse,
   };
 
@@ -46,6 +49,9 @@ enum AgentRole {
     ),
     AgentRole.researcher => (response) => ExternalResearchResponse(
       content: response.firstCandidateText,
+    ),
+    AgentRole.mapper => (response) => MindMapResponse.fromJson(
+      response.firstCandidateJSON,
     ),
     _ => (response) => TextResponse(content: response.firstCandidateText),
   };
@@ -123,7 +129,21 @@ enum AgentRole {
         Use no more than 40 words. Don't include any formatting
         </System Instructions>
         """;
-      case AgentRole.pipeline:
+      case AgentRole.mapper:
+        return """
+        <System Instructions>
+        Your task is to generate a mind map schema for the provided notes.
+
+        Generate no more than 10 nodes.
+
+        You are generating JSON that MUST strictly conform to the provided OpenAPI schema.
+        - Do not include extra fields
+        - Always include "children" arrays (empty if none)
+        - Limit nesting depth to 4
+        - Output valid JSON only
+        </System Instructions>
+        """;
+      case _:
         return "";
     }
   }
@@ -188,4 +208,37 @@ const kResourceSchema = {
   },
   "required": ["type", "id", "title", "items"],
   "propertyOrdering": ["type", "id", "title", "items"],
+};
+
+const kMindMapSchema = {
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the mind map",
+    },
+    "title": {"type": "string", "description": "Title of the mind map"},
+    "nodes": {
+      "type": "array",
+      "description": "All nodes in the mind map",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "label": {
+            "type": "string",
+            "description": "The text displayed on the node",
+          },
+          "parentId": {
+            "type": "string",
+            "description": "ID of parent node, null for root node",
+          },
+        },
+        "required": ["id", "label"],
+        "propertyOrdering": ["id", "label", "parentId"],
+      },
+    },
+  },
+  "required": ["id", "title", "nodes"],
+  "propertyOrdering": ["id", "title", "nodes"],
 };

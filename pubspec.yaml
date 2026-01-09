@@ -4,7 +4,7 @@ publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: ^3.8.1
+  sdk: ^3.10.0
 
 dependencies:
   diff_match_patch: ^0.4.1
@@ -23,6 +23,7 @@ dependencies:
   hive_ce: ^2.15.1
   crypto: ^3.0.7
   shimmer_animation: ^2.1.0
+  graphview: ^1.5.1
 
 dev_dependencies:
   flutter_test:

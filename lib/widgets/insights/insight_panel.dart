@@ -10,18 +10,27 @@ import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/widgets/insights/insight_widget.dart';
 
+final _insightPanelKey = GlobalKey<AnimatedListState>();
+
 class InsightPanel extends ConsumerWidget {
   const InsightPanel({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<Insights>(insightProvider, (prev, next) {
+      if (prev?.length != next.length) {
+        _insightPanelKey.currentState?.insertItem(next.length - 1);
+        print(next);
+      }
+    });
+
     final insights = ref.watch(insightProvider);
 
     return Container(
       decoration: BoxDecoration(color: Color.fromARGB(255, 245, 244, 240)),
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width / 3,
-
+      clipBehavior: Clip.hardEdge,
       child: Stack(
         alignment: AlignmentGeometry.bottomCenter,
         children: [

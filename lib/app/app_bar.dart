@@ -65,10 +65,15 @@ class NoteAppBar extends StatelessWidget implements PreferredSizeWidget {
                   return (isLoading || studyContent is SummaryAgentStateLoading)
                       ? Flexible(
                           child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            clipBehavior: Clip.hardEdge,
                             child: Shimmer(
-                              color: Colors.black,
-                              duration: Duration(milliseconds: 900),
-                              interval: Duration(milliseconds: 200),
+                              color: NTheme.primary,
+                              colorOpacity: 0.3,
+                              duration: Duration(seconds: 1),
+                              interval: Duration(seconds: 0),
                               child: Text(
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,

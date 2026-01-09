@@ -28,7 +28,7 @@ class GeminiService {
       body: _body(prompt),
     );
 
-    // print("calling: ${_body(prompt)}");
+    print("calling: ${_body(prompt)}");
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);

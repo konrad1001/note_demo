@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/app/app_bar.dart';
 import 'package:note_demo/app/app_status_bar.dart';
+import 'package:note_demo/providers/agent_providers/mindmap_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/observer_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/research_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/resource_agent_provider.dart';
@@ -51,6 +52,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         final _ = ref.watch(observerAgentProvider);
         final _ = ref.watch(researchAgentProvider);
         final _ = ref.watch(resourceAgentProvider);
+        final _ = ref.watch(mindmapAgentProvider);
 
         return Scaffold(
           backgroundColor: Colors.white,
@@ -102,7 +104,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                   width: isRightPanelOpen
                       ? MediaQuery.of(context).size.width / 3
                       : 0,
-                  child: InsightPanel(),
+                  child: OverflowBox(child: InsightPanel()),
                 ),
               ),
             ],

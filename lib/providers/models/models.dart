@@ -21,26 +21,42 @@ abstract class AppState with _$AppState {
       _$AppStateFromJson(json);
 }
 
+enum UserRating { like, dislike, neither }
+
 @freezed
 abstract class Insight with _$Insight {
   const factory Insight.summary({
     required String title,
     required String body,
     required DateTime created,
+    @Default(UserRating.neither) UserRating rating,
   }) = _SummaryInsight;
 
   const factory Insight.resource({
     required StudyTools resource,
     required DateTime created,
+    @Default(UserRating.neither) UserRating rating,
   }) = _ResourceInsight;
 
   const factory Insight.research({
     required String research,
     required DateTime created,
+    @Default(UserRating.neither) UserRating rating,
   }) = _ResearchInsight;
 
+  const factory Insight.mindmap({
+    required String title,
+    required DateTime created,
+    required MindMapResponse mindmap,
+    @Default(UserRating.neither) UserRating rating,
+  }) = _MindmapInsight;
+
   // Use for agent responses that shouldn't be displayed to the user, like steps in agent pipeline
-  const factory Insight.meta({String? notes, DateTime? created}) = _MetaInsight;
+  const factory Insight.meta({
+    String? notes,
+    DateTime? created,
+    @Default(UserRating.neither) UserRating rating,
+  }) = _MetaInsight;
 
   factory Insight.fromJson(Map<String, dynamic> json) =>
       _$InsightFromJson(json);
@@ -120,6 +136,12 @@ abstract class ResourceAgentState with _$ResourceAgentState {
 }
 
 @freezed
+abstract class MindmapAgentState with _$MindmapAgentState {
+  const factory MindmapAgentState({@Default(false) bool isLoading}) =
+      _MindmapAgentState;
+}
+
+@freezed
 abstract class ObserverAgentState with _$ObserverAgentState {
   const factory ObserverAgentState({
     @Default([]) List<String> history,
@@ -139,6 +161,7 @@ extension InsightX on Insight {
     summary: (_) => "Summary",
     resource: (_) => "Resource",
     research: (_) => "Research",
+    mindmap: (_) => "Mindmap",
     meta: (_) => "Meta step",
   );
 }

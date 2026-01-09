@@ -70,7 +70,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
 
         state = PrincipleAgentState(
           valid: true,
-          calls: response.calls,
+          calls: [GeminiFunctionResponse(name: "mindmap")],
           agentNotes: "",
           diff: diff,
         );

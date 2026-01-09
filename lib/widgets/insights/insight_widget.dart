@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:note_demo/app/theme.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/screens/resource_screen.dart';
 import 'package:note_demo/widgets/blurred_container.dart';
+import 'package:note_demo/widgets/mindmap_preview.dart';
 
 class InsightWidget extends StatelessWidget {
   const InsightWidget({super.key, required this.insight});
@@ -22,17 +25,29 @@ class InsightWidget extends StatelessWidget {
         subtitle: summary.title,
         body: summary.body,
         date: summary.created,
+        insight: insight,
       ),
       research: (research) => _InsightContainer(
         colour: NTheme.primary,
         title: "I found you a resource...",
         body: research.research,
         date: research.created,
+        insight: insight,
       ),
       resource: (resource) => _ResourceInsight(
         resource: resource.resource,
         colour: resource.resource.colour,
         date: resource.created,
+        insight: insight,
+      ),
+      mindmap: (mindmap) => _InsightContainer(
+        colour: Colors.deepOrangeAccent,
+        title: "I made you a mindmap...",
+        subtitle: mindmap.title,
+        body: "Tap to view",
+        date: mindmap.created,
+        insight: insight,
+        widget: MindMapPreview(mindMap: mindmap.mindmap),
       ),
       orElse: () => const SizedBox.shrink(),
     );
@@ -40,6 +55,7 @@ class InsightWidget extends StatelessWidget {
 }
 
 class _ResourceInsight extends StatelessWidget {
+  final Insight insight;
   final StudyTools resource;
   final Color colour;
   final DateTime date;
@@ -48,6 +64,7 @@ class _ResourceInsight extends StatelessWidget {
     required this.resource,
     required this.colour,
     required this.date,
+    required this.insight,
   });
   @override
   Widget build(BuildContext context) {
@@ -64,21 +81,27 @@ class _ResourceInsight extends StatelessWidget {
         subtitle: resource.title,
         body: "Tap to view",
         date: date,
+        insight: insight,
       ),
     );
   }
 }
 
-class _InsightContainer extends StatelessWidget {
+class _InsightContainer extends ConsumerWidget {
   const _InsightContainer({
     required this.colour,
     this.title,
     this.subtitle,
     required this.body,
     required this.date,
+    required this.insight,
+    this.widget,
   });
 
+  final Insight insight;
   final Color colour;
+
+  final Widget? widget;
 
   final String? title;
   final String? subtitle;
@@ -97,7 +120,7 @@ class _InsightContainer extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -124,8 +147,8 @@ class _InsightContainer extends StatelessWidget {
               ),
             if (subtitle != null)
               Text(subtitle!, style: TextStyle(fontStyle: FontStyle.italic)),
+            if (widget != null) widget!,
 
-            // Text(body, style: TextStyle(color: Colors.black87)),
             MarkdownWidget(
               data: body,
               shrinkWrap: true,
@@ -139,6 +162,44 @@ class _InsightContainer extends StatelessWidget {
             ),
             Row(
               children: [
+                if (insight.rating != UserRating.dislike)
+                  IconButton(
+                    onPressed: () {
+                      if (insight.rating == UserRating.like) {
+                        ref
+                            .read(insightProvider.notifier)
+                            .updateRating(insight, UserRating.neither);
+                      } else {
+                        ref
+                            .read(insightProvider.notifier)
+                            .updateRating(insight, UserRating.like);
+                      }
+                    },
+                    iconSize: 18,
+                    color: (insight.rating == UserRating.like)
+                        ? NTheme.primary
+                        : Colors.black45,
+                    icon: Icon(Icons.thumb_up),
+                  ),
+                if (insight.rating != UserRating.like)
+                  IconButton(
+                    onPressed: () {
+                      if (insight.rating == UserRating.dislike) {
+                        ref
+                            .read(insightProvider.notifier)
+                            .updateRating(insight, UserRating.neither);
+                      } else {
+                        ref
+                            .read(insightProvider.notifier)
+                            .updateRating(insight, UserRating.dislike);
+                      }
+                    },
+                    iconSize: 18,
+                    color: (insight.rating == UserRating.dislike)
+                        ? NTheme.primary
+                        : Colors.black45,
+                    icon: Icon(Icons.thumb_down),
+                  ),
                 Spacer(),
                 Text(
                   _formatDateTime(date),

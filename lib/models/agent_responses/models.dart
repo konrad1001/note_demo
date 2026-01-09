@@ -38,6 +38,35 @@ abstract class ExternalResearchResponse extends AgentResponse
 }
 
 @freezed
+abstract class MindMapResponse extends AgentResponse with _$MindMapResponse {
+  const MindMapResponse._();
+  const factory MindMapResponse({
+    required String id,
+    required String title,
+    required List<MindMapNode> nodes,
+  }) = _MindMapResponse;
+
+  factory MindMapResponse.fromJson(Map<String, dynamic> json) =>
+      _$MindMapResponseFromJson(json);
+
+  @override
+  Insight toInsight() =>
+      Insight.mindmap(title: title, created: DateTime.now(), mindmap: this);
+}
+
+@freezed
+abstract class MindMapNode with _$MindMapNode {
+  const factory MindMapNode({
+    required String id,
+    required String label,
+    String? parentId,
+  }) = _MindMapNode;
+
+  factory MindMapNode.fromJson(Map<String, dynamic> json) =>
+      _$MindMapNodeFromJson(json);
+}
+
+@freezed
 abstract class TextResponse extends AgentResponse with _$TextResponse {
   const TextResponse._();
   const factory TextResponse({required String content}) = _TextResponse;
@@ -150,4 +179,15 @@ extension StudyToolsX on StudyTools {
     qas: (_) => const Color.fromARGB(255, 77, 210, 150),
     keywords: (_) => const Color.fromARGB(255, 123, 198, 255),
   );
+}
+
+extension MindMapX on MindMapResponse {
+  MindMapNode? get rootNode => nodes.firstWhere(
+    (node) => node.parentId == null,
+    orElse: () => nodes.first,
+  );
+
+  List<MindMapNode> getChildren(String parentId) {
+    return nodes.where((node) => node.parentId == parentId).toList();
+  }
 }

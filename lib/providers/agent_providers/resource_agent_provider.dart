@@ -13,7 +13,8 @@ import 'package:note_demo/util/future.dart';
 const kStudyToolsNotifierToolName = "resources";
 
 class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
-  final retryLimit = 1;
+  final _retryLimit = 3;
+  final _model = GPTAgent<StudyTools>(role: AgentRole.resourcer);
 
   @override
   ResourceAgentState build() {
@@ -61,32 +62,23 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
     state = state.copyWith(isLoading: true);
     final appNotifer = ref.read(appNotifierProvider.notifier);
 
-    final model = GPTAgent<StudyTools>(role: AgentRole.resourcer);
-
     print("fetching resources for $call");
 
     try {
-      await retry(
-        () async {
-          final response = await model.fetch(
-            _buildPrompt(call),
-            verbose: false,
-          );
+      await retry(() async {
+        final response = await _model.fetch(_buildPrompt(call), verbose: false);
 
-          appNotifer.setTools(state.tools + [response]);
+        appNotifer.setTools(state.tools + [response]);
 
-          state = state.copyWith(
-            tools: state.tools + [response],
-            isLoading: false,
-          );
+        state = state.copyWith(
+          tools: state.tools + [response],
+          isLoading: false,
+        );
 
-          ref
-              .read(insightProvider.notifier)
-              .append(insight: response.toInsight());
-        },
-        retries: 3,
-        onRetry: (e, i) => print("_updateTools failed $i : $e"),
-      );
+        ref
+            .read(insightProvider.notifier)
+            .append(insight: response.toInsight());
+      }, retries: _retryLimit);
     } catch (e) {
       state = state.copyWith(isLoading: false);
       print("Resource agent _updateTools error: $e");
