@@ -13,12 +13,25 @@ part 'models.g.dart';
 abstract class AppState with _$AppState {
   const factory AppState({
     required NMetaData currentFileMetaData,
-    @Default("") String currentFileName,
-    @Default("") String enhancedNotes,
+    String? autoFileName,
+    String? userSetFileName,
   }) = _AppState;
 
   factory AppState.fromJson(Map<String, dynamic> json) =>
       _$AppStateFromJson(json);
+}
+
+@freezed
+abstract class NMetaData with _$NMetaData {
+  const factory NMetaData({
+    String? userTitle,
+    String? autoTitle,
+    @Default([]) Insights insights,
+    @Default([]) List<String> appHistory,
+  }) = _NMetaData;
+
+  factory NMetaData.fromJson(Map<String, dynamic> json) =>
+      _$NMetaDataFromJson(json);
 }
 
 enum UserRating { like, dislike, neither }
@@ -47,7 +60,7 @@ abstract class Insight with _$Insight {
   const factory Insight.mindmap({
     required String title,
     required DateTime created,
-    required MindMapResponse mindmap,
+    required MindMap mindmap,
     @Default(UserRating.neither) UserRating rating,
   }) = _MindmapInsight;
 
@@ -60,21 +73,6 @@ abstract class Insight with _$Insight {
 
   factory Insight.fromJson(Map<String, dynamic> json) =>
       _$InsightFromJson(json);
-}
-
-@freezed
-abstract class NMetaData with _$NMetaData {
-  const factory NMetaData({
-    StudyDesign? design,
-    @Default([]) List<StudyTools> tools,
-    @Default("") String agentNotes,
-    String? externalResearch,
-    @Default([]) Insights insights,
-    @Default([]) List<String> appHistory,
-  }) = _NMetaData;
-
-  factory NMetaData.fromJson(Map<String, dynamic> json) =>
-      _$NMetaDataFromJson(json);
 }
 
 @freezed
@@ -91,7 +89,6 @@ abstract class PrincipleAgentState with _$PrincipleAgentState {
   const factory PrincipleAgentState({
     required bool valid,
     @Default([]) List<GeminiFunctionResponse> calls,
-    @Default("") String agentNotes,
     UserDiff? diff,
     @Default(false) bool isLoading,
   }) = _PrincipleAgentState;
@@ -117,22 +114,14 @@ abstract class ResearchAgentState with _$ResearchAgentState {
 
 @freezed
 abstract class SummaryAgentState with _$SummaryAgentState {
-  const factory SummaryAgentState.empty() = SummaryAgentStateEmpty;
-  const factory SummaryAgentState.loading() = SummaryAgentStateLoading;
-  const factory SummaryAgentState.idle({
-    required StudyDesign design,
-    @Default(false) bool isLoading,
-  }) = SummaryAgentStateIdle;
-  const factory SummaryAgentState.error({required Object error}) =
-      SummaryAgentStateError;
+  const factory SummaryAgentState({@Default(false) bool isLoading}) =
+      _SummaryAgentState;
 }
 
 @freezed
 abstract class ResourceAgentState with _$ResourceAgentState {
-  const factory ResourceAgentState({
-    @Default([]) List<StudyTools> tools,
-    @Default(false) bool isLoading,
-  }) = _ResourceAgentState;
+  const factory ResourceAgentState({@Default(false) bool isLoading}) =
+      _ResourceAgentState;
 }
 
 @freezed
@@ -168,14 +157,4 @@ extension InsightX on Insight {
 
 extension NoteContentStateX on NoteContentState {
   String get text => editingController.text;
-}
-
-extension AppStateX on AppState {
-  bool get hasMetaData => currentFileMetaData.design != null;
-
-  String get toolsOverview => currentFileMetaData.tools.fold(
-    "",
-    (overview, resource) =>
-        "$overview,${resource.map(flashcards: (_) => "Flashcards:", qas: (_) => "QAs:", keywords: (_) => "Keywords:")}${resource.title}",
-  );
 }

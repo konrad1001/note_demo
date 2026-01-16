@@ -38,16 +38,16 @@ abstract class ExternalResearchResponse extends AgentResponse
 }
 
 @freezed
-abstract class MindMapResponse extends AgentResponse with _$MindMapResponse {
-  const MindMapResponse._();
-  const factory MindMapResponse({
+abstract class MindMap extends AgentResponse with _$MindMap {
+  const MindMap._();
+  const factory MindMap({
     required String id,
     required String title,
     required List<MindMapNode> nodes,
-  }) = _MindMapResponse;
+  }) = _MindMap;
 
-  factory MindMapResponse.fromJson(Map<String, dynamic> json) =>
-      _$MindMapResponseFromJson(json);
+  factory MindMap.fromJson(Map<String, dynamic> json) =>
+      _$MindMapFromJson(json);
 
   @override
   Insight toInsight() =>
@@ -181,7 +181,7 @@ extension StudyToolsX on StudyTools {
   );
 }
 
-extension MindMapX on MindMapResponse {
+extension MindMapX on MindMap {
   MindMapNode? get rootNode => nodes.firstWhere(
     (node) => node.parentId == null,
     orElse: () => nodes.first,

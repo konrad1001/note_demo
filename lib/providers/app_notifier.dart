@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:note_demo/db/note_content_hasher.dart';
 import 'package:note_demo/db/util.dart';
-import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/app_event_provider.dart';
 import 'package:note_demo/providers/file_service_provider.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
@@ -13,6 +13,8 @@ import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 
 class AppNotifier extends Notifier<AppState> {
+  var titleController = TextEditingController();
+
   @override
   AppState build() {
     return AppState(currentFileMetaData: NMetaData());
@@ -36,8 +38,8 @@ class AppNotifier extends Notifier<AppState> {
 
             final metadata = box.get(hash);
             state = state.copyWith(
-              currentFileName: _getFileNameFromPath(file.path),
-              enhancedNotes: result,
+              autoFileName: metadata?.autoTitle,
+              userSetFileName: metadata?.userTitle,
             );
 
             if (metadata != null) {
@@ -48,6 +50,12 @@ class AppNotifier extends Notifier<AppState> {
 
               // Assign loaded text to edit controller.
               noteContentNotifer.setText(result, previousText: result);
+              titleController = TextEditingController(
+                text:
+                    state.userSetFileName ??
+                    state.autoFileName ??
+                    _getFileNameFromPath(file.path),
+              );
             } else {
               print("Load file: no existing record of ${file.absolute} found");
 
@@ -56,6 +64,10 @@ class AppNotifier extends Notifier<AppState> {
 
               // Assign loaded text to edit controller.
               noteContentNotifer.setText(result, previousText: "");
+
+              titleController = TextEditingController(
+                text: _getFileNameFromPath(file.path),
+              );
 
               // Run principle on new content
               ref.read(principleAgentProvider.notifier).runPrinciple(hash);
@@ -71,7 +83,7 @@ class AppNotifier extends Notifier<AppState> {
     final noteContent = ref.read(noteContentProvider);
     final insights = ref.read(insightProvider);
 
-    if (state.hasMetaData) {
+    if (state.currentFileMetaData.insights.isNotEmpty) {
       final hash = NoteContentHasher.hash(noteContent.text);
       final box = Hive.box<NMetaData>(kHashedFilesBoxName);
       final metadata = state.currentFileMetaData.copyWith(insights: insights);
@@ -83,20 +95,22 @@ class AppNotifier extends Notifier<AppState> {
 
     ref
         .watch(fileServiceProvider)
-        .saveFile(noteContent.text, state.currentFileName);
+        .saveFile(
+          noteContent.text,
+          state.userSetFileName ?? state.autoFileName ?? "Untitled",
+        );
   }
 
   void newFile() async {
     print("New file");
-    state = state.copyWith(
-      currentFileMetaData: NMetaData(),
-      currentFileName: "",
-    );
+    state = state.copyWith(currentFileMetaData: NMetaData());
     ref.read(noteContentProvider.notifier).setText("");
     ref.read(noteContentProvider.notifier).setPreviousContent("");
 
     ref.read(appEventControllerProvider).add(AppEvent.newFile());
     ref.read(insightProvider.notifier).set([]);
+
+    titleController = TextEditingController();
   }
 
   void loadMetaData(NMetaData next) {
@@ -105,30 +119,6 @@ class AppNotifier extends Notifier<AppState> {
     ref
         .read(appEventControllerProvider)
         .add(AppEvent.loadedFromFile(state: state));
-  }
-
-  void setStudyDesign(StudyDesign? next) {
-    state = state.copyWith(
-      currentFileMetaData: state.currentFileMetaData.copyWith(design: next),
-    );
-  }
-
-  void setTools(List<StudyTools> next) {
-    state = state.copyWith(
-      currentFileMetaData: state.currentFileMetaData.copyWith(tools: next),
-    );
-  }
-
-  void setCurrentFileName(String name) {
-    state = state.copyWith(currentFileName: name);
-  }
-
-  void setExternalResearchString(String next) {
-    state = state.copyWith(
-      currentFileMetaData: state.currentFileMetaData.copyWith(
-        externalResearch: next,
-      ),
-    );
   }
 
   void setInsights(Insights insights) {
@@ -147,7 +137,34 @@ class AppNotifier extends Notifier<AppState> {
     );
   }
 
-  String _getFileNameFromPath(String path) => path.split("\\").last;
+  void setUserTitle(String newTitle) {
+    state = state.copyWith(userSetFileName: newTitle);
+    state = state.copyWith(
+      currentFileMetaData: state.currentFileMetaData.copyWith(
+        userTitle: newTitle,
+      ),
+    );
+  }
+
+  void setAutoTitle(String newTitle) {
+    if (state.userSetFileName == null) {
+      titleController = TextEditingController(text: newTitle);
+      state = state.copyWith(
+        currentFileMetaData: state.currentFileMetaData.copyWith(
+          autoTitle: newTitle,
+        ),
+      );
+    }
+    state = state.copyWith(autoFileName: newTitle);
+  }
+
+  String _getFileNameFromPath(String path) {
+    if (Platform.isWindows) {
+      return path.split("\\").last.split(".").first;
+    } else {
+      return path.split("/").last.split(".").first;
+    }
+  }
 }
 
 final appNotifierProvider = NotifierProvider<AppNotifier, AppState>(

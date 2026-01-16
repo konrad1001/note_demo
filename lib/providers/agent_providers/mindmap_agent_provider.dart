@@ -11,7 +11,7 @@ import 'package:note_demo/util/future.dart';
 const kMindmapNotifierToolName = "mindmap";
 
 class MindmapAgentNotifier extends Notifier<MindmapAgentState> {
-  final _model = GPTAgent<MindMapResponse>(role: AgentRole.mapper);
+  final _model = GPTAgent<MindMap>(role: AgentRole.mapper);
 
   @override
   MindmapAgentState build() {
@@ -44,8 +44,6 @@ class MindmapAgentNotifier extends Notifier<MindmapAgentState> {
       state = state.copyWith(isLoading: false);
       print("Mindmap agent error $e");
     }
-
-    print("Final state = $state");
   }
 }
 

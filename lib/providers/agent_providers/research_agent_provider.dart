@@ -33,10 +33,8 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
   }
 
   void _updateResearch(GeminiFunctionResponse call) async {
-    print("updating research");
     state = state.copyWith(isLoading: true, pipeLevel: 0);
 
-    final appNotifer = ref.read(appNotifierProvider.notifier);
     final diff = ref.read(principleAgentProvider).diff?.additions;
 
     if (diff == null) return;
@@ -53,11 +51,7 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
       state = state.copyWith(pipeLevel: result.index);
       result.maybeMap(
         finished: (finished) {
-          print("fetched research: ${finished.object}");
-
           if (finished.object.contains("https://")) {
-            appNotifer.setExternalResearchString(finished.object);
-
             ref
                 .read(insightProvider.notifier)
                 .append(

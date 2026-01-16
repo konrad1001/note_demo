@@ -33,8 +33,6 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
         ? now.difference(_lastCallTime!).inSeconds
         : 31;
 
-    print("$timeSinceLastCall");
-
     final noteContent = ref.read(noteContentProvider);
     final noteContentNotifier = ref.read(noteContentProvider.notifier);
 
@@ -63,20 +61,15 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
 
     try {
       await retry(() async {
-        print("Calling with ${diff.all}");
         final response = await _model.fetch(_buildPrompt(diff), verbose: false);
-
-        print("Principle called: ${response.calls.map((call) => call.name)}");
 
         state = PrincipleAgentState(
           valid: true,
           calls: [GeminiFunctionResponse(name: "mindmap")],
-          agentNotes: "",
           diff: diff,
         );
-      }, onRetry: (e, i) => print("_runPrinciple failed $i : $e"));
+      }, onRetry: (e, i) {});
     } catch (e) {
-      print("_runPrinciple: Error $e");
       state = state.copyWith(isLoading: false);
       rethrow;
     }
@@ -87,9 +80,6 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
         .read(appNotifierProvider)
         .currentFileMetaData
         .appHistory;
-    // print(
-    //   "Prompting principle with: <AgentHistory> $appHistory  <UserAdded> ...",
-    // );
     return "<AgentHistory> $appHistory  <UserAdded> ${diff.additions} <UserDeleted> ${diff.deletions}";
   }
 }
