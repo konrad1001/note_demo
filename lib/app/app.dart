@@ -91,20 +91,32 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                 flex: 2,
                 child: AnimatedContainer(
                   duration: Duration(milliseconds: rightPanelAnimationDuration),
-                  curve: Curves.easeInOut, // animate width factor
+                  curve: Curves.easeInOut,
                   margin: EdgeInsets.only(right: isRightPanelOpen ? 0 : 0),
                   child: NotesScreen(controller: _notesController),
                 ),
               ),
               Flexible(
                 flex: isRightPanelOpen ? 1 : 0,
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: rightPanelAnimationDuration),
-                  curve: Curves.easeInOut,
-                  width: isRightPanelOpen
-                      ? MediaQuery.of(context).size.width / 3
-                      : 0,
-                  child: OverflowBox(child: InsightPanel()),
+                child: ClipRect(
+                  child: AnimatedContainer(
+                    duration: Duration(
+                      milliseconds: rightPanelAnimationDuration,
+                    ),
+                    curve: Curves.easeInOut,
+                    width: isRightPanelOpen
+                        ? MediaQuery.of(context).size.width / 3
+                        : 0,
+                    child: AnimatedOpacity(
+                      opacity: isRightPanelOpen ? 1 : 0.6,
+                      duration: Duration(milliseconds: 100),
+                      child: OverflowBox(
+                        minWidth: 0,
+                        maxWidth: MediaQuery.of(context).size.width / 3,
+                        child: InsightPanel(),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
