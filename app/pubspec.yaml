@@ -24,6 +24,8 @@ dependencies:
   crypto: ^3.0.7
   shimmer_animation: ^2.1.0
   graphview: ^1.5.1
+  markdown_editor: 
+    path: ../packages/markdown_editor
 
 dev_dependencies:
   flutter_test:

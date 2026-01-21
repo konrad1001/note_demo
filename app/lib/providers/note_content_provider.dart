@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:markdown_editor/markdown_editor.dart';
 import 'package:note_demo/providers/models/models.dart';
-import 'package:note_demo/screens/editor.dart';
 
 class NoteContentNotifier extends Notifier<NoteContentState> {
   @override

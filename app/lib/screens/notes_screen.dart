@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
+import 'package:markdown_editor/markdown_editor.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
-import 'package:note_demo/screens/editor.dart';
 
 class NotesScreen extends ConsumerWidget {
   const NotesScreen({super.key, required this.controller});

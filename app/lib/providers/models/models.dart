@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:markdown_editor/markdown_editor.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
-import 'package:note_demo/screens/editor.dart';
 import 'package:note_demo/util/diff.dart';
 import 'package:note_demo/util/error/errors.dart';
 
