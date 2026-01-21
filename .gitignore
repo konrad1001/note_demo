@@ -45,8 +45,11 @@ app.*.map.json
 */android/app/release
 
 config.json
-*.md
+notes*.md
 
 # Auto-generated
 *.g.dart
 *.freezed.dart
+
+# Our packages
+/packages/*/pubspec.lock
