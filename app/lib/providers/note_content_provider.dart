@@ -1,19 +1,20 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/providers/models/models.dart';
+import 'package:note_demo/screens/editor.dart';
 
 class NoteContentNotifier extends Notifier<NoteContentState> {
   @override
   NoteContentState build() {
     return NoteContentState(
-      editingController: TextEditingController(),
+      editingController: MarkdownTextEditingController(),
       previousContent: '',
     );
   }
 
   void setText(String newText, {String? previousText}) {
     state = state.copyWith(
-      editingController: TextEditingController(text: newText),
+      editingController: MarkdownTextEditingController(text: newText),
       previousContent: previousText ?? state.previousContent,
     );
   }

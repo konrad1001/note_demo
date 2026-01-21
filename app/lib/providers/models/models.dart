@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
+import 'package:note_demo/screens/editor.dart';
 import 'package:note_demo/util/diff.dart';
 import 'package:note_demo/util/error/errors.dart';
 
@@ -34,7 +35,17 @@ abstract class NMetaData with _$NMetaData {
       _$NMetaDataFromJson(json);
 }
 
-enum UserRating { like, dislike, neither }
+enum UserRating {
+  like,
+  dislike,
+  neither;
+
+  int get toValue => switch (this) {
+    UserRating.like => 1,
+    UserRating.dislike => -1,
+    UserRating.neither => 0,
+  };
+}
 
 @freezed
 abstract class Insight with _$Insight {
@@ -78,7 +89,7 @@ abstract class Insight with _$Insight {
 @freezed
 abstract class NoteContentState with _$NoteContentState {
   const factory NoteContentState({
-    required TextEditingController editingController,
+    required MarkdownTextEditingController editingController,
     required String previousContent,
     NError? error,
   }) = _NoteContentState;

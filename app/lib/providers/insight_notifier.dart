@@ -38,6 +38,18 @@ class InsightNotifier extends Notifier<Insights> {
     }
     state = newState;
   }
+
+  Map<String, int> get allUserRatings {
+    Map<String, int> ratings = {};
+    for (final i in state) {
+      ratings.update(
+        i.name,
+        (value) => value + i.rating.toValue,
+        ifAbsent: () => i.rating.toValue,
+      );
+    }
+    return ratings;
+  }
 }
 
 final insightProvider = NotifierProvider<InsightNotifier, Insights>(

@@ -21,7 +21,6 @@ class InsightPanel extends ConsumerWidget {
     ref.listen<Insights>(insightProvider, (prev, next) {
       if (prev?.length != next.length) {
         _insightPanelKey.currentState?.insertItem(next.length - 1);
-        print(next);
       }
     });
 
@@ -96,7 +95,7 @@ class _AgentFeedback extends ConsumerWidget {
 
     if (pState.isLoading) {
       text = "Reading...";
-    } else if (sState is SummaryAgentStateLoading) {
+    } else if (sState.isLoading) {
       text = "Summarising...";
     } else if (rState.isLoading) {
       text = "Researching...";

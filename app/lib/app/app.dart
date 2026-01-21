@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/app/app_bar.dart';
-import 'package:note_demo/app/app_status_bar.dart';
 import 'package:note_demo/providers/agent_providers/mindmap_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/observer_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/research_agent_provider.dart';
@@ -11,9 +10,7 @@ import 'package:note_demo/providers/agent_providers/principle_agent_provider.dar
 import 'package:note_demo/providers/agent_providers/summary_agent_provider.dart';
 import 'package:note_demo/screens/debug_screen.dart';
 import 'package:note_demo/screens/notes_screen.dart';
-import 'package:note_demo/screens/study_screen.dart';
 import 'package:note_demo/widgets/insights/insight_panel.dart';
-import 'package:note_demo/widgets/insights/insight_overlay.dart';
 import 'package:note_demo/widgets/menu_bar/menu_bar.dart';
 
 class App extends StatefulWidget {
@@ -46,9 +43,6 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final studyContent = ref.watch(summaryAgentProvider);
-        final principle = ref.watch(principleAgentProvider);
-
         final _ = ref.watch(observerAgentProvider);
         final _ = ref.watch(researchAgentProvider);
         final _ = ref.watch(resourceAgentProvider);
@@ -64,8 +58,6 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                 openFile: ref.watch(appNotifierProvider.notifier).loadFromFile,
                 saveFile: ref.watch(appNotifierProvider.notifier).saveFile,
                 openDebugView: () {
-                  print("pushing");
-
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => DebugScreen()),
                   );
@@ -74,8 +66,6 @@ class _AppState extends State<App> with TickerProviderStateMixin {
             ),
           ),
           appBar: NoteAppBar(
-            studyContent: studyContent,
-            isLoading: principle.isLoading,
             isRightPanelOpen: isRightPanelOpen,
             onTap: () {
               setState(() {

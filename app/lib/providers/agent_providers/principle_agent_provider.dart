@@ -27,7 +27,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     return PrincipleAgentState(valid: true);
   }
 
-  void runPrinciple(Object? param) async {
+  void runPrinciple(String value) async {
     final now = DateTime.now();
     final timeSinceLastCall = _lastCallTime != null
         ? now.difference(_lastCallTime!).inSeconds
@@ -39,11 +39,14 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     final prev = noteContent.previousContent;
     final next = noteContent.text;
 
+    print(prev);
+    print(value);
+
     final diffTool = DiffTool();
-    final diff = diffTool.diff(prev, next);
+    final diff = diffTool.diff(prev, value);
 
     if (diff.size > _kMinDiff && timeSinceLastCall > _kMinTime) {
-      noteContentNotifier.setPreviousContent(next);
+      noteContentNotifier.setPreviousContent(value);
       try {
         await _runPrinciple(diff);
         _lastCallTime = now;
@@ -65,7 +68,8 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
 
         state = PrincipleAgentState(
           valid: true,
-          calls: [GeminiFunctionResponse(name: "mindmap")],
+          // calls: [GeminiFunctionResponse(name: "mindmap")],
+          calls: response.calls,
           diff: diff,
         );
       }, onRetry: (e, i) {});

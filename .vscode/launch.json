@@ -9,6 +9,7 @@
       "request": "launch",
       "type": "dart",
       "toolArgs": ["--dart-define-from-file=config.json"],
+      "program": "app/lib/main.dart",
       "args": ["--dart-define=ENVIRONMENT=MOCK"]
     },
     {
@@ -16,6 +17,7 @@
       "request": "launch",
       "type": "dart",
       "toolArgs": ["--dart-define-from-file=config.json"],
+      "program": "app/lib/main.dart",
       "args": ["--dart-define=ENVIRONMENT=DEV"]
     }
   ]

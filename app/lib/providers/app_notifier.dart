@@ -21,7 +21,8 @@ class AppNotifier extends Notifier<AppState> {
   }
 
   void onType(String value) {
-    ref.read(principleAgentProvider.notifier).runPrinciple(value);
+    print(value);
+    // ref.read(principleAgentProvider.notifier).runPrinciple(value);
   }
 
   void loadFromFile() async {

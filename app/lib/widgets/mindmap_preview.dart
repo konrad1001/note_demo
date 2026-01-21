@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import 'package:note_demo/models/agent_responses/models.dart';
 
 class MindMapPreview extends StatelessWidget {
-  final MindMapResponse mindMap;
+  final MindMap mindMap;
   final double width;
   final double height;
 
@@ -17,12 +17,15 @@ class MindMapPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
       child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.0),
+          border: BoxBorder.all(color: Colors.black12),
+        ),
         width: width,
         height: height,
-        padding: const EdgeInsets.all(8),
         child: CustomPaint(painter: MindMapPreviewPainter(mindMap: mindMap)),
       ),
     );
@@ -30,7 +33,7 @@ class MindMapPreview extends StatelessWidget {
 }
 
 class MindMapPreviewPainter extends CustomPainter {
-  final MindMapResponse mindMap;
+  final MindMap mindMap;
 
   MindMapPreviewPainter({required this.mindMap});
 

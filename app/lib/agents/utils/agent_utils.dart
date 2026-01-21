@@ -32,7 +32,7 @@ enum AgentRole {
     AgentRole.designer => StudyDesign,
     AgentRole.resourcer => StudyTools,
     AgentRole.researcher => ExternalResearchResponse,
-    AgentRole.mapper => MindMapResponse,
+    AgentRole.mapper => MindMap,
     _ => TextResponse,
   };
 
@@ -50,7 +50,7 @@ enum AgentRole {
     AgentRole.researcher => (response) => ExternalResearchResponse(
       content: response.firstCandidateText,
     ),
-    AgentRole.mapper => (response) => MindMapResponse.fromJson(
+    AgentRole.mapper => (response) => MindMap.fromJson(
       response.firstCandidateJSON,
     ),
     _ => (response) => TextResponse(content: response.firstCandidateText),
