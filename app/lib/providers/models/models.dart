@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:markdown_editor/markdown_editor.dart';
+import 'package:note_demo/agents/utils/embedding_service.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
@@ -52,18 +53,21 @@ abstract class Insight with _$Insight {
     required String title,
     required String body,
     required DateTime created,
+    required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
   }) = _SummaryInsight;
 
   const factory Insight.resource({
     required StudyTools resource,
     required DateTime created,
+    required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
   }) = _ResourceInsight;
 
   const factory Insight.research({
     required String research,
     required DateTime created,
+    required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
   }) = _ResearchInsight;
 
@@ -71,6 +75,7 @@ abstract class Insight with _$Insight {
     required String title,
     required DateTime created,
     required MindMap mindmap,
+    required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
   }) = _MindmapInsight;
 
@@ -78,6 +83,7 @@ abstract class Insight with _$Insight {
   const factory Insight.meta({
     String? notes,
     DateTime? created,
+    required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
   }) = _MetaInsight;
 

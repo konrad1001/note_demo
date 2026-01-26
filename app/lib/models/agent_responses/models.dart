@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:note_demo/agents/utils/embedding_service.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/models/models.dart';
 
@@ -9,7 +10,7 @@ part 'models.g.dart';
 abstract class AgentResponse {
   const AgentResponse();
 
-  Insight toInsight();
+  Insight toInsight(Embedding? queryEmbedding);
 }
 
 @freezed
@@ -22,7 +23,8 @@ abstract class PrincipleResponse extends AgentResponse
   }) = _PrincipleResponse;
 
   @override
-  Insight toInsight() => Insight.meta(created: DateTime.now());
+  Insight toInsight(Embedding? queryEmbedding) =>
+      Insight.meta(created: DateTime.now(), queryEmbedding: queryEmbedding);
 }
 
 @freezed
@@ -33,8 +35,11 @@ abstract class ExternalResearchResponse extends AgentResponse
       _ExternalResearchResponse;
 
   @override
-  Insight toInsight() =>
-      Insight.research(research: content, created: DateTime.now());
+  Insight toInsight(Embedding? queryEmbedding) => Insight.research(
+    research: content,
+    created: DateTime.now(),
+    queryEmbedding: queryEmbedding,
+  );
 }
 
 @freezed
@@ -50,8 +55,12 @@ abstract class MindMap extends AgentResponse with _$MindMap {
       _$MindMapFromJson(json);
 
   @override
-  Insight toInsight() =>
-      Insight.mindmap(title: title, created: DateTime.now(), mindmap: this);
+  Insight toInsight(Embedding? queryEmbedding) => Insight.mindmap(
+    title: title,
+    created: DateTime.now(),
+    mindmap: this,
+    queryEmbedding: queryEmbedding,
+  );
 }
 
 @freezed
@@ -72,7 +81,8 @@ abstract class TextResponse extends AgentResponse with _$TextResponse {
   const factory TextResponse({required String content}) = _TextResponse;
 
   @override
-  Insight toInsight() => Insight.meta(created: DateTime.now());
+  Insight toInsight(Embedding? queryEmbedding) =>
+      Insight.meta(created: DateTime.now(), queryEmbedding: queryEmbedding);
 }
 
 @freezed
@@ -91,8 +101,12 @@ abstract class StudyDesign extends AgentResponse with _$StudyDesign {
   static StudyDesign empty() => StudyDesign(title: '', summary: '');
 
   @override
-  Insight toInsight() =>
-      Insight.summary(title: title, body: summary, created: DateTime.now());
+  Insight toInsight(Embedding? queryEmbedding) => Insight.summary(
+    title: title,
+    body: summary,
+    created: DateTime.now(),
+    queryEmbedding: queryEmbedding,
+  );
 }
 
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
@@ -124,8 +138,11 @@ abstract class StudyTools extends AgentResponse with _$StudyTools {
       _$StudyToolsFromJson(json);
 
   @override
-  Insight toInsight() =>
-      Insight.resource(resource: this, created: DateTime.now());
+  Insight toInsight(Embedding? queryEmbedding) => Insight.resource(
+    resource: this,
+    created: DateTime.now(),
+    queryEmbedding: queryEmbedding,
+  );
 }
 
 @freezed

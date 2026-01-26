@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/agent_pipeline.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
+import 'package:note_demo/agents/utils/embedding_service.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/app_notifier.dart';
@@ -13,6 +14,8 @@ const kExternalResearchNotifierToolName = "research";
 final on = true;
 
 class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
+  final _embedder = EmbeddingService();
+
   @override
   ResearchAgentState build() {
     _subscribeToPrinciple();
@@ -32,6 +35,7 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
     });
   }
 
+  // Uses principle diff only
   void _updateResearch(GeminiFunctionResponse call) async {
     state = state.copyWith(isLoading: true, pipeLevel: 0);
 
@@ -50,14 +54,17 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
     await for (final result in pipeline.fetch(diff)) {
       state = state.copyWith(pipeLevel: result.index);
       result.maybeMap(
-        finished: (finished) {
+        finished: (finished) async {
           if (finished.object.contains("https://")) {
+            final embedding = await _embedder.embed(diff);
+
             ref
                 .read(insightProvider.notifier)
                 .append(
                   insight: Insight.research(
                     research: finished.object,
                     created: DateTime.now(),
+                    queryEmbedding: embedding,
                   ),
                 );
           }

@@ -13,9 +13,11 @@ abstract class MockBuilder {
           text preprocessing methods like tokenization and normalization, and an introduction
            to word meaning and deep learning concepts like RNNs for sequential data.""",
       created: DateTime(2003),
+      queryEmbedding: null,
     ),
     Insight.resource(
       created: DateTime(2003),
+      queryEmbedding: null,
 
       resource: StudyTools.flashcards(
         id: "id",
@@ -29,11 +31,13 @@ abstract class MockBuilder {
     ),
     Insight.research(
       created: DateTime(2003),
+      queryEmbedding: null,
       research:
           "Heres an interesting video that will summarise this concept...",
     ),
     Insight.resource(
       created: DateTime(2003),
+      queryEmbedding: null,
       resource: StudyTools.qas(
         id: "id",
         title: "Mock flashcards",
