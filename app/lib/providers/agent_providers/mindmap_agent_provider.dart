@@ -22,7 +22,7 @@ class MindmapAgentNotifier extends Notifier<MindmapAgentState> {
   void _subscribeToPrinciple() {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
       final call = next.callsMe(kMindmapNotifierToolName);
-      if (next.valid && call != null) {
+      if (call != null) {
         _update();
       }
     });

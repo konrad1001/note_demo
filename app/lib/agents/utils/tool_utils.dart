@@ -34,3 +34,21 @@ class ResearchTool {
 
   ResearchTool(this.additionalInstructions);
 }
+
+@Tool(
+  name: "mindmap",
+  description:
+      "This function triggers the creation of a mindmap based on the content",
+)
+class MindmapTool {
+  MindmapTool();
+}
+
+@Tool(
+  name: "invalid",
+  description:
+      "Call this function when the provided content does not resemble study notes",
+)
+class InvalidTool {
+  InvalidTool();
+}

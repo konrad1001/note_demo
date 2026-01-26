@@ -50,17 +50,16 @@ class _ResourceWidget extends StatelessWidget {
 
               children: tool.map(
                 flashcards: (flashcards) => [
-                  SizedBox(
-                    height: 400,
-                    child: FlashcardCarousel(
-                      items: flashcards.items
-                          .map(
-                            (item) => FlashcardItem(
-                              front: item.front,
-                              back: item.back,
-                            ),
-                          )
-                          .toList(),
+                  ...flashcards.items.map(
+                    (item) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(item.front),
+                        Text(
+                          item.back,
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      ],
                     ),
                   ),
                 ],

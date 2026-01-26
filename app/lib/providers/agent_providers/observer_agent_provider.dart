@@ -39,7 +39,6 @@ class ObserverAgentNotifier extends Notifier<ObserverAgentState> {
       history: state.history + ["$timePoint. $tools"],
       isLoading: false,
     );
-    appNotifier.setAppHistory(state.history);
   }
 
   String _buildPrompt(PrincipleAgentState state) {

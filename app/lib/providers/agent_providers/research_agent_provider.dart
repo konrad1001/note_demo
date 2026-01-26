@@ -25,7 +25,7 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
         case PrincipleAgentState idle:
           final call = idle.callsMe(kExternalResearchNotifierToolName);
 
-          if (idle.valid && call != null && on) {
+          if (call != null && on) {
             _updateResearch(call);
           }
       }

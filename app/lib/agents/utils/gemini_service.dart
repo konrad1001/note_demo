@@ -72,9 +72,11 @@ class GeminiService {
       canCallTools
           ? {
               "functionDeclarations": [
+                invalidToolAsMap,
                 overviewToolAsMap,
                 resourcesToolAsMap,
                 researchToolAsMap,
+                mindmapToolAsMap,
               ],
             }
           : {"urlContext": {}},

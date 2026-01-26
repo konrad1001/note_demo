@@ -26,7 +26,7 @@ class SummaryAgentNotifier extends Notifier<SummaryAgentState> {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
       final call = next.callsMe(kStudyContentNotifierToolName);
 
-      if (next.valid && !next.isLoading && call != null) {
+      if (!next.isLoading && call != null) {
         _updateDesign(call);
       }
     });

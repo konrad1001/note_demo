@@ -20,11 +20,6 @@ class AppNotifier extends Notifier<AppState> {
     return AppState(currentFileMetaData: NMetaData());
   }
 
-  void onType(String value) {
-    print(value);
-    // ref.read(principleAgentProvider.notifier).runPrinciple(value);
-  }
-
   void loadFromFile() async {
     final File? file = await ref.watch(fileServiceProvider).pickFile();
     final noteContentNotifer = ref.read(noteContentProvider.notifier);
@@ -46,7 +41,7 @@ class AppNotifier extends Notifier<AppState> {
             if (metadata != null) {
               print("Load file: found existing record of ${file.absolute}");
 
-              loadMetaData(metadata);
+              state = state.copyWith(currentFileMetaData: metadata);
               insightsNotifier.set(metadata.insights);
 
               // Assign loaded text to edit controller.
@@ -60,7 +55,7 @@ class AppNotifier extends Notifier<AppState> {
             } else {
               print("Load file: no existing record of ${file.absolute} found");
 
-              loadMetaData(NMetaData());
+              state = state.copyWith(currentFileMetaData: NMetaData());
               insightsNotifier.set([]);
 
               // Assign loaded text to edit controller.
@@ -108,34 +103,9 @@ class AppNotifier extends Notifier<AppState> {
     ref.read(noteContentProvider.notifier).setText("");
     ref.read(noteContentProvider.notifier).setPreviousContent("");
 
-    ref.read(appEventControllerProvider).add(AppEvent.newFile());
     ref.read(insightProvider.notifier).set([]);
 
     titleController = TextEditingController();
-  }
-
-  void loadMetaData(NMetaData next) {
-    state = state.copyWith(currentFileMetaData: next);
-
-    ref
-        .read(appEventControllerProvider)
-        .add(AppEvent.loadedFromFile(state: state));
-  }
-
-  void setInsights(Insights insights) {
-    state = state.copyWith(
-      currentFileMetaData: state.currentFileMetaData.copyWith(
-        insights: insights,
-      ),
-    );
-  }
-
-  void setAppHistory(List<String> history) {
-    state = state.copyWith(
-      currentFileMetaData: state.currentFileMetaData.copyWith(
-        appHistory: history,
-      ),
-    );
   }
 
   void setUserTitle(String newTitle) {

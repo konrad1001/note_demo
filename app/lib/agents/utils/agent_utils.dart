@@ -67,9 +67,12 @@ enum AgentRole {
           - Additional history from previous iterations.
 
           First ensure the content can validly be interpreted as study notes. If the content
-          is in any other format, call zero tools.
+          is in any other format, call the invalid tool to signal the content is invalid.
 
           Next, consult the agent history to see which tools have been called in previous iterations.
+
+          Finally, consult the user preferences dictionary, which will contain positive or negative integers
+          relating to a users opinion of that tool, if any.
 
           <Tool-Calling Guidance>
           - You may choose multiple tools.
@@ -77,6 +80,7 @@ enum AgentRole {
           - Always call overview for valid notes when there is no agent history, afterwards, call it rarely.
           - Use additional information arguments to breifly instruct sub agent tools on specific aspects of the notes. <20 words.
           - Look at agent history to avoid over calling the same tools.
+          - Don't over call tools the user dislikes.
           - Never call the same tool more than 2 times in a row. 
           - Never call overview two times in a row.
           - Every 2 or 3 iterations call no tools.

@@ -23,7 +23,7 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
   void _subscribeToPrinciple() {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
       final call = next.callsMe(kStudyToolsNotifierToolName);
-      if (next.valid && call != null) {
+      if (call != null) {
         _updateTools(call);
       }
     });

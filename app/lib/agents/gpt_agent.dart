@@ -1,6 +1,6 @@
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
-import 'package:note_demo/util/gemini_service.dart';
+import 'package:note_demo/agents/utils/gemini_service.dart';
 
 class GPTAgent<T extends AgentResponse> {
   final AgentRole role;

@@ -97,8 +97,8 @@ abstract class NoteContentState with _$NoteContentState {
 @freezed
 abstract class PrincipleAgentState with _$PrincipleAgentState {
   const factory PrincipleAgentState({
-    required bool valid,
     @Default([]) List<GeminiFunctionResponse> calls,
+    @Default([]) List<String> callHistory,
     UserDiff? diff,
     @Default(false) bool isLoading,
   }) = _PrincipleAgentState;

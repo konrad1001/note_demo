@@ -24,7 +24,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
 
   @override
   PrincipleAgentState build() {
-    return PrincipleAgentState(valid: true);
+    return PrincipleAgentState();
   }
 
   void runPrinciple(String value) async {
@@ -38,9 +38,6 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
 
     final prev = noteContent.previousContent;
     final next = noteContent.text;
-
-    print(prev);
-    print(value);
 
     final diffTool = DiffTool();
     final diff = diffTool.diff(prev, value);
@@ -66,10 +63,28 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
       await retry(() async {
         final response = await _model.fetch(_buildPrompt(diff), verbose: false);
 
+        print(response);
+
+        var history = List<String>.from(state.callHistory);
+        var calls = response.calls;
+
+        if (calls.map((call) => call.name).contains("invalid")) {
+          print("Content was invalid");
+          calls = [];
+        } else {
+          if (history.length == 4) {
+            history = history.sublist(1);
+          }
+          history.add("${response.calls.map((call) => call.name)}");
+        }
+
+        print(calls);
+        print(history);
+
         state = PrincipleAgentState(
-          valid: true,
           // calls: [GeminiFunctionResponse(name: "mindmap")],
-          calls: response.calls,
+          calls: calls,
+          callHistory: history,
           diff: diff,
         );
       }, onRetry: (e, i) {});
@@ -80,11 +95,19 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
   }
 
   String _buildPrompt(UserDiff diff) {
-    final appHistory = ref
-        .read(appNotifierProvider)
-        .currentFileMetaData
-        .appHistory;
-    return "<AgentHistory> $appHistory  <UserAdded> ${diff.additions} <UserDeleted> ${diff.deletions}";
+    final insightPreferences = ref
+        .read(insightProvider.notifier)
+        .allUserRatings;
+
+    final history = state.callHistory.indexed.map(
+      (e) => "T[${e.$1}] called: ${e.$2}",
+    );
+
+    print(
+      "<AgentHistory> $history <UserPreferences> $insightPreferences  <UserAdded>",
+    );
+
+    return "<AgentHistory> $history <UserPreferences> $insightPreferences  <UserAdded> ${diff.additions}";
   }
 }
 
