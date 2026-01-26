@@ -18,7 +18,7 @@ class NotesScreen extends ConsumerWidget {
       children: [
         Expanded(
           child: MarkdownEditor(
-            cursorColor: Colors.black,
+            cursorColor: Theme.of(context).textTheme.bodyLarge?.backgroundColor,
             style: TextStyle(fontSize: 14.5),
             decoration: InputDecoration(
               contentPadding: EdgeInsets.fromLTRB(50, 0, 50, 0),

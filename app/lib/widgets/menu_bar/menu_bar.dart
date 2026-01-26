@@ -9,6 +9,7 @@ typedef MenuBarFunctions = ({
   Function() newFile,
   Function() openFile,
   Function() saveFile,
+  Function(ThemeMode) toggleTheme,
   Function() openDebugView,
 });
 

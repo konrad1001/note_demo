@@ -27,7 +27,7 @@ class InsightPanel extends ConsumerWidget {
     final insights = ref.watch(insightProvider);
 
     return Container(
-      decoration: BoxDecoration(color: Color.fromARGB(255, 245, 244, 240)),
+      decoration: BoxDecoration(color: Theme.of(context).canvasColor),
       child: Stack(
         alignment: AlignmentGeometry.bottomCenter,
         children: [
@@ -36,7 +36,11 @@ class InsightPanel extends ConsumerWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: DefaultTextStyle(
-                      style: TextStyle(color: Colors.black54),
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).textTheme.bodyLarge?.color?.withValues(alpha: 0.5),
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         spacing: 12.0,
@@ -89,8 +93,9 @@ class _AgentFeedback extends ConsumerWidget {
     SummaryAgentState sState,
     ResearchAgentState rState,
     ResourceAgentState srcState,
-    MindmapAgentState mapState,
-  ) {
+    MindmapAgentState mapState, {
+    required BuildContext context,
+  }) {
     String text = "Idle";
 
     if (pState.isLoading) {
@@ -109,7 +114,9 @@ class _AgentFeedback extends ConsumerWidget {
       child: Text(
         text,
         style: TextStyle(
-          color: text == "Idle" ? Colors.black : NTheme.greyed,
+          color: text == "Idle"
+              ? Theme.of(context).textTheme.bodyMedium?.color
+              : NTheme.greyed,
           fontSize: 14.0,
         ),
       ),
@@ -129,7 +136,7 @@ class _AgentFeedback extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32.0),
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
@@ -153,7 +160,14 @@ class _AgentFeedback extends ConsumerWidget {
               ),
               child: Icon(Icons.abc),
             ),
-            _decideState(principe, content, research, tools, map),
+            _decideState(
+              principe,
+              content,
+              research,
+              tools,
+              map,
+              context: context,
+            ),
           ],
         ),
       ),

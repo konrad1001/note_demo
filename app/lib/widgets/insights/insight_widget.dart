@@ -134,7 +134,7 @@ class _InsightContainer extends ConsumerWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Padding(
@@ -168,7 +168,9 @@ class _InsightContainer extends ConsumerWidget {
                     PConfig(
                       textStyle: TextStyle(
                         fontSize: 14.0,
-                        color: Colors.black87,
+                        color: Theme.of(
+                          context,
+                        ).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
                       ),
                     ),
                   ],
@@ -196,7 +198,7 @@ class _InsightContainer extends ConsumerWidget {
                       iconSize: 18,
                       color: (insight.rating == UserRating.like)
                           ? NTheme.primary
-                          : Colors.black45,
+                          : Theme.of(context).textTheme.bodyLarge?.color,
                       icon: Icon(Icons.thumb_up),
                     ),
                   if (insight.rating != UserRating.like)
@@ -219,13 +221,18 @@ class _InsightContainer extends ConsumerWidget {
                       iconSize: 18,
                       color: (insight.rating == UserRating.dislike)
                           ? NTheme.primary
-                          : Colors.black45,
+                          : Theme.of(context).textTheme.bodyLarge?.color,
                       icon: Icon(Icons.thumb_down),
                     ),
                   Spacer(),
                   Text(
                     _formatDateTime(date),
-                    style: TextStyle(fontSize: 11.0, color: Colors.black54),
+                    style: TextStyle(
+                      fontSize: 11.0,
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyLarge?.color?.withValues(alpha: 0.5),
+                    ),
                   ),
                 ],
               ),

@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/app/app_bar.dart';
+import 'package:note_demo/app/theme.dart';
 import 'package:note_demo/providers/agent_providers/mindmap_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/observer_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/research_agent_provider.dart';
@@ -8,6 +10,7 @@ import 'package:note_demo/providers/agent_providers/resource_agent_provider.dart
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/summary_agent_provider.dart';
+import 'package:note_demo/providers/theme_mode_provider.dart';
 import 'package:note_demo/screens/debug_screen.dart';
 import 'package:note_demo/screens/notes_screen.dart';
 import 'package:note_demo/widgets/insights/insight_panel.dart';
@@ -25,6 +28,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   late final TextEditingController _notesController = TextEditingController();
 
   var isRightPanelOpen = true;
+  var selectedTheme = ThemeMode.system;
   static const rightPanelAnimationDuration = 300;
 
   @override
@@ -47,69 +51,86 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         final _ = ref.watch(researchAgentProvider);
         final _ = ref.watch(resourceAgentProvider);
         final _ = ref.watch(mindmapAgentProvider);
+        final theme = ref.watch(themeModeProvider);
+        final themeNotifier = ref.watch(themeModeProvider.notifier);
 
-        return Scaffold(
-          backgroundColor: Colors.white,
-          drawer: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 400),
-            child: SidePanelWidget(
-              functions: (
-                newFile: ref.watch(appNotifierProvider.notifier).newFile,
-                openFile: ref.watch(appNotifierProvider.notifier).loadFromFile,
-                saveFile: ref.watch(appNotifierProvider.notifier).saveFile,
-                openDebugView: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => DebugScreen()),
-                  );
-                },
-              ),
-            ),
-          ),
-          appBar: NoteAppBar(
-            isRightPanelOpen: isRightPanelOpen,
-            onTap: () {
-              setState(() {
-                isRightPanelOpen = !isRightPanelOpen;
-              });
-            },
-          ),
-          body: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(width: 1),
-              Flexible(
-                flex: 2,
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: rightPanelAnimationDuration),
-                  curve: Curves.easeInOut,
-                  margin: EdgeInsets.only(right: isRightPanelOpen ? 0 : 0),
-                  child: NotesScreen(controller: _notesController),
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: "Note GPT",
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: theme,
+          home: Scaffold(
+            drawer: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 400),
+              child: SidePanelWidget(
+                currentTheme: theme,
+                functions: (
+                  newFile: ref.watch(appNotifierProvider.notifier).newFile,
+                  openFile: ref
+                      .watch(appNotifierProvider.notifier)
+                      .loadFromFile,
+                  saveFile: ref.watch(appNotifierProvider.notifier).saveFile,
+                  toggleTheme: (mode) {
+                    themeNotifier.toggle();
+                  },
+                  openDebugView: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => DebugScreen()),
+                    );
+                  },
                 ),
               ),
-              Flexible(
-                flex: isRightPanelOpen ? 1 : 0,
-                child: ClipRect(
+            ),
+
+            appBar: NoteAppBar(
+              isRightPanelOpen: isRightPanelOpen,
+              onTap: () {
+                setState(() {
+                  isRightPanelOpen = !isRightPanelOpen;
+                });
+              },
+            ),
+            body: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(width: 1),
+                Flexible(
+                  flex: 2,
                   child: AnimatedContainer(
                     duration: Duration(
                       milliseconds: rightPanelAnimationDuration,
                     ),
                     curve: Curves.easeInOut,
-                    width: isRightPanelOpen
-                        ? MediaQuery.of(context).size.width / 3
-                        : 0,
-                    child: AnimatedOpacity(
-                      opacity: isRightPanelOpen ? 1 : 0.6,
-                      duration: Duration(milliseconds: 100),
-                      child: OverflowBox(
-                        minWidth: 0,
-                        maxWidth: MediaQuery.of(context).size.width / 3,
-                        child: InsightPanel(),
+                    margin: EdgeInsets.only(right: isRightPanelOpen ? 0 : 0),
+                    child: NotesScreen(controller: _notesController),
+                  ),
+                ),
+                Flexible(
+                  flex: isRightPanelOpen ? 1 : 0,
+                  child: ClipRect(
+                    child: AnimatedContainer(
+                      duration: Duration(
+                        milliseconds: rightPanelAnimationDuration,
+                      ),
+                      curve: Curves.easeInOut,
+                      width: isRightPanelOpen
+                          ? MediaQuery.of(context).size.width / 3
+                          : 0,
+                      child: AnimatedOpacity(
+                        opacity: isRightPanelOpen ? 1 : 0.6,
+                        duration: Duration(milliseconds: 100),
+                        child: OverflowBox(
+                          minWidth: 0,
+                          maxWidth: MediaQuery.of(context).size.width / 3,
+                          child: InsightPanel(),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -118,16 +139,19 @@ class _AppState extends State<App> with TickerProviderStateMixin {
 }
 
 class SidePanelWidget extends StatelessWidget {
-  const SidePanelWidget({super.key, required this.functions});
+  const SidePanelWidget({
+    super.key,
+    required this.functions,
+    required this.currentTheme,
+  });
 
   final MenuBarFunctions functions;
+  final ThemeMode currentTheme;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         toolbarHeight: 64,
         leading: IconButton(
           onPressed: () {
@@ -149,6 +173,7 @@ class SidePanelWidget extends StatelessWidget {
               context,
               dontAutoPop: true,
             ),
+            _themeToggle(context, functions.toggleTheme),
           ],
         ),
       ),
@@ -167,6 +192,37 @@ class SidePanelWidget extends StatelessWidget {
         if (!dontAutoPop) Navigator.of(context).pop();
       },
       child: Text(name),
+    );
+  }
+
+  Widget _themeToggle(
+    BuildContext context,
+    Function(ThemeMode) onValueChanged,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Text("Theme", style: TextStyle(fontWeight: FontWeight.w600)),
+          Spacer(),
+          CupertinoSegmentedControl<ThemeMode>(
+            groupValue: currentTheme,
+            onValueChanged: (ThemeMode mode) {
+              onValueChanged(mode);
+            },
+            children: const {
+              ThemeMode.light: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text('Light'),
+              ),
+              ThemeMode.dark: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text('Dark'),
+              ),
+            },
+          ),
+        ],
+      ),
     );
   }
 }

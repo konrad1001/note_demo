@@ -24,8 +24,6 @@ class NoteAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.white,
       scrolledUnderElevation: 1.0,
       toolbarHeight: kToolBarHeight,
       shadowColor: Colors.black,
@@ -34,7 +32,9 @@ class NoteAppBar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: onTap,
           icon: Icon(Icons.auto_awesome),
           iconSize: 20.0,
-          color: isRightPanelOpen ? NTheme.primary : NTheme.greyed,
+          color: isRightPanelOpen
+              ? NTheme.primary
+              : Theme.of(context).unselectedWidgetColor,
         ),
       ],
       actionsPadding: EdgeInsets.only(right: 8),

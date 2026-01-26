@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:note_demo/app/app.dart';
+import 'package:note_demo/app/theme.dart';
 import 'package:note_demo/db/models/meta_data_adapter.dart';
 import 'package:note_demo/db/util.dart';
 import 'package:note_demo/providers/models/models.dart';
@@ -32,18 +33,5 @@ void main() async {
     await windowManager.focus();
   });
 
-  runApp(ProviderScope(child: const MainApp()));
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Note GPT",
-      home: App(),
-    );
-  }
+  runApp(ProviderScope(child: const App()));
 }
