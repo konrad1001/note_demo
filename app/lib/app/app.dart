@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,8 +30,6 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   late final TextEditingController _notesController = TextEditingController();
 
   var isRightPanelOpen = true;
-  var selectedTheme = ThemeMode.system;
-  static const rightPanelAnimationDuration = 300;
 
   @override
   void initState() {
@@ -53,6 +53,16 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         final _ = ref.watch(mindmapAgentProvider);
         final theme = ref.watch(themeModeProvider);
         final themeNotifier = ref.watch(themeModeProvider.notifier);
+
+        final isMobile = (Platform.isAndroid || Platform.isIOS);
+
+        final screenWidth = MediaQuery.of(context).size.width;
+        double noteScreenWidthCondensed = isMobile ? 0 : screenWidth * (2 / 3);
+        double insightPanelWidthExpanded = isMobile
+            ? screenWidth
+            : screenWidth * (1 / 3);
+
+        int insightPanelAnimationDuration = isMobile ? 500 : 300;
 
         return MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -94,35 +104,38 @@ class _AppState extends State<App> with TickerProviderStateMixin {
             body: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(width: 1),
                 Flexible(
-                  flex: 2,
+                  flex: 0,
                   child: AnimatedContainer(
                     duration: Duration(
-                      milliseconds: rightPanelAnimationDuration,
+                      milliseconds: insightPanelAnimationDuration,
                     ),
+                    width: isRightPanelOpen
+                        ? noteScreenWidthCondensed
+                        : screenWidth,
                     curve: Curves.easeInOut,
-                    margin: EdgeInsets.only(right: isRightPanelOpen ? 0 : 0),
-                    child: NotesScreen(controller: _notesController),
+                    child: OverflowBox(
+                      minWidth: 0,
+                      maxWidth: insightPanelWidthExpanded,
+                      child: NotesScreen(controller: _notesController),
+                    ),
                   ),
                 ),
                 Flexible(
-                  flex: isRightPanelOpen ? 1 : 0,
+                  flex: 0,
                   child: ClipRect(
                     child: AnimatedContainer(
                       duration: Duration(
-                        milliseconds: rightPanelAnimationDuration,
+                        milliseconds: insightPanelAnimationDuration,
                       ),
                       curve: Curves.easeInOut,
-                      width: isRightPanelOpen
-                          ? MediaQuery.of(context).size.width / 3
-                          : 0,
+                      width: isRightPanelOpen ? insightPanelWidthExpanded : 0,
                       child: AnimatedOpacity(
-                        opacity: isRightPanelOpen ? 1 : 0.6,
+                        opacity: isRightPanelOpen ? 1 : 1,
                         duration: Duration(milliseconds: 100),
                         child: OverflowBox(
                           minWidth: 0,
-                          maxWidth: MediaQuery.of(context).size.width / 3,
+                          maxWidth: insightPanelWidthExpanded,
                           child: InsightPanel(),
                         ),
                       ),

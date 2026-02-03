@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/app/theme.dart';
@@ -25,6 +27,8 @@ class InsightPanel extends ConsumerWidget {
     });
 
     final insights = ref.watch(insightProvider);
+
+    final isMobile = (Platform.isAndroid || Platform.isIOS);
 
     return Container(
       decoration: BoxDecoration(color: Theme.of(context).canvasColor),
@@ -66,17 +70,14 @@ class InsightPanel extends ConsumerWidget {
                   children: [
                     ...(insights.reversed).map(
                       (insight) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
+                        padding: EdgeInsets.only(bottom: isMobile ? 42 : 12),
                         child: InsightWidget(insight: insight),
                       ),
                     ),
                   ],
                 ),
           Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 16.0,
-              horizontal: 12.0,
-            ),
+            padding: EdgeInsets.fromLTRB(12, 16, 12, isMobile ? 32 : 16),
             child: _AgentFeedback(),
           ),
         ],
@@ -146,30 +147,28 @@ class _AgentFeedback extends ConsumerWidget {
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          spacing: 12.0,
-          children: [
-            Container(
-              width: iconSize,
-              height: iconSize,
-              decoration: BoxDecoration(
-                color: NTheme.primary.withValues(alpha: 0.4),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.abc),
+      padding: EdgeInsets.all(12.0),
+      child: Row(
+        spacing: 12.0,
+        children: [
+          Container(
+            width: iconSize,
+            height: iconSize,
+            decoration: BoxDecoration(
+              color: NTheme.primary.withValues(alpha: 0.4),
+              shape: BoxShape.circle,
             ),
-            _decideState(
-              principe,
-              content,
-              research,
-              tools,
-              map,
-              context: context,
-            ),
-          ],
-        ),
+            child: Icon(Icons.abc),
+          ),
+          _decideState(
+            principe,
+            content,
+            research,
+            tools,
+            map,
+            context: context,
+          ),
+        ],
       ),
     );
   }

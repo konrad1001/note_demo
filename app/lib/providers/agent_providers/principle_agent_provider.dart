@@ -19,7 +19,7 @@ import 'package:note_demo/util/math/dot.dart';
 class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
   DateTime? _lastCallTime;
 
-  static const _kMinDiff = 10;
+  static const _kMinDiff = 100;
   static const _kMinTime = 8;
   static const _similarityThreshold = 0.8;
 

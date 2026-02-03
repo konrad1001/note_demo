@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
@@ -11,7 +13,8 @@ import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
+
+  final isMobile = (Platform.isAndroid || Platform.isIOS);
 
   // Init hive DB
   final dir = await getApplicationDocumentsDirectory();
@@ -21,17 +24,20 @@ void main() async {
   Hive.registerAdapter(MetaDataAdapter());
 
   // Init window
-  WindowOptions windowOptions = WindowOptions(
-    title: "Note GPT",
-    size: Size(1000, 600),
-    minimumSize: Size(400, 300),
-    // center: true,
-    skipTaskbar: false,
-  );
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
-  });
+  if (!isMobile) {
+    await windowManager.ensureInitialized();
+
+    WindowOptions windowOptions = WindowOptions(
+      title: "Note GPT",
+      size: Size(1000, 600),
+      minimumSize: Size(400, 300),
+      skipTaskbar: false,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
 
   runApp(ProviderScope(child: const App()));
 }

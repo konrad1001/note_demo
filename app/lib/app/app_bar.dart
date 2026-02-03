@@ -38,16 +38,18 @@ class NoteAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ],
       actionsPadding: EdgeInsets.only(right: 8),
-      flexibleSpace: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Align(
-          alignment: Alignment.center,
-          child: Row(
-            children: [
-              const SizedBox(width: 24),
-              _NoteTitle(),
-              const SizedBox(width: 48),
-            ],
+      flexibleSpace: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Align(
+            alignment: Alignment.center,
+            child: Row(
+              children: [
+                const SizedBox(width: 24),
+                _NoteTitle(),
+                const SizedBox(width: 48),
+              ],
+            ),
           ),
         ),
       ),
@@ -69,7 +71,7 @@ class _NoteTitle extends ConsumerWidget {
 
     final currentTitle = app.userSetFileName ?? app.autoFileName ?? "";
 
-    final maxWidth = MediaQuery.of(context).size.width / 2.5;
+    final maxWidth = MediaQuery.of(context).size.width / 2.2;
 
     if (app.userSetFileName == null &&
         app.autoFileName == null &&
@@ -78,7 +80,7 @@ class _NoteTitle extends ConsumerWidget {
     }
 
     return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: max(maxWidth, 250)),
+      constraints: BoxConstraints(maxWidth: max(maxWidth, 280)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Opacity(
