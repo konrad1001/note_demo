@@ -1,6 +1,8 @@
+import 'package:note_demo/agents/models.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/agents/utils/gemini_service.dart';
+import 'package:note_demo/providers/models/models.dart';
 
 class GPTAgent<T extends AgentResponse> {
   final AgentRole role;
@@ -16,7 +18,11 @@ class GPTAgent<T extends AgentResponse> {
     );
   }
 
-  Future<T> fetch(String message, {bool verbose = false}) async {
+  Future<T> fetch(
+    String message, {
+    bool verbose = false,
+    List<ChatTurn> history = const [],
+  }) async {
     if (_busy) {
       print("Agent ${role.name} busy");
       throw Exception("Agent ${role.name} is busy");
@@ -27,7 +33,11 @@ class GPTAgent<T extends AgentResponse> {
     final prompt = '${role.systemInstructions}. $message';
 
     try {
-      final response = await _geminiService.fetch(prompt, verbose: verbose);
+      final response = await _geminiService.fetch(
+        prompt,
+        verbose: verbose,
+        history: history,
+      );
       _busy = false;
       return role.convert(response);
     } catch (e) {

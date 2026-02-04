@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:markdown_widget/markdown_widget.dart';
+import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/app/theme.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
@@ -37,11 +38,21 @@ class InsightWidget extends StatelessWidget {
         date: research.created,
         insight: insight,
       ),
-      resource: (resource) => _ResourceInsight(
-        resource: resource.resource,
+      resource: (resource) => _InsightContainer(
         colour: resource.resource.colour,
+        title: "I generated you a resource...",
+        subtitle: resource.resource.title,
+        body: "Tap to view",
         date: resource.created,
         insight: insight,
+        onTap: () {
+          navigator.push(
+            ResourceScreen(
+              colour: resource.resource.colour,
+              tool: resource.resource,
+            ),
+          );
+        },
       ),
       mindmap: (mindmap) => _InsightContainer(
         colour: Colors.deepOrangeAccent,
@@ -55,40 +66,15 @@ class InsightWidget extends StatelessWidget {
           navigator.push(MindmapScreen(mindmap: mindmap.mindmap));
         },
       ),
-      orElse: () => const SizedBox.shrink(),
-    );
-  }
-}
-
-class _ResourceInsight extends StatelessWidget {
-  final Insight insight;
-  final StudyTools resource;
-  final Color colour;
-  final DateTime date;
-
-  const _ResourceInsight({
-    required this.resource,
-    required this.colour,
-    required this.date,
-    required this.insight,
-  });
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (context) =>
-              ResourceScreen(colour: resource.colour, tool: resource),
-        ),
-      ),
-      child: _InsightContainer(
-        colour: colour,
-        title: "I generated you a resource...",
-        subtitle: resource.title,
-        body: "Tap to view",
-        date: date,
+      chat: (chat) => _InsightContainer(
+        colour: Colors.purple,
+        body: chat.body,
+        date: chat.created,
         insight: insight,
+        role: chat.role,
+        rateable: false,
       ),
+      orElse: () => const SizedBox.shrink(),
     );
   }
 }
@@ -103,10 +89,13 @@ class _InsightContainer extends ConsumerWidget {
     required this.insight,
     this.widget,
     this.onTap,
+    this.role = ChatRole.agent,
+    this.rateable = true,
   });
 
   final Insight insight;
   final Color colour;
+  final ChatRole role;
 
   final Widget? widget;
 
@@ -116,6 +105,8 @@ class _InsightContainer extends ConsumerWidget {
   final String? subtitle;
   final String body;
   final DateTime date;
+
+  final bool rateable;
 
   String _formatDateTime(DateTime date) {
     String two(int n) => n.toString().padLeft(2, '0');
@@ -130,113 +121,116 @@ class _InsightContainer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 4.0,
-            children: [
-              if (title != null)
-                Row(
-                  spacing: 12.0,
-                  children: [
-                    Icon(Icons.auto_awesome, size: 14.0, color: colour),
-                    Flexible(
-                      child: Text(
-                        title!,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              if (subtitle != null)
-                Text(subtitle!, style: TextStyle(fontStyle: FontStyle.italic)),
-              if (widget != null) widget!,
+    final isUser = role == ChatRole.user;
 
-              MarkdownWidget(
-                data: body,
-                shrinkWrap: true,
-                config: MarkdownConfig(
-                  configs: [
-                    PConfig(
-                      textStyle: TextStyle(
-                        fontSize: 14.0,
+    return Padding(
+      padding: EdgeInsets.only(left: isUser ? 40 : 0),
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            color: isUser ? Theme.of(context).cardColor : Colors.transparent,
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: isUser ? 8 : 4,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 4.0,
+              children: [
+                if (title != null)
+                  Row(
+                    spacing: 12.0,
+                    children: [
+                      Icon(Icons.auto_awesome, size: 14.0, color: colour),
+                      Flexible(
+                        child: Text(
+                          title!,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                if (subtitle != null)
+                  Text(
+                    subtitle!,
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                if (widget != null) widget!,
+
+                MarkdownWidget(
+                  data: body,
+                  shrinkWrap: true,
+                  config: MarkdownConfig(
+                    configs: [
+                      PConfig(
+                        textStyle: TextStyle(
+                          fontSize: 14.0,
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  children: [
+                    if (insight.rating != UserRating.dislike && rateable)
+                      IconButton(
+                        onPressed: () {
+                          if (insight.rating == UserRating.like) {
+                            ref
+                                .read(insightProvider.notifier)
+                                .updateRating(insight, UserRating.neither);
+                          } else {
+                            ref
+                                .read(insightProvider.notifier)
+                                .updateRating(insight, UserRating.like);
+                          }
+                        },
+                        iconSize: 18,
+                        color: (insight.rating == UserRating.like)
+                            ? NTheme.primary
+                            : Theme.of(context).textTheme.bodyLarge?.color,
+                        icon: Icon(Icons.thumb_up),
+                      ),
+                    if (insight.rating != UserRating.like && rateable)
+                      IconButton(
+                        onPressed: () {
+                          if (insight.rating == UserRating.dislike) {
+                            ref
+                                .read(insightProvider.notifier)
+                                .updateRating(insight, UserRating.neither);
+                          } else {
+                            ref
+                                .read(insightProvider.notifier)
+                                .updateRating(insight, UserRating.dislike);
+                          }
+                        },
+                        iconSize: 18,
+                        color: (insight.rating == UserRating.dislike)
+                            ? NTheme.primary
+                            : Theme.of(context).textTheme.bodyLarge?.color,
+                        icon: Icon(Icons.thumb_down),
+                      ),
+                    Spacer(),
+                    Text(
+                      _formatDateTime(date),
+                      style: TextStyle(
+                        fontSize: 11.0,
                         color: Theme.of(
                           context,
-                        ).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
+                        ).textTheme.bodyLarge?.color?.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
                 ),
-              ),
-              Row(
-                children: [
-                  if (insight.rating != UserRating.dislike)
-                    IconButton(
-                      onPressed: () {
-                        print(
-                          ref.read(insightProvider.notifier).allUserRatings,
-                        );
-
-                        if (insight.rating == UserRating.like) {
-                          ref
-                              .read(insightProvider.notifier)
-                              .updateRating(insight, UserRating.neither);
-                        } else {
-                          ref
-                              .read(insightProvider.notifier)
-                              .updateRating(insight, UserRating.like);
-                        }
-                      },
-                      iconSize: 18,
-                      color: (insight.rating == UserRating.like)
-                          ? NTheme.primary
-                          : Theme.of(context).textTheme.bodyLarge?.color,
-                      icon: Icon(Icons.thumb_up),
-                    ),
-                  if (insight.rating != UserRating.like)
-                    IconButton(
-                      onPressed: () {
-                        print(
-                          ref.read(insightProvider.notifier).allUserRatings,
-                        );
-
-                        if (insight.rating == UserRating.dislike) {
-                          ref
-                              .read(insightProvider.notifier)
-                              .updateRating(insight, UserRating.neither);
-                        } else {
-                          ref
-                              .read(insightProvider.notifier)
-                              .updateRating(insight, UserRating.dislike);
-                        }
-                      },
-                      iconSize: 18,
-                      color: (insight.rating == UserRating.dislike)
-                          ? NTheme.primary
-                          : Theme.of(context).textTheme.bodyLarge?.color,
-                      icon: Icon(Icons.thumb_down),
-                    ),
-                  Spacer(),
-                  Text(
-                    _formatDateTime(date),
-                    style: TextStyle(
-                      fontSize: 11.0,
-                      color: Theme.of(
-                        context,
-                      ).textTheme.bodyLarge?.color?.withValues(alpha: 0.5),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

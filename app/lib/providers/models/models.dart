@@ -47,6 +47,16 @@ enum UserRating {
   };
 }
 
+enum ChatRole {
+  user,
+  agent;
+
+  String get geminiName => switch (this) {
+    ChatRole.agent => "model",
+    _ => "user",
+  };
+}
+
 @freezed
 abstract class Insight with _$Insight {
   const factory Insight.summary({
@@ -78,6 +88,14 @@ abstract class Insight with _$Insight {
     required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
   }) = _MindmapInsight;
+
+  const factory Insight.chat({
+    required ChatRole role,
+    required String body,
+    required DateTime created,
+    required Embedding? queryEmbedding,
+    @Default(UserRating.neither) UserRating rating,
+  }) = _ChatInsight;
 
   // Use for agent responses that shouldn't be displayed to the user, like steps in agent pipeline
   const factory Insight.meta({
@@ -147,6 +165,12 @@ abstract class MindmapAgentState with _$MindmapAgentState {
 }
 
 @freezed
+abstract class ConversationAgentState with _$ConversationAgentState {
+  const factory ConversationAgentState({@Default(false) bool isLoading}) =
+      _ConversationAgentState;
+}
+
+@freezed
 abstract class ObserverAgentState with _$ObserverAgentState {
   const factory ObserverAgentState({
     @Default([]) List<String> history,
@@ -167,6 +191,7 @@ extension InsightX on Insight {
     resource: (_) => "Resource",
     research: (_) => "Research",
     mindmap: (_) => "Mindmap",
+    chat: (_) => "Chat",
     meta: (_) => "Meta step",
   );
 }

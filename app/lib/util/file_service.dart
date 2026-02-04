@@ -20,7 +20,7 @@ class FileService {
     return await FilePicker.platform.saveFile(
       dialogTitle: 'Please select an output file:',
       type: FileType.custom,
-      allowedExtensions: ['txt', 'md'],
+      allowedExtensions: ['md', 'txt'],
       bytes: Uint8List.fromList(content.codeUnits),
       fileName: expectedName,
     );

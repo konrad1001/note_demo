@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:note_demo/agents/models.dart';
 import 'package:note_demo/agents/utils/tool_utils.dart';
 import 'package:note_demo/models/gemini_response.dart';
 
@@ -21,11 +22,15 @@ class GeminiService {
     this.thinkingBudget = 0,
   });
 
-  Future<GeminiResponse> fetch(String prompt, {bool verbose = false}) async {
+  Future<GeminiResponse> fetch(
+    String prompt, {
+    List<ChatTurn> history = const [],
+    bool verbose = false,
+  }) async {
     final response = await http.post(
       Uri.parse(kUrl),
       headers: _headers,
-      body: _body(prompt),
+      body: _body(prompt, history),
     );
 
     if (response.statusCode == 200) {
@@ -47,22 +52,22 @@ class GeminiService {
     return {'Content-Type': 'application/json', 'x-goog-api-key': apiKey};
   }
 
-  String _body(String prompt) {
-    final body = {
-      'contents': [
-        {
-          "role": "user",
-          'parts': [
-            {'text': prompt},
-          ],
-        },
+  String _body(String prompt, List<ChatTurn> history) {
+    var contents = history.map((m) => m.toJson()).toList();
+    contents.add({
+      "role": "user",
+      'parts': [
+        {'text': prompt},
       ],
-      "generationConfig": _generationConfig,
-    };
+    });
+
+    final body = {'contents': contents, "generationConfig": _generationConfig};
 
     if (responseSchema == null) {
       body["tools"] = _tools;
     }
+
+    print(body);
 
     return jsonEncode(body);
   }

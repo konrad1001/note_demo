@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const Color _appBlack = Color.fromARGB(255, 32, 32, 32);
+const Color _appBlack = Color.fromARGB(255, 30, 30, 30);
 
 abstract class NTheme {
   static Color primary = Colors.blueAccent;
@@ -28,8 +28,8 @@ final ThemeData darkTheme = ThemeData(
   primaryColor: Colors.blueGrey,
   scaffoldBackgroundColor: _appBlack,
   unselectedWidgetColor: Colors.white.withValues(alpha: 0.5),
-  canvasColor: const Color.fromARGB(255, 52, 52, 52),
-  cardColor: _appBlack,
+  canvasColor: const Color.fromARGB(255, 40, 40, 40),
+  cardColor: const Color.fromARGB(255, 23, 23, 23),
   appBarTheme: AppBarTheme(
     backgroundColor: _appBlack,
     surfaceTintColor: _appBlack,

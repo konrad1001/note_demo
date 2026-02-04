@@ -73,8 +73,6 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
       await retry(() async {
         final response = await _model.fetch(_buildPrompt(diff), verbose: false);
 
-        print(response);
-
         var history = List<String>.from(state.callHistory);
         var calls = response.calls;
 

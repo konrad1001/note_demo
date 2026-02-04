@@ -14,25 +14,29 @@ class NotesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final noteContent = ref.watch(noteContentProvider);
 
-    return Column(
-      children: [
-        Expanded(
-          child: MarkdownEditor(
-            cursorColor: Theme.of(context).textTheme.bodyLarge?.backgroundColor,
-            style: TextStyle(fontSize: 14.5),
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(50, 0, 50, 0),
-              constraints: BoxConstraints(maxWidth: 700),
-              isDense: true,
-              border: InputBorder.none,
+    return GestureDetector(
+      child: Column(
+        children: [
+          Expanded(
+            child: MarkdownEditor(
+              cursorColor: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.backgroundColor,
+              style: TextStyle(fontSize: 14.5),
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.fromLTRB(50, 0, 50, 0),
+                constraints: BoxConstraints(maxWidth: 700),
+                isDense: true,
+                border: InputBorder.none,
+              ),
+              controller: noteContent.editingController,
+              onChanged: (value) {
+                ref.read(principleAgentProvider.notifier).runPrinciple(value);
+              },
             ),
-            controller: noteContent.editingController,
-            onChanged: (value) {
-              ref.read(principleAgentProvider.notifier).runPrinciple(value);
-            },
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

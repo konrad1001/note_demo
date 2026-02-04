@@ -43,6 +43,12 @@ class MarkdownEditor extends StatelessWidget {
         minLines: minLines ?? 10,
         keyboardType: TextInputType.multiline,
         onChanged: onChanged,
+        // onTapOutside: ((event) {
+        //   FocusScope.of(context).unfocus();
+        // }),
+        // onTap: () {
+        //   FocusScope.of(context).unfocus();
+        // },
       ),
     );
   }

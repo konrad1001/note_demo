@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/db/note_content_hasher.dart';
 import 'package:note_demo/db/util.dart';
 import 'package:note_demo/providers/app_event_provider.dart';
@@ -66,7 +67,7 @@ class AppNotifier extends Notifier<AppState> {
               );
 
               // Run principle on new content
-              ref.read(principleAgentProvider.notifier).runPrinciple(hash);
+              ref.read(principleAgentProvider.notifier).runPrinciple(result);
             }
           })
           .onError((e, st) {
@@ -79,7 +80,7 @@ class AppNotifier extends Notifier<AppState> {
     final noteContent = ref.read(noteContentProvider);
     final insights = ref.read(insightProvider);
 
-    if (state.currentFileMetaData.insights.isNotEmpty) {
+    if (insights.isNotEmpty) {
       final hash = NoteContentHasher.hash(noteContent.text);
       final box = Hive.box<NMetaData>(kHashedFilesBoxName);
       final metadata = state.currentFileMetaData.copyWith(insights: insights);
@@ -103,7 +104,7 @@ class AppNotifier extends Notifier<AppState> {
     ref.read(noteContentProvider.notifier).setText("");
     ref.read(noteContentProvider.notifier).setPreviousContent("");
 
-    ref.read(insightProvider.notifier).set([]);
+    ref.read(insightProvider.notifier).set([createChatIntro()]);
 
     titleController = TextEditingController();
   }

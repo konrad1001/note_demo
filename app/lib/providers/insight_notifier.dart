@@ -1,9 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/mock/mocks.dart';
-import 'package:note_demo/providers/app_event_provider.dart';
 import 'package:note_demo/providers/mock_service_provider.dart';
 import 'package:note_demo/providers/models/models.dart';
-import 'package:note_demo/widgets/insights/insight_panel.dart';
 
 typedef Insights = List<Insight>;
 
@@ -13,7 +12,7 @@ class InsightNotifier extends Notifier<Insights> {
     final isMock = ref.watch(mockServiceProvider);
     if (isMock) return MockBuilder.mockInsights;
 
-    return [];
+    return [createChatIntro()];
   }
 
   void set(Insights insights) {
@@ -49,6 +48,10 @@ class InsightNotifier extends Notifier<Insights> {
       );
     }
     return ratings;
+  }
+
+  Insights getChatHistory() {
+    return state.where((i) => i.name == "Chat").toList();
   }
 }
 

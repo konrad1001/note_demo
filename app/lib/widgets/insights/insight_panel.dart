@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:note_demo/app/theme.dart';
+import 'package:note_demo/providers/agent_providers/conversation_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/mindmap_agent_provider.dart';
-import 'package:note_demo/providers/agent_providers/observer_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/research_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/resource_agent_provider.dart';
@@ -15,11 +14,18 @@ import 'package:note_demo/widgets/insights/insight_widget.dart';
 
 final _insightPanelKey = GlobalKey<AnimatedListState>();
 
-class InsightPanel extends ConsumerWidget {
+class InsightPanel extends ConsumerStatefulWidget {
   const InsightPanel({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _InsightPanelState();
+}
+
+class _InsightPanelState extends ConsumerState<InsightPanel> {
+  double _interfacePadding = 53;
+
+  @override
+  Widget build(BuildContext context) {
     ref.listen<Insights>(insightProvider, (prev, next) {
       if (prev?.length != next.length) {
         _insightPanelKey.currentState?.insertItem(next.length - 1);
@@ -30,76 +36,98 @@ class InsightPanel extends ConsumerWidget {
 
     final isMobile = (Platform.isAndroid || Platform.isIOS);
 
-    return Container(
-      decoration: BoxDecoration(color: Theme.of(context).canvasColor),
-      child: Stack(
-        alignment: AlignmentGeometry.bottomCenter,
-        children: [
-          insights.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: DefaultTextStyle(
-                      style: TextStyle(
-                        color: Theme.of(
-                          context,
-                        ).textTheme.bodyLarge?.color?.withValues(alpha: 0.5),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 12.0,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Nothing here yet...",
-                            textAlign: TextAlign.center,
-                          ),
-                          Text(
-                            "Start writing to automatically generate AI insights.",
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
+    return GestureDetector(
+      onTap: () {
+        // FocusScope.of(context).unfocus();
+        print("tasp");
+      },
+      child: Container(
+        decoration: BoxDecoration(color: Theme.of(context).canvasColor),
+        child: Stack(
+          alignment: AlignmentGeometry.bottomCenter,
+          children: [
+            ListView(
+              physics: AlwaysScrollableScrollPhysics(),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+
+              reverse: true,
+              padding: EdgeInsets.fromLTRB(
+                12,
+                12,
+                12,
+                _interfacePadding + (isMobile ? 32 : 20),
+              ),
+              children: [
+                ...(insights.reversed).map(
+                  (insight) => Padding(
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: InsightWidget(insight: insight),
                   ),
-                )
-              : ListView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  reverse: true,
-                  padding: EdgeInsets.fromLTRB(12, 12, 12, 64),
-                  children: [
-                    ...(insights.reversed).map(
-                      (insight) => Padding(
-                        padding: EdgeInsets.only(bottom: isMobile ? 42 : 12),
-                        child: InsightWidget(insight: insight),
-                      ),
-                    ),
-                  ],
                 ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(12, 16, 12, isMobile ? 32 : 16),
-            child: _AgentFeedback(),
-          ),
-        ],
+              ],
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Theme.of(context).cardColor.withValues(alpha: 0.2),
+                    Theme.of(context).cardColor.withValues(alpha: 0.5),
+                  ],
+                  stops: const [0.0, 0.3, 0.9],
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(12, 16, 12, isMobile ? 32 : 16),
+                child: _AgentInterface(
+                  onSubmit: (text) {
+                    ref.read(conversationAgentProvider.notifier).chat(text);
+                  },
+                  onHeightChanged: (newHeight) {
+                    setState(() {
+                      _interfacePadding = newHeight;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _AgentFeedback extends ConsumerWidget {
-  const _AgentFeedback();
+class _AgentInterface extends ConsumerStatefulWidget {
+  const _AgentInterface({this.onSubmit, this.onHeightChanged});
+
+  final Function(double newHeight)? onHeightChanged;
+  final Function(String text)? onSubmit;
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _AgentInterfaceState();
+}
+
+class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
+  final GlobalKey _textFieldKey = GlobalKey();
+  final TextEditingController _controller = TextEditingController();
 
   Widget _decideState(
     PrincipleAgentState pState,
+    ConversationAgentState cState,
     SummaryAgentState sState,
     ResearchAgentState rState,
     ResourceAgentState srcState,
     MindmapAgentState mapState, {
     required BuildContext context,
   }) {
-    String text = "Idle";
+    String? text;
 
-    if (pState.isLoading) {
+    if (cState.isLoading) {
+      text = "Thinking";
+    } else if (pState.isLoading) {
       text = "Reading...";
     } else if (sState.isLoading) {
       text = "Summarising...";
@@ -111,13 +139,45 @@ class _AgentFeedback extends ConsumerWidget {
       text = "Mapping...";
     }
 
-    return Flexible(
+    if (text == null) {
+      return Expanded(
+        child: TextField(
+          maxLines: 3,
+          minLines: 1,
+          keyboardType: TextInputType.multiline,
+          textInputAction: TextInputAction.newline,
+          controller: _controller,
+          decoration: InputDecoration(
+            hintText: 'Chat...',
+            hintStyle: TextStyle(
+              color: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
+            ),
+            border: InputBorder.none,
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          ),
+          style: TextStyle(fontSize: 14.0),
+          onSubmitted: (_) => _handleSubmit(),
+          onChanged: (_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _reportHeight();
+            });
+          },
+        ),
+      );
+    }
+
+    return Expanded(
       child: Text(
         text,
         style: TextStyle(
           color: text == "Idle"
               ? Theme.of(context).textTheme.bodyMedium?.color
-              : NTheme.greyed,
+              : Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.color?.withValues(alpha: 0.5),
           fontSize: 14.0,
         ),
       ),
@@ -125,8 +185,36 @@ class _AgentFeedback extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _reportHeight();
+    });
+  }
+
+  void _reportHeight() {
+    final RenderBox? renderBox =
+        _textFieldKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox != null) {
+      widget.onHeightChanged?.call(renderBox.size.height);
+    }
+  }
+
+  void _handleSubmit() {
+    final text = _controller.text.trim();
+    if (text.isNotEmpty) {
+      widget.onSubmit?.call(text);
+      _controller.clear();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _reportHeight();
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final principe = ref.watch(principleAgentProvider);
+    final conversation = ref.watch(conversationAgentProvider);
     final content = ref.watch(summaryAgentProvider);
     final tools = ref.watch(resourceAgentProvider);
     final research = ref.watch(researchAgentProvider);
@@ -135,6 +223,7 @@ class _AgentFeedback extends ConsumerWidget {
     const iconSize = 28.0;
 
     return Container(
+      key: _textFieldKey,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32.0),
         color: Theme.of(context).scaffoldBackgroundColor,
@@ -151,22 +240,22 @@ class _AgentFeedback extends ConsumerWidget {
       child: Row(
         spacing: 12.0,
         children: [
-          Container(
-            width: iconSize,
-            height: iconSize,
-            decoration: BoxDecoration(
-              color: NTheme.primary.withValues(alpha: 0.4),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.abc),
-          ),
           _decideState(
             principe,
+            conversation,
             content,
             research,
             tools,
             map,
             context: context,
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            onPressed: _handleSubmit,
+            icon: const Icon(Icons.send, size: 22),
+            color: Colors.blue,
+            padding: EdgeInsets.all(2),
+            constraints: const BoxConstraints(),
           ),
         ],
       ),

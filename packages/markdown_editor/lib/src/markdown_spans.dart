@@ -28,10 +28,7 @@ abstract class MarkdownSpan {
           padding: const EdgeInsets.only(left: 20),
           child: Text(
             type,
-            style: baseStyle.copyWith(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
+            style: baseStyle.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
       ),

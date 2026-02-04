@@ -30,7 +30,7 @@ void main() async {
     WindowOptions windowOptions = WindowOptions(
       title: "Note GPT",
       size: Size(1000, 600),
-      minimumSize: Size(400, 300),
+      minimumSize: Size(800, 500),
       skipTaskbar: false,
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {

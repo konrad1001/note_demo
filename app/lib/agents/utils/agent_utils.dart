@@ -1,5 +1,6 @@
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/providers/models/models.dart';
 
 enum AgentRole {
   principle,
@@ -8,6 +9,7 @@ enum AgentRole {
   researcher,
   observer,
   mapper,
+  conversation,
   pipeline;
 
   bool get canCallTools => switch (this) {
@@ -21,9 +23,9 @@ enum AgentRole {
   };
 
   Map? get responseSchema => switch (this) {
-    .resourcer => kResourceSchema,
-    .designer => kOverviewSchema,
-    .mapper => kMindMapSchema,
+    AgentRole.resourcer => kResourceSchema,
+    AgentRole.designer => kOverviewSchema,
+    AgentRole.mapper => kMindMapSchema,
     _ => null,
   };
 
@@ -147,11 +149,33 @@ enum AgentRole {
         - Output valid JSON only
         </System Instructions>
         """;
+      case AgentRole.conversation:
+        return """
+        <System Instructions> 
+        You are a friendly, Socratic study assistant at Notable. You help users learn by thinking through their own notes. 
+        Use questions, prompts, and concise explanations to deepen understanding, expose gaps, and encourage 
+        active reasoning. Be curious, clear, with a target demographic of university students.
+
+        - Prefer asking thoughtful, guiding questions over giving direct answers when appropriate.
+        - Encourage the user to reason, explain concepts in their own words, and make connections.
+        - When giving explanations, be concise, structured, and conceptually grounded.
+
+        Avoid being verbose.
+
+        </System Instructions>
+        """;
       case _:
         return "";
     }
   }
 }
+
+Insight createChatIntro() => Insight.chat(
+  role: .agent,
+  body: "Hello! Start writing to automatically generate AI insights.",
+  created: DateTime.now(),
+  queryEmbedding: null,
+);
 
 const kExternalResearchPromptPipe = [
   """<System Instructions>

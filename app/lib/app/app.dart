@@ -29,7 +29,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   late final TabController _tabController;
   late final TextEditingController _notesController = TextEditingController();
 
-  var isRightPanelOpen = true;
+  var isRightPanelOpen = !(Platform.isAndroid || Platform.isIOS);
 
   @override
   void initState() {
@@ -57,10 +57,12 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         final isMobile = (Platform.isAndroid || Platform.isIOS);
 
         final screenWidth = MediaQuery.of(context).size.width;
-        double noteScreenWidthCondensed = isMobile ? 0 : screenWidth * (2 / 3);
+        double noteScreenWidthCondensed = isMobile
+            ? 0
+            : screenWidth * (1.9 / 3);
         double insightPanelWidthExpanded = isMobile
             ? screenWidth
-            : screenWidth * (1 / 3);
+            : screenWidth * (1.1 / 3);
 
         int insightPanelAnimationDuration = isMobile ? 500 : 300;
 
@@ -71,6 +73,9 @@ class _AppState extends State<App> with TickerProviderStateMixin {
           darkTheme: darkTheme,
           themeMode: theme,
           home: Scaffold(
+            onDrawerChanged: (_) {
+              FocusScope.of(context).unfocus();
+            },
             drawer: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 400),
               child: SidePanelWidget(
@@ -84,11 +89,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                   toggleTheme: (mode) {
                     themeNotifier.toggle();
                   },
-                  openDebugView: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => DebugScreen()),
-                    );
-                  },
+                  openDebugView: () {},
                 ),
               ),
             ),
@@ -116,7 +117,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                     curve: Curves.easeInOut,
                     child: OverflowBox(
                       minWidth: 0,
-                      maxWidth: insightPanelWidthExpanded,
+                      maxWidth: screenWidth,
                       child: NotesScreen(controller: _notesController),
                     ),
                   ),
@@ -182,7 +183,11 @@ class SidePanelWidget extends StatelessWidget {
             _menuButton("New", functions.newFile, context),
             _menuButton(
               "Open Debug",
-              functions.openDebugView,
+              () {
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (context) => DebugScreen()));
+              },
               context,
               dontAutoPop: true,
             ),
