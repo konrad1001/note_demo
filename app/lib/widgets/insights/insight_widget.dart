@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/app/theme.dart';
@@ -161,20 +162,27 @@ class _InsightContainer extends ConsumerWidget {
                   ),
                 if (widget != null) widget!,
 
-                MarkdownWidget(
-                  data: body,
-                  shrinkWrap: true,
-                  config: MarkdownConfig(
-                    configs: [
-                      PConfig(
-                        textStyle: TextStyle(
-                          fontSize: 14.0,
-                          color: Theme.of(
-                            context,
-                          ).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
+                DefaultTextStyle(
+                  style: isUser
+                      ? TextStyle()
+                      : GoogleFonts.notoSerif(
+                          letterSpacing: 0.1,
+                          fontWeight: FontWeight.w400,
                         ),
-                      ),
-                    ],
+                  child: MarkdownWidget(
+                    data: body,
+                    shrinkWrap: true,
+                    config: MarkdownConfig(
+                      configs: [
+                        PConfig(
+                          textStyle: TextStyle(
+                            fontSize: 13.0,
+                            color: Theme.of(context).textTheme.bodyLarge?.color
+                                ?.withValues(alpha: 0.8),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Row(

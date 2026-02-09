@@ -26,6 +26,7 @@ dependencies:
   graphview: ^1.5.1
   markdown_editor: 
     path: ../packages/markdown_editor
+  google_fonts: ^8.0.1
 
 dev_dependencies:
   flutter_test:
