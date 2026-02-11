@@ -4,6 +4,7 @@ import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/agents/utils/embedding_service.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/providers/agent_providers/conversation_agent_provider.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
@@ -32,6 +33,13 @@ class SummaryAgentNotifier extends Notifier<SummaryAgentState> {
         _updateDesign(call);
       }
     });
+
+    ref.listen<ConversationAgentState>(conversationAgentProvider, (prev, next) {
+      final call = next.callsMe(kStudyContentNotifierToolName);
+      if (call != null) {
+        _updateDesign(call);
+      }
+    });
   }
 
   // Uses entire User notes.
@@ -56,7 +64,8 @@ class SummaryAgentNotifier extends Notifier<SummaryAgentState> {
             .append(insight: design.toInsight(embedding));
       }, onRetry: (e, i) => print("_updateDesign failed $i : $e"));
     } catch (e) {
-      print("Error $e");
+      state = state.copyWith(isLoading: false);
+      print("Summary error $e");
     }
   }
 

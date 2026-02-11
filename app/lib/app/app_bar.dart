@@ -45,7 +45,7 @@ class NoteAppBar extends StatelessWidget implements PreferredSizeWidget {
             alignment: Alignment.center,
             child: Row(
               children: [
-                const SizedBox(width: 24),
+                const SizedBox(width: 44),
                 _NoteTitle(),
                 const SizedBox(width: 48),
               ],

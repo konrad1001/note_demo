@@ -131,8 +131,6 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
       text = "Reading...";
     } else if (sState.isLoading) {
       text = "Summarising...";
-    } else if (rState.isLoading) {
-      text = "Researching...";
     } else if (srcState.isLoading) {
       text = "Resourcing...";
     } else if (mapState.isLoading) {
@@ -145,7 +143,7 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
           maxLines: 3,
           minLines: 1,
           keyboardType: TextInputType.multiline,
-          textInputAction: TextInputAction.newline,
+          textInputAction: TextInputAction.send,
           controller: _controller,
           decoration: InputDecoration(
             hintText: 'Chat...',
@@ -213,14 +211,21 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
 
   @override
   Widget build(BuildContext context) {
-    final principe = ref.watch(principleAgentProvider);
+    final principle = ref.watch(principleAgentProvider);
     final conversation = ref.watch(conversationAgentProvider);
-    final content = ref.watch(summaryAgentProvider);
-    final tools = ref.watch(resourceAgentProvider);
+    final summary = ref.watch(summaryAgentProvider);
+    final resources = ref.watch(resourceAgentProvider);
     final research = ref.watch(researchAgentProvider);
-    final map = ref.watch(mindmapAgentProvider);
+    final mindmap = ref.watch(mindmapAgentProvider);
 
-    const iconSize = 28.0;
+    final anyLoading = [
+      principle,
+      research,
+      summary,
+      conversation,
+      resources,
+      mindmap,
+    ].any((p) => p.isLoading);
 
     return Container(
       key: _textFieldKey,
@@ -241,19 +246,20 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
         spacing: 12.0,
         children: [
           _decideState(
-            principe,
+            principle,
             conversation,
-            content,
+            summary,
             research,
-            tools,
-            map,
+            resources,
+            mindmap,
             context: context,
           ),
           const SizedBox(width: 8),
           IconButton(
-            onPressed: _handleSubmit,
+            onPressed: anyLoading ? null : _handleSubmit,
             icon: const Icon(Icons.send, size: 22),
-            color: Colors.blue,
+            color: anyLoading ? Colors.blueGrey : Colors.blue,
+
             padding: EdgeInsets.all(2),
             constraints: const BoxConstraints(),
           ),

@@ -78,7 +78,10 @@ abstract class MindMapNode with _$MindMapNode {
 @freezed
 abstract class TextResponse extends AgentResponse with _$TextResponse {
   const TextResponse._();
-  const factory TextResponse({required String content}) = _TextResponse;
+  const factory TextResponse({
+    required String content,
+    @Default([]) List<GeminiFunctionResponse> calls,
+  }) = _TextResponse;
 
   @override
   Insight toInsight(Embedding? queryEmbedding) =>

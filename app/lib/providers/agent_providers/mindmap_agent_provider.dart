@@ -3,6 +3,7 @@ import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/agents/utils/embedding_service.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/providers/agent_providers/conversation_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
@@ -23,6 +24,12 @@ class MindmapAgentNotifier extends Notifier<MindmapAgentState> {
 
   void _subscribeToPrinciple() {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
+      final call = next.callsMe(kMindmapNotifierToolName);
+      if (call != null) {
+        _update();
+      }
+    });
+    ref.listen<ConversationAgentState>(conversationAgentProvider, (prev, next) {
       final call = next.callsMe(kMindmapNotifierToolName);
       if (call != null) {
         _update();

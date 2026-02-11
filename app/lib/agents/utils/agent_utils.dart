@@ -1,3 +1,4 @@
+import 'package:note_demo/agents/utils/tool_utils.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/models/models.dart';
@@ -12,13 +13,26 @@ enum AgentRole {
   conversation,
   pipeline;
 
-  bool get canCallTools => switch (this) {
-    AgentRole.principle => true,
-    _ => false,
+  List<Map<dynamic, dynamic>> get availableTools => switch (this) {
+    AgentRole.principle => [
+      invalidToolAsMap,
+      overviewToolAsMap,
+      resourcesToolAsMap,
+      researchToolAsMap,
+      mindmapToolAsMap,
+    ],
+    AgentRole.conversation => [
+      overviewToolAsMap,
+      resourcesToolAsMap,
+      researchToolAsMap,
+      mindmapToolAsMap,
+    ],
+    _ => [],
   };
 
   int get thinkingBudget => switch (this) {
     AgentRole.principle => 1024,
+    AgentRole.conversation => 1024,
     _ => 0,
   };
 
@@ -55,7 +69,10 @@ enum AgentRole {
     AgentRole.mapper => (response) => MindMap.fromJson(
       response.firstCandidateJSON,
     ),
-    _ => (response) => TextResponse(content: response.firstCandidateText),
+    _ => (response) => TextResponse(
+      content: response.firstCandidateText,
+      calls: response.functionCalls,
+    ),
   };
 
   String get systemInstructions {
@@ -160,7 +177,7 @@ enum AgentRole {
         - Encourage the user to reason, explain concepts in their own words, and make connections.
         - When giving explanations, be concise, structured, and conceptually grounded.
 
-        Avoid being verbose.
+        You always complete your answers in 2 paragraphs or less.
 
         </System Instructions>
         """;

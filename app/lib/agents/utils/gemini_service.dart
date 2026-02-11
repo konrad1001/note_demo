@@ -12,12 +12,12 @@ const kUrl =
     'https://generativelanguage.googleapis.com/v1beta/models/$kGeminiFlashId:generateContent';
 
 class GeminiService {
-  final bool canCallTools;
+  final List<Map<dynamic, dynamic>> availableTools;
   final Map? responseSchema;
   final int thinkingBudget;
 
   GeminiService({
-    this.canCallTools = false,
+    this.availableTools = const [],
     this.responseSchema,
     this.thinkingBudget = 0,
   });
@@ -67,23 +67,13 @@ class GeminiService {
       body["tools"] = _tools;
     }
 
-    print(body);
-
     return jsonEncode(body);
   }
 
   List get _tools {
     final tools = [
-      canCallTools
-          ? {
-              "functionDeclarations": [
-                invalidToolAsMap,
-                overviewToolAsMap,
-                resourcesToolAsMap,
-                researchToolAsMap,
-                mindmapToolAsMap,
-              ],
-            }
+      availableTools.isNotEmpty
+          ? {"functionDeclarations": availableTools}
           : {"urlContext": {}},
     ];
 

@@ -4,6 +4,7 @@ import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/agents/utils/embedding_service.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/providers/agent_providers/conversation_agent_provider.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
@@ -31,6 +32,12 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
           if (call != null && on) {
             _updateResearch(call);
           }
+      }
+    });
+    ref.listen<ConversationAgentState>(conversationAgentProvider, (prev, next) {
+      final call = next.callsMe(kExternalResearchNotifierToolName);
+      if (call != null) {
+        _updateResearch(call);
       }
     });
   }

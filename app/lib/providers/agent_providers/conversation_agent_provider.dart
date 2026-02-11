@@ -35,11 +35,18 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
           history: chatHistory,
         );
 
-        insightNotifier.append(
-          insight: _insight(ChatRole.agent, response.content),
-        );
-
-        state = state.copyWith(isLoading: false);
+        if (response.calls.isNotEmpty) {
+          // Make calls
+          insightNotifier.append(
+            insight: _insight(ChatRole.agent, "Calling: ${response.calls}"),
+          );
+          state = state.copyWith(isLoading: false, calls: response.calls);
+        } else {
+          insightNotifier.append(
+            insight: _insight(ChatRole.agent, response.content),
+          );
+          state = state.copyWith(isLoading: false, calls: []);
+        }
       }, retries: 0);
     } catch (e) {
       state = state.copyWith(isLoading: false);

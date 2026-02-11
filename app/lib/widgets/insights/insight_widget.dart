@@ -28,14 +28,14 @@ class InsightWidget extends StatelessWidget {
         colour: NTheme.primary,
         title: "I generated you a summary...",
         subtitle: summary.title,
-        body: summary.body,
+        markdownBody: summary.body,
         date: summary.created,
         insight: insight,
       ),
       research: (research) => _InsightContainer(
         colour: NTheme.primary,
         title: "I found you a resource...",
-        body: research.research,
+        markdownBody: research.research,
         date: research.created,
         insight: insight,
       ),
@@ -69,7 +69,7 @@ class InsightWidget extends StatelessWidget {
       ),
       chat: (chat) => _InsightContainer(
         colour: Colors.purple,
-        body: chat.body,
+        markdownBody: chat.body,
         date: chat.created,
         insight: insight,
         role: chat.role,
@@ -85,13 +85,14 @@ class _InsightContainer extends ConsumerWidget {
     required this.colour,
     this.title,
     this.subtitle,
-    required this.body,
+    this.markdownBody,
     required this.date,
     required this.insight,
     this.widget,
     this.onTap,
     this.role = ChatRole.agent,
     this.rateable = true,
+    this.body,
   });
 
   final Insight insight;
@@ -104,7 +105,8 @@ class _InsightContainer extends ConsumerWidget {
 
   final String? title;
   final String? subtitle;
-  final String body;
+  final String? markdownBody;
+  final String? body;
   final DateTime date;
 
   final bool rateable;
@@ -161,30 +163,34 @@ class _InsightContainer extends ConsumerWidget {
                     style: TextStyle(fontStyle: FontStyle.italic),
                   ),
                 if (widget != null) widget!,
-
-                DefaultTextStyle(
-                  style: isUser
-                      ? TextStyle()
-                      : GoogleFonts.notoSerif(
-                          letterSpacing: 0.1,
-                          fontWeight: FontWeight.w400,
-                        ),
-                  child: MarkdownWidget(
-                    data: body,
-                    shrinkWrap: true,
-                    config: MarkdownConfig(
-                      configs: [
-                        PConfig(
-                          textStyle: TextStyle(
-                            fontSize: 13.0,
-                            color: Theme.of(context).textTheme.bodyLarge?.color
-                                ?.withValues(alpha: 0.8),
+                if (markdownBody != null)
+                  DefaultTextStyle(
+                    style: isUser
+                        ? TextStyle()
+                        : GoogleFonts.notoSerif(
+                            letterSpacing: 0.1,
+                            fontWeight: FontWeight.w400,
                           ),
-                        ),
-                      ],
+                    child: MarkdownWidget(
+                      data: markdownBody!,
+                      shrinkWrap: true,
+                      config: MarkdownConfig(
+                        configs: [
+                          PConfig(
+                            textStyle: TextStyle(
+                              fontSize: 13.0,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.color
+                                  ?.withValues(alpha: 0.8),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                if (body != null) Text(body!, style: TextStyle(fontSize: 12.0)),
                 Row(
                   children: [
                     if (insight.rating != UserRating.dislike && rateable)

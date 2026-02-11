@@ -57,6 +57,8 @@ enum ChatRole {
   };
 }
 
+// INSIGHTS
+
 @freezed
 abstract class Insight with _$Insight {
   const factory Insight.summary({
@@ -118,8 +120,19 @@ abstract class NoteContentState with _$NoteContentState {
   }) = _NoteContentState;
 }
 
+// AGENT STATES
+
+abstract class AgentState {
+  const AgentState();
+
+  bool get isLoading;
+}
+
 @freezed
-abstract class PrincipleAgentState with _$PrincipleAgentState {
+abstract class PrincipleAgentState extends AgentState
+    with _$PrincipleAgentState {
+  const PrincipleAgentState._();
+
   const factory PrincipleAgentState({
     @Default([]) List<GeminiFunctionResponse> calls,
     @Default([]) List<String> callHistory,
@@ -138,7 +151,9 @@ extension PrincipleAgentStateX on PrincipleAgentState {
 }
 
 @freezed
-abstract class ResearchAgentState with _$ResearchAgentState {
+abstract class ResearchAgentState extends AgentState with _$ResearchAgentState {
+  const ResearchAgentState._();
+
   const factory ResearchAgentState({
     String? content,
     @Default(0) int pipeLevel,
@@ -147,27 +162,47 @@ abstract class ResearchAgentState with _$ResearchAgentState {
 }
 
 @freezed
-abstract class SummaryAgentState with _$SummaryAgentState {
+abstract class SummaryAgentState extends AgentState with _$SummaryAgentState {
+  const SummaryAgentState._();
+
   const factory SummaryAgentState({@Default(false) bool isLoading}) =
       _SummaryAgentState;
 }
 
 @freezed
-abstract class ResourceAgentState with _$ResourceAgentState {
+abstract class ResourceAgentState extends AgentState with _$ResourceAgentState {
+  const ResourceAgentState._();
+
   const factory ResourceAgentState({@Default(false) bool isLoading}) =
       _ResourceAgentState;
 }
 
 @freezed
-abstract class MindmapAgentState with _$MindmapAgentState {
+abstract class MindmapAgentState extends AgentState with _$MindmapAgentState {
+  const MindmapAgentState._();
+
   const factory MindmapAgentState({@Default(false) bool isLoading}) =
       _MindmapAgentState;
 }
 
 @freezed
-abstract class ConversationAgentState with _$ConversationAgentState {
-  const factory ConversationAgentState({@Default(false) bool isLoading}) =
-      _ConversationAgentState;
+abstract class ConversationAgentState extends AgentState
+    with _$ConversationAgentState {
+  const ConversationAgentState._();
+
+  const factory ConversationAgentState({
+    @Default([]) List<GeminiFunctionResponse> calls,
+    @Default(false) bool isLoading,
+  }) = _ConversationAgentState;
+}
+
+extension ConversationAgentStateX on ConversationAgentState {
+  GeminiFunctionResponse? callsMe(String name) {
+    for (var call in calls) {
+      if (call.name == name) return call;
+    }
+    return null;
+  }
 }
 
 @freezed

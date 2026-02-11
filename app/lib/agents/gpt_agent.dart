@@ -12,7 +12,7 @@ class GPTAgent<T extends AgentResponse> {
 
   GPTAgent({required this.role}) {
     _geminiService = GeminiService(
-      canCallTools: role.canCallTools,
+      availableTools: role.availableTools,
       responseSchema: role.responseSchema,
       thinkingBudget: role.thinkingBudget,
     );
