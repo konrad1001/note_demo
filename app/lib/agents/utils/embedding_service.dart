@@ -9,7 +9,9 @@ const kEmbeddingUrl =
 typedef Embedding = List<double>;
 
 class EmbeddingService {
-  Future<Embedding> embed(String text, {bool verbose = false}) async {
+  Future<Embedding?> embed(String text, {bool verbose = false}) async {
+    if (text.isEmpty) return null;
+
     final response = await http.post(
       Uri.parse(kEmbeddingUrl),
       headers: _headers,

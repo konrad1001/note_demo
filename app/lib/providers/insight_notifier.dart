@@ -23,24 +23,36 @@ class InsightNotifier extends Notifier<Insights> {
     state = state + [insight];
   }
 
+  void clear() {
+    state = [];
+  }
+
+  void deleteInsight(Insight insight) {
+    state = state
+        .map((i) {
+          if (i == insight) {
+            return null;
+          } else {
+            return i;
+          }
+        })
+        .nonNulls
+        .toList();
+  }
+
   void updateLatest({required Insight insight}) {
     state.removeLast();
     state = state + [insight];
   }
 
-  void clear() {
-    state = [];
-  }
-
-  void updateRating(Insight insight, UserRating newRating) {
-    Insights newState = [];
-    for (var i in state) {
+  void updateInsight(Insight insight, {required Insight newInsight}) {
+    state = state.map((i) {
       if (i == insight) {
-        i = i.copyWith(rating: newRating);
+        return newInsight;
+      } else {
+        return i;
       }
-      newState.add(i);
-    }
-    state = newState;
+    }).toList();
   }
 
   Map<String, int> get allUserRatings {

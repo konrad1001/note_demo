@@ -22,6 +22,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
   static const _kMinDiff = 100;
   static const _kMinTime = 8;
   static const _similarityThreshold = 0.8;
+  static const _deletionSimilarityThreshold = 0.9;
 
   final _model = GPTAgent<PrincipleResponse>(role: AgentRole.principle);
   final _embedder = EmbeddingService();
@@ -41,10 +42,13 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     final noteContentNotifier = ref.read(noteContentProvider.notifier);
 
     final prev = noteContent.previousContent;
-    final next = noteContent.text;
 
     final diffTool = DiffTool();
     final diff = diffTool.diff(prev, value);
+
+    if (diff.size > _kMinDiff) {
+      _checkDeletion(diff.deletions);
+    }
 
     if (diff.size > _kMinDiff && timeSinceLastCall > _kMinTime) {
       noteContentNotifier.setPreviousContent(value);
@@ -77,7 +81,6 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
         var calls = response.calls;
 
         if (calls.map((call) => call.name).contains("invalid")) {
-          print("Content was invalid");
           calls = [];
         } else {
           if (history.length == 4) {
@@ -87,7 +90,6 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
         }
 
         state = PrincipleAgentState(
-          // calls: [GeminiFunctionResponse(name: "mindmap")],
           calls: calls,
           callHistory: history,
           diff: diff,
@@ -111,9 +113,30 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     return "<AgentHistory> $history <UserPreferences> $insightPreferences  <UserAdded> ${diff.additions}";
   }
 
+  void _checkDeletion(String deletion) async {
+    final emb = await _embedder.embed(deletion);
+
+    if (emb == null) return;
+
+    final insights = ref.read(insightProvider);
+    for (final i in insights) {
+      final qEmb = i.queryEmbedding;
+      if (qEmb != null) {
+        final sim = dot(qEmb, emb);
+        if (sim > _deletionSimilarityThreshold) {
+          print("Found similar insight $sim. Suggesting delete.");
+          ref
+              .read(insightProvider.notifier)
+              .updateInsight(i, newInsight: i.copyWith(markForDeletion: true));
+        }
+      }
+    }
+  }
+
   Future<bool> _checkWithInsights(String content) async {
-    // print("Embedding: $content");
     final emb = await _embedder.embed(content);
+
+    if (emb == null) return true;
 
     final insights = ref.read(insightProvider);
     for (final i in insights) {
@@ -121,7 +144,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
       if (qEmb != null) {
         final sim = dot(qEmb, emb);
         if (sim > _similarityThreshold) {
-          print("Content is too stale, not generating");
+          print("Content is too stale, not generating.");
           return false;
         }
       }

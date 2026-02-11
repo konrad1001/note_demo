@@ -67,6 +67,8 @@ abstract class Insight with _$Insight {
     required DateTime created,
     required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
+    @Default(false) bool markForDeletion,
+    @Default(false) bool stagedForDeletion,
   }) = _SummaryInsight;
 
   const factory Insight.resource({
@@ -74,6 +76,8 @@ abstract class Insight with _$Insight {
     required DateTime created,
     required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
+    @Default(false) bool markForDeletion,
+    @Default(false) bool stagedForDeletion,
   }) = _ResourceInsight;
 
   const factory Insight.research({
@@ -81,6 +85,8 @@ abstract class Insight with _$Insight {
     required DateTime created,
     required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
+    @Default(false) bool markForDeletion,
+    @Default(false) bool stagedForDeletion,
   }) = _ResearchInsight;
 
   const factory Insight.mindmap({
@@ -89,6 +95,8 @@ abstract class Insight with _$Insight {
     required MindMap mindmap,
     required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
+    @Default(false) bool markForDeletion,
+    @Default(false) bool stagedForDeletion,
   }) = _MindmapInsight;
 
   const factory Insight.chat({
@@ -98,6 +106,8 @@ abstract class Insight with _$Insight {
     required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
     @Default(false) bool isStreaming,
+    @Default(false) bool markForDeletion,
+    @Default(false) bool stagedForDeletion,
   }) = _ChatInsight;
 
   // Use for agent responses that shouldn't be displayed to the user, like steps in agent pipeline
@@ -106,6 +116,8 @@ abstract class Insight with _$Insight {
     DateTime? created,
     required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
+    @Default(false) bool markForDeletion,
+    @Default(false) bool stagedForDeletion,
   }) = _MetaInsight;
 
   factory Insight.fromJson(Map<String, dynamic> json) =>
