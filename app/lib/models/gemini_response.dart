@@ -9,9 +9,9 @@ part 'gemini_response.g.dart';
 abstract class GeminiResponse with _$GeminiResponse {
   const factory GeminiResponse({
     required List<Candidate> candidates,
-    required UsageMetadata usageMetadata,
-    required String modelVersion,
-    required String responseId,
+    UsageMetadata? usageMetadata,
+    String? modelVersion,
+    String? responseId,
   }) = _GeminiResponse;
 
   factory GeminiResponse.fromJson(Map<String, dynamic> json) =>
@@ -52,8 +52,8 @@ extension GeminiResponseX on GeminiResponse {
 abstract class Candidate with _$Candidate {
   const factory Candidate({
     required Content content,
-    required String finishReason,
-    required int index,
+    String? finishReason,
+    int? index,
   }) = _Candidate;
 
   factory Candidate.fromJson(Map<String, dynamic> json) =>

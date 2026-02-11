@@ -69,7 +69,7 @@ class InsightWidget extends StatelessWidget {
       ),
       chat: (chat) => _InsightContainer(
         colour: Colors.purple,
-        markdownBody: chat.body,
+        markdownBody: "${chat.body}${chat.isStreaming ? " ***" : ""}",
         date: chat.created,
         insight: insight,
         role: chat.role,

@@ -39,7 +39,6 @@ class _InsightPanelState extends ConsumerState<InsightPanel> {
     return GestureDetector(
       onTap: () {
         // FocusScope.of(context).unfocus();
-        print("tasp");
       },
       child: Container(
         decoration: BoxDecoration(color: Theme.of(context).canvasColor),

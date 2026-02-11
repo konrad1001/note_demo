@@ -28,38 +28,66 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     insightNotifier.append(insight: newInsight);
     final chatHistory = _generateHistory(insights + [newInsight]);
 
-    try {
-      await retry(() async {
-        final response = await _model.fetch(
-          "<User message> $message  <Notes> ${noteContent.text}",
-          history: chatHistory,
-        );
+    final buffer = StringBuffer();
+    var isFirstChunk = true;
 
-        if (response.calls.isNotEmpty) {
+    try {
+      await for (final chunk in _model.stream(message, history: chatHistory)) {
+        if (chunk.calls.isNotEmpty) {
+          buffer.write("Calling: ${chunk.calls}");
+
           // Make calls
           insightNotifier.append(
-            insight: _insight(ChatRole.agent, "Calling: ${response.calls}"),
+            insight: _insight(ChatRole.agent, "Calling: ${chunk.calls}"),
           );
-          state = state.copyWith(isLoading: false, calls: response.calls);
+          state = state.copyWith(isLoading: false, calls: chunk.calls);
         } else {
-          insightNotifier.append(
-            insight: _insight(ChatRole.agent, response.content),
-          );
-          state = state.copyWith(isLoading: false, calls: []);
+          buffer.write(chunk.content);
+
+          if (isFirstChunk) {
+            insightNotifier.append(
+              insight: _insight(
+                ChatRole.agent,
+                buffer.toString(),
+                isStreaming: true,
+              ),
+            );
+            isFirstChunk = false;
+          } else {
+            insightNotifier.updateLatest(
+              insight: _insight(
+                ChatRole.agent,
+                buffer.toString(),
+                isStreaming: true,
+              ),
+            );
+          }
+          await Future.delayed(Duration(milliseconds: 300));
         }
-      }, retries: 0);
+      }
     } catch (e) {
       state = state.copyWith(isLoading: false);
       print("Conversation agent error $e");
+    } finally {
+      insightNotifier.updateLatest(
+        insight: _insight(
+          ChatRole.agent,
+          buffer.toString(),
+          isStreaming: false,
+        ),
+      );
+      state = state.copyWith(isLoading: false, calls: []);
     }
   }
 
-  Insight _insight(ChatRole role, String body) => Insight.chat(
-    role: role,
-    body: body,
-    created: DateTime.now(),
-    queryEmbedding: null,
-  );
+  Insight _insight(ChatRole role, String body, {bool isStreaming = false}) =>
+      Insight.chat(
+        role: role,
+        body: body,
+        created: DateTime.now(),
+        queryEmbedding: null,
+        isStreaming: isStreaming,
+      );
 
   List<ChatTurn> _generateHistory(Insights insights) {
     return insights

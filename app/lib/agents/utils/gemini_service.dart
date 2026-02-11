@@ -16,12 +16,14 @@ class GeminiService {
   final String? systemInstructions;
   final Map? responseSchema;
   final int thinkingBudget;
+  final bool streamContent;
 
   GeminiService({
     this.availableTools = const [],
     this.responseSchema,
     this.thinkingBudget = 0,
     this.systemInstructions,
+    this.streamContent = false,
   });
 
   Future<GeminiResponse> fetch(
@@ -30,7 +32,7 @@ class GeminiService {
     bool verbose = false,
   }) async {
     final response = await http.post(
-      Uri.parse(kUrl),
+      _url(modelId: kGeminiFlashId, withStreaming: false),
       headers: _headers,
       body: _body(prompt, history),
     );
@@ -47,6 +49,66 @@ class GeminiService {
       throw Exception('Failed to fetch data: ${response.statusCode}');
     }
   }
+
+  Stream<GeminiResponse> stream(
+    String prompt, {
+    List<ChatTurn> history = const [],
+    bool verbose = false,
+  }) async* {
+    var client = http.Client();
+    try {
+      const geminiKey = String.fromEnvironment("GEMINI_KEY");
+      final request = http.Request(
+        'POST',
+        _url(modelId: kGeminiFlashId, withStreaming: true),
+      );
+      request.headers['Content-Type'] = 'application/json';
+      request.headers['x-goog-api-key'] = geminiKey;
+
+      request.body = _body(prompt, history);
+
+      final streamedResponse = await request.send();
+
+      final buffer = StringBuffer();
+      var inString = false;
+      var depth = 0;
+      if (streamedResponse.statusCode == 200) {
+        await for (final chunk in streamedResponse.stream.transform(
+          utf8.decoder,
+        )) {
+          for (final char in chunk.split('')) {
+            buffer.write(char);
+
+            if (char == '"') {
+              inString = !inString;
+              continue;
+            }
+
+            if (!inString) {
+              if (char == '{') depth++;
+              if (char == '}') depth--;
+            }
+
+            if (depth == 0 && buffer.isNotEmpty) {
+              final segment = buffer.toString().trim();
+              if (segment.startsWith("{") || segment.endsWith("}")) {
+                final data = jsonDecode(segment);
+                yield GeminiResponse.fromJson(data);
+              }
+
+              buffer.clear();
+            }
+          }
+        }
+      }
+    } finally {
+      client.close();
+    }
+  }
+
+  Uri _url({required String modelId, bool withStreaming = false}) => Uri.parse(
+    'https://generativelanguage.googleapis.com/v1beta/models/$modelId:${withStreaming ? "streamGenerateContent" : "generateContent"}',
+  );
 
   Map<String, String> get _headers {
     const apiKey = String.fromEnvironment("GEMINI_KEY");

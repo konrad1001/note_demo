@@ -97,6 +97,7 @@ abstract class Insight with _$Insight {
     required DateTime created,
     required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
+    @Default(false) bool isStreaming,
   }) = _ChatInsight;
 
   // Use for agent responses that shouldn't be displayed to the user, like steps in agent pipeline

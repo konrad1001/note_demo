@@ -23,6 +23,11 @@ class InsightNotifier extends Notifier<Insights> {
     state = state + [insight];
   }
 
+  void updateLatest({required Insight insight}) {
+    state.removeLast();
+    state = state + [insight];
+  }
+
   void clear() {
     state = [];
   }
