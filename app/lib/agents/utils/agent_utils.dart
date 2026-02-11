@@ -78,7 +78,7 @@ enum AgentRole {
   String get systemInstructions {
     switch (this) {
       case AgentRole.principle:
-        return """<System Instructions>
+        return """
           You are the principal agent in a study-assistant system.
     
           You will receive:
@@ -106,7 +106,7 @@ enum AgentRole {
           </Tool-Calling Guidance>
       """;
       case AgentRole.designer:
-        return """<System Instructions>
+        return """
           You update the study-plan metadata based on student notes.
 
           Rules:
@@ -122,10 +122,10 @@ enum AgentRole {
 
           Validity rule:
           If the text is not recognizable as study notes (see principal agent criteria), set valid=false in the JSON.
-          </System Instructions>
+          
         """;
       case AgentRole.resourcer:
-        return """<System Instructions>
+        return """
           Your task is to generate the most appropriate study tool from notes.
           
           One of flashcards | qas | keywords
@@ -134,14 +134,14 @@ enum AgentRole {
 
           Generate a maximum of 4 items for each type of resource.
 
-          </System Instructions>
+          
         """;
       case AgentRole.researcher:
         return """
         """;
       case AgentRole.observer:
         return """
-        <System Instructions>
+        
         You are a member of an agentic workflow. 
         You will recieve an event that has occured in the system, which you will summarise into a 
         short format that will form a historic timeline of events within the systems run time.
@@ -150,11 +150,11 @@ enum AgentRole {
         - A tool call, with optional additional arguments. State the name of the tool and its arguments. 
 
         Use no more than 40 words. Don't include any formatting
-        </System Instructions>
+        
         """;
       case AgentRole.mapper:
         return """
-        <System Instructions>
+        
         Your task is to generate a mind map schema for the provided notes.
 
         Generate no more than 10 nodes.
@@ -164,11 +164,11 @@ enum AgentRole {
         - Always include "children" arrays (empty if none)
         - Limit nesting depth to 4
         - Output valid JSON only
-        </System Instructions>
+        
         """;
       case AgentRole.conversation:
         return """
-        <System Instructions> 
+         
         You are a friendly, Socratic study assistant at Notable. You help users learn by thinking through their own notes. 
         Use questions, prompts, and concise explanations to deepen understanding, expose gaps, and encourage 
         active reasoning. Be curious, clear, with a target demographic of university students.
@@ -179,7 +179,7 @@ enum AgentRole {
 
         You always complete your answers in 2 paragraphs or less.
 
-        </System Instructions>
+        
         """;
       case _:
         return "";
@@ -195,19 +195,19 @@ Insight createChatIntro() => Insight.chat(
 );
 
 const kExternalResearchPromptPipe = [
-  """<System Instructions>
+  """
         You are the first step in a resource fetching and synthesising pipeline. 
         Your job is to return up to 4 links for online content related to the provided content.
         It can be blog posts, articles or youtube videos. 
 
         Respond in a comma seperated list.
-        </System Instructions> """,
+         """,
   """
-      <System Instructions> You are the second step in a resource fetching and synthesising pipeline. 
+       You are the second step in a resource fetching and synthesising pipeline. 
       Based on this list of resources, visit each one, then rank them in order of usefulness. make sure the links are valid.
-      </System Instructions>""",
+      """,
   """
-      <System Instructions> You are the final step in a resource fetching and synthesising pipeline.
+       You are the final step in a resource fetching and synthesising pipeline.
       The final step is to synthesise the list of evaluated resources.
       Your output will be displayed to a student using an ai study companion app, under a helpful "Next Steps" section, 
       so it must follow the following criteria:
@@ -215,7 +215,7 @@ const kExternalResearchPromptPipe = [
       - Under 20 words
       - Must include the link
       - .md format
-     </System Instructions>
+     
     """,
 ];
 

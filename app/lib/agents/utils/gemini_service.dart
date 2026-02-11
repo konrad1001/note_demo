@@ -13,6 +13,7 @@ const kUrl =
 
 class GeminiService {
   final List<Map<dynamic, dynamic>> availableTools;
+  final String? systemInstructions;
   final Map? responseSchema;
   final int thinkingBudget;
 
@@ -20,6 +21,7 @@ class GeminiService {
     this.availableTools = const [],
     this.responseSchema,
     this.thinkingBudget = 0,
+    this.systemInstructions,
   });
 
   Future<GeminiResponse> fetch(
@@ -65,6 +67,13 @@ class GeminiService {
 
     if (responseSchema == null) {
       body["tools"] = _tools;
+    }
+    if (systemInstructions != null) {
+      body["system_instruction"] = {
+        "parts": [
+          {"text": systemInstructions},
+        ],
+      };
     }
 
     return jsonEncode(body);

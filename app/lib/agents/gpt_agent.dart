@@ -15,6 +15,7 @@ class GPTAgent<T extends AgentResponse> {
       availableTools: role.availableTools,
       responseSchema: role.responseSchema,
       thinkingBudget: role.thinkingBudget,
+      systemInstructions: role.systemInstructions,
     );
   }
 
@@ -30,11 +31,9 @@ class GPTAgent<T extends AgentResponse> {
 
     _busy = true;
 
-    final prompt = '${role.systemInstructions}. $message';
-
     try {
       final response = await _geminiService.fetch(
-        prompt,
+        message,
         verbose: verbose,
         history: history,
       );
