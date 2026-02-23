@@ -30,17 +30,22 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
 
     final buffer = StringBuffer();
     var isFirstChunk = true;
+    var isCalling = false;
 
     try {
       await for (final chunk in _model.stream(message, history: chatHistory)) {
         if (chunk.calls.isNotEmpty) {
-          buffer.write("Calling: ${chunk.calls}");
+          // buffer.write("Calling: ${chunk.calls}");
+
+          print("calling: ${chunk.calls}");
+          isCalling = true;
 
           // Make calls
-          insightNotifier.append(
-            insight: _insight(ChatRole.agent, "Calling: ${chunk.calls}"),
-          );
+          // insightNotifier.append(
+          //   insight: _insight(ChatRole.agent, "Calling: ${chunk.calls}"),
+          // );
           state = state.copyWith(isLoading: false, calls: chunk.calls);
+          continue;
         } else {
           buffer.write(chunk.content);
 
@@ -69,13 +74,15 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
       state = state.copyWith(isLoading: false);
       print("Conversation agent error $e");
     } finally {
-      insightNotifier.updateLatest(
-        insight: _insight(
-          ChatRole.agent,
-          buffer.toString(),
-          isStreaming: false,
-        ),
-      );
+      if (!isCalling) {
+        insightNotifier.updateLatest(
+          insight: _insight(
+            ChatRole.agent,
+            buffer.toString(),
+            isStreaming: false,
+          ),
+        );
+      }
       state = state.copyWith(isLoading: false, calls: []);
     }
   }

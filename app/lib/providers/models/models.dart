@@ -110,6 +110,15 @@ abstract class Insight with _$Insight {
     @Default(false) bool stagedForDeletion,
   }) = _ChatInsight;
 
+  const factory Insight.focusEvent({
+    required DateTime startTime,
+    required Duration duration,
+    required Embedding? queryEmbedding,
+    @Default(UserRating.neither) UserRating rating,
+    @Default(false) bool markForDeletion,
+    @Default(false) bool stagedForDeletion,
+  }) = _FocusEventInsight;
+
   // Use for agent responses that shouldn't be displayed to the user, like steps in agent pipeline
   const factory Insight.meta({
     String? notes,
@@ -227,6 +236,14 @@ abstract class ObserverAgentState with _$ObserverAgentState {
 }
 
 @freezed
+abstract class FocusEvent with _$FocusEvent {
+  const factory FocusEvent({
+    required DateTime startTime,
+    required Duration duration,
+  }) = _FocusEvent;
+}
+
+@freezed
 abstract class AppEvent with _$AppEvent {
   const factory AppEvent.loadedFromFile({required AppState state}) =
       _AppEventLoadedFromFile;
@@ -240,10 +257,15 @@ extension InsightX on Insight {
     research: (_) => "Research",
     mindmap: (_) => "Mindmap",
     chat: (_) => "Chat",
+    focusEvent: (_) => "Focus Event",
     meta: (_) => "Meta step",
   );
 }
 
 extension NoteContentStateX on NoteContentState {
   String get text => editingController.text;
+}
+
+extension FocusEventX on FocusEvent {
+  DateTime get endTime => startTime.add(duration);
 }

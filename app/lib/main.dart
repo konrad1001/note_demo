@@ -28,7 +28,7 @@ void main() async {
     await windowManager.ensureInitialized();
 
     WindowOptions windowOptions = WindowOptions(
-      title: "Note GPT",
+      title: "Notable",
       size: Size(1000, 600),
       minimumSize: Size(800, 500),
       skipTaskbar: false,

@@ -15,8 +15,9 @@ class OverviewTool {
 
 @Tool(
   name: "resources",
-  description:
-      "This function generates resources to supplement the users study. They can be one of flashcards, q&as or keywords. Use the additional instructions parameter to specify further instructions as to which of these should be generated.",
+  description: """
+    This function generates resources to supplement the users study. They can be one of flashcards, q&as or keywords. 
+    Use the additional instructions parameter to specify further instructions as to which of these should be generated.""",
 )
 class ResourcesTool {
   final String? additionalInstructions;
@@ -26,8 +27,9 @@ class ResourcesTool {
 
 @Tool(
   name: "research",
-  description:
-      "This function triggers a search for additional material online to supplement the users notes. Use the additional instructions parameter to give further detail as to what is required.",
+  description: """
+    This function triggers a search for additional material online to supplement the users notes. 
+    Use the additional instructions parameter to give further detail as to what is required.""",
 )
 class ResearchTool {
   final String? additionalInstructions;
@@ -42,6 +44,19 @@ class ResearchTool {
 )
 class MindmapTool {
   MindmapTool();
+}
+
+@Tool(
+  name: "focusTimer",
+  description: """
+    This function triggers a focus period timer for the user. Otherwise known as a focus event. 
+    You recommend 20 minutes, and normally set this amount. Specifiy the time duration in minutes and seconds.""",
+)
+class FocusEventTool {
+  final int minutes;
+  final int seconds;
+
+  FocusEventTool({required this.minutes, required this.seconds});
 }
 
 @Tool(

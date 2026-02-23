@@ -8,6 +8,7 @@ import 'package:note_demo/providers/agent_providers/principle_agent_provider.dar
 import 'package:note_demo/providers/agent_providers/research_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/resource_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/summary_agent_provider.dart';
+import 'package:note_demo/providers/focus_event_provider.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/widgets/insights/insight_widget.dart';
@@ -54,7 +55,7 @@ class _InsightPanelState extends ConsumerState<InsightPanel> {
                 12,
                 12,
                 12,
-                _interfacePadding + (isMobile ? 32 : 20),
+                _interfacePadding + (isMobile ? 32 : 20) + 60,
               ),
               children: [
                 ...(insights.reversed).map(
@@ -73,13 +74,15 @@ class _InsightPanelState extends ConsumerState<InsightPanel> {
                   colors: [
                     Colors.transparent,
                     Theme.of(context).cardColor.withValues(alpha: 0.2),
-                    Theme.of(context).cardColor.withValues(alpha: 0.5),
+                    Theme.of(
+                      context,
+                    ).scaffoldBackgroundColor.withValues(alpha: 1.0),
                   ],
-                  stops: const [0.0, 0.3, 0.9],
+                  stops: const [0.0, 0.5, 1.0],
                 ),
               ),
               child: Padding(
-                padding: EdgeInsets.fromLTRB(12, 16, 12, isMobile ? 32 : 16),
+                padding: EdgeInsets.fromLTRB(12, 16, 12, isMobile ? 32 : 20),
                 child: _AgentInterface(
                   onSubmit: (text) {
                     ref.read(conversationAgentProvider.notifier).chat(text);
@@ -112,6 +115,33 @@ class _AgentInterface extends ConsumerStatefulWidget {
 class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
   final GlobalKey _textFieldKey = GlobalKey();
   final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _reportHeight();
+    });
+  }
+
+  void _reportHeight() {
+    final RenderBox? renderBox =
+        _textFieldKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox != null) {
+      widget.onHeightChanged?.call(renderBox.size.height);
+    }
+  }
+
+  void _handleSubmit() {
+    final text = _controller.text.trim();
+    if (text.isNotEmpty) {
+      widget.onSubmit?.call(text);
+      _controller.clear();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _reportHeight();
+      });
+    }
+  }
 
   Widget _decideState(
     PrincipleAgentState pState,
@@ -181,31 +211,52 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _reportHeight();
-    });
-  }
-
-  void _reportHeight() {
-    final RenderBox? renderBox =
-        _textFieldKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox != null) {
-      widget.onHeightChanged?.call(renderBox.size.height);
-    }
-  }
-
-  void _handleSubmit() {
-    final text = _controller.text.trim();
-    if (text.isNotEmpty) {
-      widget.onSubmit?.call(text);
-      _controller.clear();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _reportHeight();
-      });
-    }
+  Widget _ToolButton(VoidCallback onTap, {bool active = true}) {
+    return InkWell(
+      onTap: active ? onTap : null,
+      child: Opacity(
+        opacity: active ? 1.0 : 0.5,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(32.0),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            border: BoxBorder.all(
+              color: const Color.fromARGB(56, 255, 255, 255),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                spreadRadius: 0.3,
+                blurRadius: 4.0,
+                offset: Offset(-1, 2),
+              ),
+            ],
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          child: Row(
+            children: [
+              Icon(
+                Icons.timelapse,
+                size: 14,
+                color: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.color?.withValues(alpha: 0.7),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                "Start Focus Timer",
+                style: TextStyle(
+                  fontSize: 11.0,
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.color?.withValues(alpha: 0.7),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -216,6 +267,7 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
     final resources = ref.watch(resourceAgentProvider);
     final research = ref.watch(researchAgentProvider);
     final mindmap = ref.watch(mindmapAgentProvider);
+    final events = ref.watch(focusEventProvider);
 
     final anyLoading = [
       principle,
@@ -226,44 +278,77 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
       mindmap,
     ].any((p) => p.isLoading);
 
-    return Container(
-      key: _textFieldKey,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(32.0),
-        color: Theme.of(context).scaffoldBackgroundColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            spreadRadius: 0.3,
-            blurRadius: 4.0,
-            offset: Offset(-1, 2),
+    return Column(
+      spacing: 8.0,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          key: _textFieldKey,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(32.0),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            border: BoxBorder.all(
+              color: const Color.fromARGB(56, 255, 255, 255),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                spreadRadius: 0.3,
+                blurRadius: 4.0,
+                offset: Offset(-1, 2),
+              ),
+            ],
           ),
-        ],
-      ),
-      padding: EdgeInsets.all(12.0),
-      child: Row(
-        spacing: 12.0,
-        children: [
-          _decideState(
-            principle,
-            conversation,
-            summary,
-            research,
-            resources,
-            mindmap,
-            context: context,
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            onPressed: anyLoading ? null : _handleSubmit,
-            icon: const Icon(Icons.send, size: 22),
-            color: anyLoading ? Colors.blueGrey : Colors.blue,
+          padding: EdgeInsets.all(12.0),
+          child: Row(
+            spacing: 12.0,
+            children: [
+              _decideState(
+                principle,
+                conversation,
+                summary,
+                research,
+                resources,
+                mindmap,
+                context: context,
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: anyLoading ? null : _handleSubmit,
+                icon: const Icon(Icons.send, size: 22),
+                color: anyLoading ? Colors.blueGrey : Colors.blue,
 
-            padding: EdgeInsets.all(2),
-            constraints: const BoxConstraints(),
+                padding: EdgeInsets.all(2),
+                constraints: const BoxConstraints(),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        SizedBox(
+          height: 30,
+          child: ListView(
+            clipBehavior: Clip.none,
+            scrollDirection: Axis.horizontal,
+            physics: AlwaysScrollableScrollPhysics(),
+            children: [
+              _ToolButton(() {
+                ref
+                    .read(focusEventProvider.notifier)
+                    .setEvent(
+                      FocusEvent(
+                        startTime: DateTime.now(),
+                        duration: Duration(minutes: 0, seconds: 10),
+                      ),
+                    );
+              }, active: events == null),
+              SizedBox(width: 8),
+              // _ToolButton(),
+              SizedBox(width: 8),
+              // _ToolButton(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

@@ -12,6 +12,7 @@ import 'package:note_demo/providers/agent_providers/resource_agent_provider.dart
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/summary_agent_provider.dart';
+import 'package:note_demo/providers/focus_event_provider.dart';
 import 'package:note_demo/providers/theme_mode_provider.dart';
 import 'package:note_demo/screens/debug_screen.dart';
 import 'package:note_demo/screens/notes_screen.dart';
@@ -51,6 +52,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         final _ = ref.watch(researchAgentProvider);
         final _ = ref.watch(resourceAgentProvider);
         final _ = ref.watch(mindmapAgentProvider);
+        final _ = ref.watch(focusEventProvider);
         final theme = ref.watch(themeModeProvider);
         final themeNotifier = ref.watch(themeModeProvider.notifier);
 

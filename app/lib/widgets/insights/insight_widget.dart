@@ -11,6 +11,7 @@ import 'package:note_demo/screens/mindmap_screen.dart';
 import 'package:note_demo/screens/resource_screen.dart';
 import 'package:note_demo/util/navigator.dart';
 import 'package:note_demo/widgets/blurred_container.dart';
+import 'package:note_demo/widgets/insights/focus_event_widget.dart';
 import 'package:note_demo/widgets/mindmap_preview.dart';
 
 class InsightWidget extends StatelessWidget {
@@ -74,6 +75,11 @@ class InsightWidget extends StatelessWidget {
         insight: insight,
         role: chat.role,
         rateable: false,
+      ),
+      focusEvent: (event) => FocusEventWidget(
+        key: UniqueKey(),
+        insight: insight,
+        event: FocusEvent(startTime: event.startTime, duration: event.duration),
       ),
       orElse: () => const SizedBox.shrink(),
     );
