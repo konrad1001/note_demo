@@ -78,7 +78,7 @@ class _InsightPanelState extends ConsumerState<InsightPanel> {
                       context,
                     ).scaffoldBackgroundColor.withValues(alpha: 1.0),
                   ],
-                  stops: const [0.0, 0.5, 1.0],
+                  stops: const [0.0, 0.3, 1.0],
                 ),
               ),
               child: Padding(

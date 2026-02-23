@@ -220,9 +220,9 @@ class _InsightContainer extends ConsumerWidget {
                         DefaultTextStyle(
                           style: isUser
                               ? TextStyle()
-                              : GoogleFonts.notoSerif(
-                                  letterSpacing: 0.1,
-                                  fontWeight: FontWeight.w400,
+                              : GoogleFonts.ptSerif(
+                                  letterSpacing: 0.15,
+                                  fontWeight: FontWeight.w200,
                                 ),
                           child: MarkdownWidget(
                             data: markdownBody!,
@@ -231,7 +231,7 @@ class _InsightContainer extends ConsumerWidget {
                               configs: [
                                 PConfig(
                                   textStyle: TextStyle(
-                                    fontSize: 13.0,
+                                    fontSize: 14.0,
                                     color: Theme.of(context)
                                         .textTheme
                                         .bodyLarge
