@@ -30,11 +30,12 @@ class GeminiService {
     String prompt, {
     List<ChatTurn> history = const [],
     bool verbose = false,
+    String? injectedSystemInstructions,
   }) async {
     final response = await http.post(
       _url(modelId: kGeminiFlashId, withStreaming: false),
       headers: _headers,
-      body: _body(prompt, history),
+      body: _body(prompt, history, injectedSystemInstructions),
     );
 
     if (response.statusCode == 200) {
@@ -54,6 +55,7 @@ class GeminiService {
     String prompt, {
     List<ChatTurn> history = const [],
     bool verbose = false,
+    String? injectedSystemInstructions,
   }) async* {
     var client = http.Client();
     try {
@@ -65,7 +67,7 @@ class GeminiService {
       request.headers['Content-Type'] = 'application/json';
       request.headers['x-goog-api-key'] = geminiKey;
 
-      request.body = _body(prompt, history);
+      request.body = _body(prompt, history, injectedSystemInstructions);
 
       final streamedResponse = await request.send();
 
@@ -116,7 +118,11 @@ class GeminiService {
     return {'Content-Type': 'application/json', 'x-goog-api-key': apiKey};
   }
 
-  String _body(String prompt, List<ChatTurn> history) {
+  String _body(
+    String prompt,
+    List<ChatTurn> history,
+    String? injectedSystemInstructions,
+  ) {
     var contents = history.map((m) => m.toJson()).toList();
     contents.add({
       "role": "user",
@@ -133,7 +139,7 @@ class GeminiService {
     if (systemInstructions != null) {
       body["system_instruction"] = {
         "parts": [
-          {"text": systemInstructions},
+          {"text": "$systemInstructions ${injectedSystemInstructions ?? ""}"},
         ],
       };
     }

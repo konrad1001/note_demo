@@ -160,6 +160,7 @@ abstract class PrincipleAgentState extends AgentState
     @Default([]) List<String> callHistory,
     UserDiff? diff,
     @Default(false) bool isLoading,
+    String? fingerprint,
   }) = _PrincipleAgentState;
 }
 

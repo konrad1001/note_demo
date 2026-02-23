@@ -25,6 +25,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
   static const _deletionSimilarityThreshold = 0.9;
 
   final _model = GPTAgent<PrincipleResponse>(role: AgentRole.principle);
+  final _observer = GPTAgent<TextResponse>(role: AgentRole.observer);
   final _embedder = EmbeddingService();
 
   @override
@@ -73,6 +74,8 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
       return;
     }
 
+    _runObserver();
+
     try {
       await retry(() async {
         final response = await _model.fetch(_buildPrompt(diff), verbose: false);
@@ -101,6 +104,20 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     }
   }
 
+  Future<void> _runObserver() async {
+    final noteContent = ref.read(noteContentProvider).text;
+
+    try {
+      await retry(() async {
+        final response = await _observer.fetch(noteContent);
+        print(response);
+        state = state.copyWith(fingerprint: response.content);
+      });
+    } catch (e) {
+      print("_runObserver error: $e");
+    }
+  }
+
   String _buildPrompt(UserDiff diff) {
     final insightPreferences = ref
         .read(insightProvider.notifier)
@@ -110,7 +127,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
       (e) => "T[${e.$1}] called: ${e.$2}",
     );
 
-    return "<AgentHistory> $history <UserPreferences> $insightPreferences  <UserAdded> ${diff.additions}";
+    return "<AgentHistory> $history <UserFingerprint> ${state.fingerprint ?? "Empty."} <UserPreferences> $insightPreferences  <UserAdded> ${diff.additions}";
   }
 
   void _checkDeletion(String deletion) async {

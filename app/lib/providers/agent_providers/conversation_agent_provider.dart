@@ -3,6 +3,7 @@ import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/agents/models.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
@@ -17,11 +18,11 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
   }
 
   void chat(String message) async {
+    state = state.copyWith(isLoading: true);
+
     final insightNotifier = ref.read(insightProvider.notifier);
     final insights = ref.read(insightProvider);
-    final noteContent = ref.watch(noteContentProvider);
-
-    state = state.copyWith(isLoading: true);
+    final principle = ref.read(principleAgentProvider);
 
     final newInsight = _insight(ChatRole.user, message);
 
@@ -33,17 +34,15 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     var isCalling = false;
 
     try {
-      await for (final chunk in _model.stream(message, history: chatHistory)) {
+      await for (final chunk in _model.stream(
+        message,
+        history: chatHistory,
+        injectedSystemInstructions: principle.fingerprint,
+      )) {
         if (chunk.calls.isNotEmpty) {
-          // buffer.write("Calling: ${chunk.calls}");
-
           print("calling: ${chunk.calls}");
           isCalling = true;
 
-          // Make calls
-          // insightNotifier.append(
-          //   insight: _insight(ChatRole.agent, "Calling: ${chunk.calls}"),
-          // );
           state = state.copyWith(isLoading: false, calls: chunk.calls);
           continue;
         } else {
@@ -85,6 +84,12 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
       }
       state = state.copyWith(isLoading: false, calls: []);
     }
+  }
+
+  String _message(String message) {
+    final noteContent = ref.read(noteContentProvider);
+
+    return "$message";
   }
 
   Insight _insight(ChatRole role, String body, {bool isStreaming = false}) =>

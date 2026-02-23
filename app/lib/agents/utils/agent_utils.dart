@@ -142,15 +142,14 @@ enum AgentRole {
         """;
       case AgentRole.observer:
         return """
-        
-        You are a member of an agentic workflow. 
-        You will recieve an event that has occured in the system, which you will summarise into a 
-        short format that will form a historic timeline of events within the systems run time.
+        You are a member of an agentic workflow for a study companion
+        You will recieve a document containing a users study notes, you must create a summary that provides useful insight into a users habits and writing style.
+        Further agents will then tailor their communication to this user. 
+        Your response will fill in the blanks to the following insights:
 
-        Events will be one of 
-        - A tool call, with optional additional arguments. State the name of the tool and its arguments. 
-
-        Use no more than 40 words. Don't include any formatting
+        * Notes topic: <One line on what the notes are about here>
+        * Users inferred working level: <For example:  primary, highschool, bachelors, masters>
+        * Users inferred learning style: ...
         
         """;
       case AgentRole.mapper:
@@ -174,6 +173,7 @@ enum AgentRole {
         Use questions, prompts, and concise explanations to deepen understanding, expose gaps, and encourage 
         active reasoning. Be curious, clear, with a target demographic of university students.
 
+        - Respond to the user at their inferred working level, but don't patronise. 
         - Prefer asking thoughtful, guiding questions over giving direct answers when appropriate.
         - Encourage the user to reason, explain concepts in their own words, and make connections.
         - When giving explanations, be concise, structured, and conceptually grounded.

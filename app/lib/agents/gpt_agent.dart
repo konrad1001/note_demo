@@ -24,6 +24,7 @@ class GPTAgent<T extends AgentResponse> {
     String message, {
     bool verbose = false,
     List<ChatTurn> history = const [],
+    String? injectedSystemInstructions,
   }) async {
     if (_busy) {
       print("Agent ${role.name} busy");
@@ -37,6 +38,7 @@ class GPTAgent<T extends AgentResponse> {
         message,
         verbose: verbose,
         history: history,
+        injectedSystemInstructions: injectedSystemInstructions,
       );
       _busy = false;
       return role.convert(response);
@@ -50,6 +52,7 @@ class GPTAgent<T extends AgentResponse> {
     String message, {
     bool verbose = false,
     List<ChatTurn> history = const [],
+    String? injectedSystemInstructions,
   }) async* {
     if (_busy) {
       print("Agent ${role.name} busy");
@@ -62,6 +65,7 @@ class GPTAgent<T extends AgentResponse> {
       await for (final chunk in _geminiService.stream(
         message,
         history: history,
+        injectedSystemInstructions: injectedSystemInstructions,
       )) {
         yield role.convert(chunk);
       }

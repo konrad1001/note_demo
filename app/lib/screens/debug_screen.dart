@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:note_demo/db/util.dart';
 import 'package:note_demo/providers/agent_providers/observer_agent_provider.dart';
+import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 
@@ -63,11 +65,11 @@ class _DebugResponseInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final history = ref.watch(observerAgentProvider);
     final insights = ref.watch(insightProvider);
+    final principle = ref.watch(principleAgentProvider);
 
     return SizedBox(
-      height: 300,
+      height: 320,
       child: ListView(
         children: [
           Text("Insights:"),
@@ -76,7 +78,16 @@ class _DebugResponseInfo extends ConsumerWidget {
             children: [...insights.map((item) => Text(item.name))],
           ),
           Text("History:"),
-          ...history.history.map((item) => Text(item)),
+          ...principle.callHistory.map((item) => Text(item)),
+          Divider(),
+          Text("User fingerprint:"),
+          Text(
+            principle.fingerprint ?? "Empty",
+            style: GoogleFonts.googleSansCode(
+              color: Colors.deepOrangeAccent,
+              letterSpacing: 1.5,
+            ),
+          ),
         ],
       ),
     );

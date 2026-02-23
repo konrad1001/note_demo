@@ -26,19 +26,11 @@ class ObserverAgentNotifier extends Notifier<ObserverAgentState> {
     final isMock = ref.read(mockServiceProvider);
     final appNotifier = ref.read(appNotifierProvider.notifier);
 
-    if (principleState.isLoading == true ||
-        principleState.calls == [] ||
-        isMock) {
+    if (principleState.isLoading == true || isMock) {
       return;
     }
 
-    final timePoint = "T[${state.history.length}]";
-    final tools = principleState.calls.map((call) => "Tool: ${call.name}");
-
-    state = state.copyWith(
-      history: state.history + ["$timePoint. $tools"],
-      isLoading: false,
-    );
+    print("runnning observer");
   }
 
   String _buildPrompt(PrincipleAgentState state) {

@@ -13,7 +13,6 @@ abstract class MarkdownPatterns {
     _italicRegex: (style) => style.copyWith(fontStyle: FontStyle.italic),
     _codeRegex: (style) => style.copyWith(
       fontFamily: 'monospace',
-      backgroundColor: Colors.grey[200],
       color: Colors.deepOrangeAccent,
       letterSpacing: 1.5,
     ),
