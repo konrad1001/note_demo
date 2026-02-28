@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -211,48 +212,59 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
     );
   }
 
-  Widget _ToolButton(VoidCallback onTap, {bool active = true}) {
+  Widget _toolButton(VoidCallback onTap, {bool active = true}) {
     return InkWell(
       onTap: active ? onTap : null,
       child: Opacity(
         opacity: active ? 1.0 : 0.5,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(32.0),
-            color: Theme.of(context).scaffoldBackgroundColor,
-            border: BoxBorder.all(
-              color: const Color.fromARGB(56, 255, 255, 255),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                spreadRadius: 0.3,
-                blurRadius: 4.0,
-                offset: Offset(-1, 2),
-              ),
-            ],
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: Row(
-            children: [
-              Icon(
-                Icons.timelapse,
-                size: 14,
-                color: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.color?.withValues(alpha: 0.7),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                "Start Focus Timer",
-                style: TextStyle(
-                  fontSize: 11.0,
-                  color: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.color?.withValues(alpha: 0.7),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(32.0),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32.0),
+                color: Theme.of(context).scaffoldBackgroundColor.withValues(
+                  red: 0.2,
+                  green: 0.2,
+                  blue: 0.2,
+                  alpha: 0.4,
                 ),
+                border: BoxBorder.all(
+                  color: const Color.fromARGB(56, 255, 255, 255),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    spreadRadius: 0.3,
+                    blurRadius: 4.0,
+                    offset: Offset(-1, 2),
+                  ),
+                ],
               ),
-            ],
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.timelapse,
+                    size: 14,
+                    color: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge?.color?.withValues(alpha: 0.7),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "Start Focus Timer",
+                    style: TextStyle(
+                      fontSize: 11.0,
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyLarge?.color?.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -282,46 +294,57 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
       spacing: 8.0,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          key: _textFieldKey,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(32.0),
-            color: Theme.of(context).scaffoldBackgroundColor,
-            border: BoxBorder.all(
-              color: const Color.fromARGB(56, 255, 255, 255),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                spreadRadius: 0.3,
-                blurRadius: 4.0,
-                offset: Offset(-1, 2),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(32.0),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
+            child: Container(
+              key: _textFieldKey,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32.0),
+                color: Theme.of(context).scaffoldBackgroundColor.withValues(
+                  red: 0.2,
+                  green: 0.2,
+                  blue: 0.2,
+                  alpha: 0.4,
+                ),
+                border: BoxBorder.all(
+                  color: const Color.fromARGB(56, 255, 255, 255),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    spreadRadius: 0.3,
+                    blurRadius: 4.0,
+                    offset: Offset(-1, 2),
+                  ),
+                ],
               ),
-            ],
-          ),
-          padding: EdgeInsets.all(12.0),
-          child: Row(
-            spacing: 12.0,
-            children: [
-              _decideState(
-                principle,
-                conversation,
-                summary,
-                research,
-                resources,
-                mindmap,
-                context: context,
-              ),
-              const SizedBox(width: 8),
-              IconButton(
-                onPressed: anyLoading ? null : _handleSubmit,
-                icon: const Icon(Icons.send, size: 22),
-                color: anyLoading ? Colors.blueGrey : Colors.blue,
+              padding: EdgeInsets.all(12.0),
+              child: Row(
+                spacing: 12.0,
+                children: [
+                  _decideState(
+                    principle,
+                    conversation,
+                    summary,
+                    research,
+                    resources,
+                    mindmap,
+                    context: context,
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: anyLoading ? null : _handleSubmit,
+                    icon: const Icon(Icons.send, size: 22),
+                    color: anyLoading ? Colors.blueGrey : Colors.blue,
 
-                padding: EdgeInsets.all(2),
-                constraints: const BoxConstraints(),
+                    padding: EdgeInsets.all(2),
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
         SizedBox(
@@ -331,7 +354,7 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
             scrollDirection: Axis.horizontal,
             physics: AlwaysScrollableScrollPhysics(),
             children: [
-              _ToolButton(() {
+              _toolButton(() {
                 ref
                     .read(focusEventProvider.notifier)
                     .setEvent(
