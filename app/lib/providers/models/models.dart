@@ -49,11 +49,12 @@ enum UserRating {
 
 enum ChatRole {
   user,
+  function,
   agent;
 
   String get geminiName => switch (this) {
     ChatRole.agent => "model",
-    _ => "user",
+    _ => name,
   };
 }
 
@@ -119,12 +120,21 @@ abstract class Insight with _$Insight {
     @Default(false) bool stagedForDeletion,
   }) = _FocusEventInsight;
 
+  const factory Insight.functionCall({
+    required GeminiFunctionResponse function,
+    required Embedding? queryEmbedding,
+    @Default(UserRating.neither) UserRating rating,
+    @Default(false) bool markForDeletion,
+    @Default(false) bool stagedForDeletion,
+  }) = _FunctionCallInsight;
+
   // Use for agent responses that shouldn't be displayed to the user, like steps in agent pipeline
   const factory Insight.meta({
     String? notes,
     DateTime? created,
     required Embedding? queryEmbedding,
     @Default(UserRating.neither) UserRating rating,
+    @Default(ChatRole.agent) ChatRole role,
     @Default(false) bool markForDeletion,
     @Default(false) bool stagedForDeletion,
   }) = _MetaInsight;
@@ -216,6 +226,7 @@ abstract class ConversationAgentState extends AgentState
   const factory ConversationAgentState({
     @Default([]) List<GeminiFunctionResponse> calls,
     @Default(false) bool isLoading,
+    void Function()? callback,
   }) = _ConversationAgentState;
 }
 
@@ -260,6 +271,7 @@ extension InsightX on Insight {
     chat: (_) => "Chat",
     focusEvent: (_) => "Focus Event",
     meta: (_) => "Meta step",
+    functionCall: (_) => "Function call",
   );
 }
 

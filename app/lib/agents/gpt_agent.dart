@@ -1,4 +1,4 @@
-import 'package:note_demo/agents/models.dart';
+import 'package:note_demo/agents/chat_turn.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/agents/utils/gemini_service.dart';
@@ -64,6 +64,7 @@ class GPTAgent<T extends AgentResponse> {
     try {
       await for (final chunk in _geminiService.stream(
         message,
+        verbose: verbose,
         history: history,
         injectedSystemInstructions: injectedSystemInstructions,
       )) {

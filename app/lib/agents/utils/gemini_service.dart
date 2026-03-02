@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:note_demo/agents/models.dart';
+import 'package:note_demo/agents/chat_turn.dart';
 import 'package:note_demo/agents/utils/tool_utils.dart';
 import 'package:note_demo/models/gemini_response.dart';
 
@@ -41,7 +41,7 @@ class GeminiService {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
 
-      if (verbose) print(response.body);
+      if (true) print(response.body);
 
       final modelResponse = GeminiResponse.fromJson(data);
 
@@ -78,6 +78,7 @@ class GeminiService {
         await for (final chunk in streamedResponse.stream.transform(
           utf8.decoder,
         )) {
+          print(chunk);
           for (final char in chunk.split('')) {
             buffer.write(char);
 
@@ -143,6 +144,8 @@ class GeminiService {
         ],
       };
     }
+
+    print(contents);
 
     return jsonEncode(body);
   }

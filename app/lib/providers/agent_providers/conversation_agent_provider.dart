@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
-import 'package:note_demo/agents/models.dart';
+import 'package:note_demo/agents/chat_turn.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
@@ -27,7 +27,7 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     final newInsight = _insight(ChatRole.user, message);
 
     insightNotifier.append(insight: newInsight);
-    final chatHistory = _generateHistory(insights + [newInsight]);
+    final chatHistory = _generateHistory(insights);
 
     final buffer = StringBuffer();
     var isFirstChunk = true;
@@ -36,6 +36,7 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     try {
       await for (final chunk in _model.stream(
         message,
+        verbose: true,
         history: chatHistory,
         injectedSystemInstructions: principle.fingerprint,
       )) {
@@ -43,7 +44,11 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
           print("calling: ${chunk.calls}");
           isCalling = true;
 
-          state = state.copyWith(isLoading: false, calls: chunk.calls);
+          state = state.copyWith(
+            isLoading: false,
+            calls: chunk.calls,
+            callback: _callback,
+          );
           continue;
         } else {
           buffer.write(chunk.content);
@@ -86,6 +91,35 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     }
   }
 
+  void _callback() async {
+    final insights = ref.read(insightProvider);
+    final insightNotifier = ref.read(insightProvider.notifier);
+    final functionCallResponse = Insight.meta(
+      notes: "Result of function call: Success",
+      queryEmbedding: null,
+    );
+
+    insightNotifier.append(insight: functionCallResponse);
+    print(insights);
+    final history = _generateHistory(insights);
+
+    final response = await _model.fetch(
+      "Result of function call: Generation Completed Successfully",
+      history: history,
+    );
+
+    print(response);
+
+    insightNotifier.append(
+      insight: Insight.chat(
+        role: ChatRole.agent,
+        body: response.content,
+        created: DateTime.now(),
+        queryEmbedding: null,
+      ),
+    );
+  }
+
   String _message(String message) {
     final noteContent = ref.read(noteContentProvider);
 
@@ -106,7 +140,12 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
         .map(
           (i) => i.mapOrNull(
             chat: (chat) {
-              return ChatTurn(chat.role, chat.body);
+              // print("${chat.role}, ${chat.body}");
+              return ChatTurn(chat.role, chat.body, null);
+            },
+            functionCall: (call) {
+              // print("${ChatRole.function}, ${"text"}");
+              return ChatTurn(ChatRole.function, null, call.function);
             },
           ),
         )

@@ -58,6 +58,15 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
         ref
             .read(insightProvider.notifier)
             .append(insight: response.toInsight(embedding));
+
+        ref
+            .read(insightProvider.notifier)
+            .append(
+              insight: Insight.functionCall(
+                function: call,
+                queryEmbedding: null,
+              ),
+            );
       }, retries: _retryLimit);
     } catch (e) {
       state = state.copyWith(isLoading: false);

@@ -110,7 +110,6 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     try {
       await retry(() async {
         final response = await _observer.fetch(noteContent);
-        print(response);
         state = state.copyWith(fingerprint: response.content);
       });
     } catch (e) {

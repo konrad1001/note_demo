@@ -53,9 +53,9 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
     final pipeline = AgentPipeline(
       3,
       promptPipe: kExternalResearchPromptPipe,
-      additionalPromptInput: call
-          .args
-          .first, // Cheeky but I know this type of call will only have one argument.
+      // additionalPromptInput: call  TODO: FIX
+      //     .args
+      //     .first, // Cheeky but I know this type of call will only have one argument.
     );
 
     await for (final result in pipeline.fetch(diff)) {

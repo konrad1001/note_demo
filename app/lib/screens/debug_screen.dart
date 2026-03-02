@@ -63,6 +63,17 @@ class _DebugScreenState extends State<DebugScreen> {
 class _DebugResponseInfo extends ConsumerWidget {
   const _DebugResponseInfo();
 
+  Widget _pair(String title, String body) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+
+      children: [
+        Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(body),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final insights = ref.watch(insightProvider);
@@ -73,9 +84,21 @@ class _DebugResponseInfo extends ConsumerWidget {
       child: ListView(
         children: [
           Text("Insights:"),
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 8.0,
-            children: [...insights.map((item) => Text(item.name))],
+            children: [
+              ...insights.map(
+                (item) => item.maybeMap(
+                  chat: (value) =>
+                      _pair(value.name, "${value.role}: ${value.body}"),
+                  functionCall: (value) =>
+                      _pair(value.name, "${value.function.name}"),
+
+                  orElse: () => Text("Other: ${item.name}"),
+                ),
+              ),
+            ],
           ),
           Text("History:"),
           ...principle.callHistory.map((item) => Text(item)),

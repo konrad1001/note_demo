@@ -19,7 +19,7 @@ class FocusEventNotifier extends Notifier<FocusEvent?> {
     ref.listen<ConversationAgentState>(conversationAgentProvider, (prev, next) {
       final call = next.callsMe(kFocusTimerToolName);
       if (call != null) {
-        _runFromCall(call);
+        _runFromCall(call, next.callback);
       }
     });
   }
@@ -67,19 +67,22 @@ class FocusEventNotifier extends Notifier<FocusEvent?> {
     }
   }
 
-  _runFromCall(GeminiFunctionResponse call) async {
+  // TODO: fix timer
+  _runFromCall(GeminiFunctionResponse call, VoidCallback? callback) async {
     print(call.args);
-    if (call.args.length == 1) {
-      final minutes = call.args[0];
+    final args = call.args.values.toList();
+    print(args);
+    if (args.length == 1) {
+      final minutes = args[0];
       setEvent(
         FocusEvent(
           startTime: DateTime.now(),
           duration: Duration(minutes: int.parse(minutes)),
         ),
       );
-    } else if (call.args.length == 2) {
-      final minutes = call.args[0];
-      final seconds = call.args[1];
+    } else if (args.length == 2) {
+      final minutes = args[0];
+      final seconds = args[1];
       setEvent(
         FocusEvent(
           startTime: DateTime.now(),
@@ -94,6 +97,14 @@ class FocusEventNotifier extends Notifier<FocusEvent?> {
         FocusEvent(startTime: DateTime.now(), duration: Duration(seconds: 20)),
       );
     }
+
+    ref
+        .read(insightProvider.notifier)
+        .append(
+          insight: Insight.functionCall(function: call, queryEmbedding: null),
+        );
+
+    callback?.call();
   }
 
   Future<void> _runCountdown(

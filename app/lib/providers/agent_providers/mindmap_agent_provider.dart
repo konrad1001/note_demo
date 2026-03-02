@@ -1,10 +1,14 @@
+import 'dart:ui';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/agents/utils/embedding_service.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/agent_providers/conversation_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
+import 'package:note_demo/providers/agent_providers/tool_agent.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
@@ -26,19 +30,19 @@ class MindmapAgentNotifier extends Notifier<MindmapAgentState> {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
       final call = next.callsMe(kMindmapNotifierToolName);
       if (call != null) {
-        _update();
+        _update(call, () {});
       }
     });
     ref.listen<ConversationAgentState>(conversationAgentProvider, (prev, next) {
       final call = next.callsMe(kMindmapNotifierToolName);
       if (call != null) {
-        _update();
+        _update(call, next.callback);
       }
     });
   }
 
   // Uses entire User notes.
-  void _update() async {
+  void _update(GeminiFunctionResponse call, VoidCallback? onFinish) async {
     state = state.copyWith(isLoading: true);
     final notes = ref.read(noteContentProvider).text;
 
@@ -51,12 +55,25 @@ class MindmapAgentNotifier extends Notifier<MindmapAgentState> {
             .read(insightProvider.notifier)
             .append(insight: response.toInsight(embedding));
         state = state.copyWith(isLoading: false);
+
+        ref
+            .read(insightProvider.notifier)
+            .append(
+              insight: Insight.functionCall(
+                function: call,
+                queryEmbedding: null,
+              ),
+            );
+
+        onFinish?.call();
       });
     } catch (e) {
       state = state.copyWith(isLoading: false);
       print("Mindmap agent error $e");
     }
   }
+
+  void _onFinish(GeminiFunctionResponse call) async {}
 }
 
 final mindmapAgentProvider =

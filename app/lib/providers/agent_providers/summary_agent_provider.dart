@@ -62,6 +62,15 @@ class SummaryAgentNotifier extends Notifier<SummaryAgentState> {
         ref
             .read(insightProvider.notifier)
             .append(insight: design.toInsight(embedding));
+
+        ref
+            .read(insightProvider.notifier)
+            .append(
+              insight: Insight.functionCall(
+                function: call,
+                queryEmbedding: null,
+              ),
+            );
       }, onRetry: (e, i) => print("_updateDesign failed $i : $e"));
     } catch (e) {
       state = state.copyWith(isLoading: false);

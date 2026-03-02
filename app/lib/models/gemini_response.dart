@@ -33,15 +33,18 @@ extension GeminiResponseX on GeminiResponse {
 
   // TODO: should test this really
   List<GeminiFunctionResponse> get functionCalls {
-    final allCalls = candidates.first.content.parts
-        .map((part) => part.functionCall)
-        .nonNulls;
+    final allCalls = candidates.first.content.parts.map((part) {
+      final functionCall = part.functionCall;
+      if (functionCall == null) return null;
+      return (functionCall, part.thoughtSignature);
+    }).nonNulls;
 
     return allCalls
         .map(
           (call) => GeminiFunctionResponse(
-            name: call.name,
-            args: call.args.values.map((arg) => arg.toString()).toList(),
+            name: call.$1.name,
+            args: call.$1.args,
+            thoughtSignature: call.$2,
           ),
         )
         .toList();
@@ -70,7 +73,11 @@ abstract class Content with _$Content {
 
 @freezed
 abstract class Part with _$Part {
-  const factory Part({String? text, FunctionCall? functionCall}) = _Part;
+  const factory Part({
+    String? text,
+    FunctionCall? functionCall,
+    String? thoughtSignature,
+  }) = _Part;
 
   factory Part.fromJson(Map<String, dynamic> json) => _$PartFromJson(json);
 }
@@ -102,6 +109,14 @@ abstract class FunctionCall with _$FunctionCall {
 abstract class GeminiFunctionResponse with _$GeminiFunctionResponse {
   const factory GeminiFunctionResponse({
     required String name,
-    @Default([]) List<String> args,
+    @Default({}) Map<String, dynamic> args,
+    String? thoughtSignature,
   }) = _GeminiFunctionResponse;
+
+  factory GeminiFunctionResponse.fromJson(Map<String, dynamic> json) =>
+      _$GeminiFunctionResponseFromJson(json);
+}
+
+extension GeminiFunctionResponseX on GeminiFunctionResponse {
+  FunctionCall toFunctionCall() => FunctionCall(name: name, args: args);
 }
