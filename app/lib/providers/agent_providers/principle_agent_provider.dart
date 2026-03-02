@@ -78,7 +78,11 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
 
     try {
       await retry(() async {
-        final response = await _model.fetch(_buildPrompt(diff), verbose: false);
+        final response = await _model.fetch(
+          _buildPrompt(diff),
+          verbose: false,
+          key: ref.read(appNotifierProvider).apiKey,
+        );
 
         var history = List<String>.from(state.callHistory);
         var calls = response.calls;
@@ -109,7 +113,10 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
 
     try {
       await retry(() async {
-        final response = await _observer.fetch(noteContent);
+        final response = await _observer.fetch(
+          noteContent,
+          key: ref.read(appNotifierProvider).apiKey,
+        );
         state = state.copyWith(fingerprint: response.content);
       });
     } catch (e) {

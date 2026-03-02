@@ -1,17 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:note_demo/app/sidepanel.dart';
 
 part 'mac_menu_bar.dart';
 part 'windows_menu_bar.dart';
-
-typedef MenuBarFunctions = ({
-  Function() newFile,
-  Function() openFile,
-  Function() saveFile,
-  Function(ThemeMode) toggleTheme,
-  Function() openDebugView,
-});
 
 class OSMenuBar extends StatelessWidget {
   final MenuBarFunctions functions;

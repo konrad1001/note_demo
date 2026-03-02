@@ -10,12 +10,16 @@ import 'package:note_demo/util/error/errors.dart';
 part 'models.freezed.dart';
 part 'models.g.dart';
 
+enum Build { mock, dev, test }
+
 @freezed
 abstract class AppState with _$AppState {
   const factory AppState({
     required NMetaData currentFileMetaData,
+    required Build build,
     String? autoFileName,
     String? userSetFileName,
+    String? apiKey,
   }) = _AppState;
 
   factory AppState.fromJson(Map<String, dynamic> json) =>
@@ -128,6 +132,16 @@ abstract class Insight with _$Insight {
     @Default(false) bool stagedForDeletion,
   }) = _FunctionCallInsight;
 
+  const factory Insight.error({
+    required String message,
+    required int code,
+    required Embedding? queryEmbedding,
+    @Default(UserRating.neither) UserRating rating,
+    @Default(false) bool markForDeletion,
+    @Default(false) bool stagedForDeletion,
+    required DateTime created,
+  }) = _ErrorInsight;
+
   // Use for agent responses that shouldn't be displayed to the user, like steps in agent pipeline
   const factory Insight.meta({
     String? notes,
@@ -148,7 +162,6 @@ abstract class NoteContentState with _$NoteContentState {
   const factory NoteContentState({
     required MarkdownTextEditingController editingController,
     required String previousContent,
-    NError? error,
   }) = _NoteContentState;
 }
 
@@ -272,6 +285,7 @@ extension InsightX on Insight {
     focusEvent: (_) => "Focus Event",
     meta: (_) => "Meta step",
     functionCall: (_) => "Function call",
+    error: (_) => "Error",
   );
 }
 

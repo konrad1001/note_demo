@@ -287,3 +287,8 @@ const kMindMapSchema = {
   "required": ["id", "title", "nodes"],
   "propertyOrdering": ["id", "title", "nodes"],
 };
+
+const kTesterString = """
+# Hello tester!
+This is the test build.
+""";

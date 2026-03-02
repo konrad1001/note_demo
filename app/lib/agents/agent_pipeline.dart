@@ -8,6 +8,7 @@ class AgentPipeline {
   int pipeLength;
   List<String> promptPipe;
   String? additionalPromptInput;
+  String? key;
 
   final agent = GPTAgent<TextResponse>(role: AgentRole.pipeline);
 
@@ -15,6 +16,7 @@ class AgentPipeline {
     this.pipeLength, {
     required this.promptPipe,
     this.additionalPromptInput,
+    this.key,
   }) {
     assert(
       pipeLength == promptPipe.length,
@@ -38,6 +40,7 @@ class AgentPipeline {
         final next = await agent.fetch(
           '$prompt ${responseChain.last}',
           verbose: false,
+          key: key,
         );
         responseChain.add(next.content);
         yield PipelineResult.step(object: next.content, index: i + 1);

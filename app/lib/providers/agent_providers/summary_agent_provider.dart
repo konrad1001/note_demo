@@ -52,6 +52,7 @@ class SummaryAgentNotifier extends Notifier<SummaryAgentState> {
         final design = await _model.fetch(
           _buildPrompt(noteContent.text, call),
           verbose: false,
+          key: ref.read(appNotifierProvider).apiKey,
         );
 
         final embedding = await _embedder.embed(noteContent.text);

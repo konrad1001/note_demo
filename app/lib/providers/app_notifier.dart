@@ -18,8 +18,21 @@ class AppNotifier extends Notifier<AppState> {
 
   @override
   AppState build() {
-    return AppState(currentFileMetaData: NMetaData());
+    const String kEnvironment = String.fromEnvironment("ENVIRONMENT");
+    final build = switch (kEnvironment) {
+      "TEST" => Build.test,
+      "DEV" => Build.dev,
+      _ => Build.mock,
+    };
+
+    return AppState(currentFileMetaData: NMetaData(), build: build);
   }
+
+  void setApiKey(String key) => state = state.copyWith(apiKey: key);
+
+  String? get apiKey => (state.build == Build.test)
+      ? state.apiKey
+      : String.fromEnvironment("GEMINI_KEY");
 
   void loadFromFile() async {
     final File? file = await ref.watch(fileServiceProvider).pickFile();

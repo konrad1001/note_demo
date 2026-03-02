@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:note_demo/agents/chat_turn.dart';
-import 'package:note_demo/agents/utils/tool_utils.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/util/error/errors.dart';
 
 const kGeminiFlashId = "gemini-2.5-flash";
 const kGeminiFlashLiteId = "gemini-2.5-flash-lite";
@@ -31,23 +31,24 @@ class GeminiService {
     List<ChatTurn> history = const [],
     bool verbose = false,
     String? injectedSystemInstructions,
+    required String key,
   }) async {
     final response = await http.post(
       _url(modelId: kGeminiFlashId, withStreaming: false),
-      headers: _headers,
+      headers: _headers(key),
       body: _body(prompt, history, injectedSystemInstructions),
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
 
-      if (true) print(response.body);
+      if (verbose) print(response.body);
 
       final modelResponse = GeminiResponse.fromJson(data);
 
       return modelResponse;
     } else {
-      throw Exception('Failed to fetch data: ${response.statusCode}');
+      throw ApiException(response.statusCode, response.reasonPhrase);
     }
   }
 
@@ -56,16 +57,16 @@ class GeminiService {
     List<ChatTurn> history = const [],
     bool verbose = false,
     String? injectedSystemInstructions,
+    required String key,
   }) async* {
     var client = http.Client();
     try {
-      const geminiKey = String.fromEnvironment("GEMINI_KEY");
       final request = http.Request(
         'POST',
         _url(modelId: kGeminiFlashId, withStreaming: true),
       );
       request.headers['Content-Type'] = 'application/json';
-      request.headers['x-goog-api-key'] = geminiKey;
+      request.headers['x-goog-api-key'] = key;
 
       request.body = _body(prompt, history, injectedSystemInstructions);
 
@@ -78,7 +79,6 @@ class GeminiService {
         await for (final chunk in streamedResponse.stream.transform(
           utf8.decoder,
         )) {
-          print(chunk);
           for (final char in chunk.split('')) {
             buffer.write(char);
 
@@ -103,6 +103,12 @@ class GeminiService {
             }
           }
         }
+      } else {
+        // Handle Error
+        throw ApiException(
+          streamedResponse.statusCode,
+          streamedResponse.reasonPhrase,
+        );
       }
     } finally {
       client.close();
@@ -113,10 +119,8 @@ class GeminiService {
     'https://generativelanguage.googleapis.com/v1beta/models/$modelId:${withStreaming ? "streamGenerateContent" : "generateContent"}',
   );
 
-  Map<String, String> get _headers {
-    const apiKey = String.fromEnvironment("GEMINI_KEY");
-
-    return {'Content-Type': 'application/json', 'x-goog-api-key': apiKey};
+  Map<String, String> _headers(String key) {
+    return {'Content-Type': 'application/json', 'x-goog-api-key': key};
   }
 
   String _body(

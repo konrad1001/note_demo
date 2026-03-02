@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,8 +13,25 @@ import 'package:note_demo/screens/mindmap_screen.dart';
 import 'package:note_demo/screens/resource_screen.dart';
 import 'package:note_demo/util/navigator.dart';
 import 'package:note_demo/widgets/blurred_container.dart';
-import 'package:note_demo/widgets/insights/focus_event_widget.dart';
 import 'package:note_demo/widgets/mindmap_preview.dart';
+
+part 'focus_event_widget.dart';
+part 'error_insight_widget.dart';
+
+String _formatDateTime(DateTime date, {int mode = 0}) {
+  String two(int n) => n.toString().padLeft(2, '0');
+
+  final hour = two(date.hour);
+  final minute = two(date.minute);
+  final day = two(date.day);
+  final month = two(date.month);
+
+  if (mode == 0) {
+    return "$hour:$minute $day/$month";
+  } else {
+    return "$hour:$minute";
+  }
+}
 
 class InsightWidget extends StatelessWidget {
   const InsightWidget({super.key, required this.insight});
@@ -81,6 +100,11 @@ class InsightWidget extends StatelessWidget {
         insight: insight,
         event: FocusEvent(startTime: event.startTime, duration: event.duration),
       ),
+      error: (error) => ErrorInsight(
+        message: error.message,
+        date: error.created,
+        code: error.code,
+      ),
       orElse: () => const SizedBox.shrink(),
     );
   }
@@ -116,17 +140,6 @@ class _InsightContainer extends ConsumerWidget {
   final DateTime date;
 
   final bool rateable;
-
-  String _formatDateTime(DateTime date) {
-    String two(int n) => n.toString().padLeft(2, '0');
-
-    final hour = two(date.hour);
-    final minute = two(date.minute);
-    final day = two(date.day);
-    final month = two(date.month);
-
-    return "$hour:$minute $day/$month";
-  }
 
   Widget _stagedForDeletionCard(
     Insight insight,

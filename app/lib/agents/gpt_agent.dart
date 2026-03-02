@@ -4,8 +4,9 @@ import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/agents/utils/gemini_service.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/models/models.dart';
+import 'package:note_demo/util/error/errors.dart';
 
-class GPTAgent<T extends AgentResponse> {
+class GPTAgent<T extends InsightConvertable> {
   final AgentRole role;
   late GeminiService _geminiService;
 
@@ -25,10 +26,14 @@ class GPTAgent<T extends AgentResponse> {
     bool verbose = false,
     List<ChatTurn> history = const [],
     String? injectedSystemInstructions,
+    required String? key,
   }) async {
     if (_busy) {
       print("Agent ${role.name} busy");
-      throw Exception("Agent ${role.name} is busy");
+      throw Exception("Agent ${role.name} is busy!");
+    }
+    if (key == null) {
+      throw LogicException.missingApiToken();
     }
 
     _busy = true;
@@ -39,6 +44,7 @@ class GPTAgent<T extends AgentResponse> {
         verbose: verbose,
         history: history,
         injectedSystemInstructions: injectedSystemInstructions,
+        key: key,
       );
       _busy = false;
       return role.convert(response);
@@ -53,10 +59,14 @@ class GPTAgent<T extends AgentResponse> {
     bool verbose = false,
     List<ChatTurn> history = const [],
     String? injectedSystemInstructions,
+    required String? key,
   }) async* {
     if (_busy) {
       print("Agent ${role.name} busy");
       throw Exception("Agent ${role.name} is busy");
+    }
+    if (key == null) {
+      throw LogicException.missingApiToken();
     }
 
     _busy = true;
@@ -67,6 +77,7 @@ class GPTAgent<T extends AgentResponse> {
         verbose: verbose,
         history: history,
         injectedSystemInstructions: injectedSystemInstructions,
+        key: key,
       )) {
         yield role.convert(chunk);
       }

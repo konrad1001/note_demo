@@ -20,6 +20,7 @@ class InsightNotifier extends Notifier<Insights> {
   }
 
   void append({required Insight insight}) {
+    print("appending. ${state.print()} + $insight");
     state = state + [insight];
   }
 
@@ -75,3 +76,7 @@ class InsightNotifier extends Notifier<Insights> {
 final insightProvider = NotifierProvider<InsightNotifier, Insights>(
   () => InsightNotifier(),
 );
+
+extension InsightsX on Insights {
+  String print() => map((i) => "${i.name}.").join("");
+}

@@ -9,6 +9,7 @@ import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/agent_providers/conversation_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/tool_agent.dart';
+import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
@@ -48,7 +49,10 @@ class MindmapAgentNotifier extends Notifier<MindmapAgentState> {
 
     try {
       await retry(() async {
-        final response = await _model.fetch("<User> $notes");
+        final response = await _model.fetch(
+          "<User> $notes",
+          key: ref.read(appNotifierProvider).apiKey,
+        );
         final embedding = await _embedder.embed(notes);
 
         ref

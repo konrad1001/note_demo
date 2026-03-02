@@ -19,6 +19,14 @@
       "toolArgs": ["--dart-define-from-file=config.json"],
       "program": "app/lib/main.dart",
       "args": ["--dart-define=ENVIRONMENT=DEV"]
+    },
+    {
+      "name": "note_demo (Test)",
+      "request": "launch",
+      "type": "dart",
+      "toolArgs": ["--dart-define-from-file=config.json"],
+      "program": "app/lib/main.dart",
+      "args": ["--dart-define=ENVIRONMENT=TEST"]
     }
   ]
 }

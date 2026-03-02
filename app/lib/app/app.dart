@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/app/app_bar.dart';
+import 'package:note_demo/app/sidepanel.dart';
 import 'package:note_demo/app/theme.dart';
 import 'package:note_demo/providers/agent_providers/mindmap_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/observer_agent_provider.dart';
@@ -56,6 +57,8 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         final theme = ref.watch(themeModeProvider);
         final themeNotifier = ref.watch(themeModeProvider.notifier);
 
+        final build = ref.watch(appNotifierProvider).build;
+
         final isMobile = (Platform.isAndroid || Platform.isIOS);
 
         final screenWidth = MediaQuery.of(context).size.width;
@@ -81,6 +84,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
             drawer: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 400),
               child: SidePanelWidget(
+                buildType: build,
                 currentTheme: theme,
                 functions: (
                   newFile: ref.watch(appNotifierProvider.notifier).newFile,
@@ -92,6 +96,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                     themeNotifier.toggle();
                   },
                   openDebugView: () {},
+                  openTestView: () {},
                 ),
               ),
             ),
@@ -150,99 +155,6 @@ class _AppState extends State<App> with TickerProviderStateMixin {
           ),
         );
       },
-    );
-  }
-}
-
-class SidePanelWidget extends StatelessWidget {
-  const SidePanelWidget({
-    super.key,
-    required this.functions,
-    required this.currentTheme,
-  });
-
-  final MenuBarFunctions functions;
-  final ThemeMode currentTheme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 64,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: Icon(Icons.chevron_left),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Column(
-          children: [
-            _menuButton("Open File", functions.openFile, context),
-            _menuButton("Save", functions.saveFile, context),
-            _menuButton("New", functions.newFile, context),
-            _menuButton(
-              "Open Debug",
-              () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (context) => DebugScreen()));
-              },
-              context,
-              dontAutoPop: true,
-            ),
-            _themeToggle(context, functions.toggleTheme),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _menuButton(
-    String name,
-    VoidCallback onPressed,
-    BuildContext context, {
-    bool dontAutoPop = false,
-  }) {
-    return MenuItemButton(
-      onPressed: () {
-        onPressed();
-        if (!dontAutoPop) Navigator.of(context).pop();
-      },
-      child: Text(name),
-    );
-  }
-
-  Widget _themeToggle(
-    BuildContext context,
-    Function(ThemeMode) onValueChanged,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Text("Theme", style: TextStyle(fontWeight: FontWeight.w600)),
-          Spacer(),
-          CupertinoSegmentedControl<ThemeMode>(
-            groupValue: currentTheme,
-            onValueChanged: (ThemeMode mode) {
-              onValueChanged(mode);
-            },
-            children: const {
-              ThemeMode.light: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Text('Light'),
-              ),
-              ThemeMode.dark: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Text('Dark'),
-              ),
-            },
-          ),
-        ],
-      ),
     );
   }
 }

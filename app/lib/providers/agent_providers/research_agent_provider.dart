@@ -53,6 +53,8 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
     final pipeline = AgentPipeline(
       3,
       promptPipe: kExternalResearchPromptPipe,
+      key: ref.read(appNotifierProvider).apiKey,
+
       // additionalPromptInput: call  TODO: FIX
       //     .args
       //     .first, // Cheeky but I know this type of call will only have one argument.

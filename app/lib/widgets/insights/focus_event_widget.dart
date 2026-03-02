@@ -1,10 +1,4 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:note_demo/providers/insight_notifier.dart';
-import 'package:note_demo/providers/models/models.dart';
+part of 'insight_widget.dart';
 
 class FocusEventWidget extends ConsumerStatefulWidget {
   const FocusEventWidget({
@@ -55,21 +49,6 @@ class _FocusEventWidgetState extends ConsumerState<FocusEventWidget> {
   void dispose() {
     _timer?.cancel();
     super.dispose();
-  }
-
-  String _formatDateTime(DateTime date, {int mode = 0}) {
-    String two(int n) => n.toString().padLeft(2, '0');
-
-    final hour = two(date.hour);
-    final minute = two(date.minute);
-    final day = two(date.day);
-    final month = two(date.month);
-
-    if (mode == 0) {
-      return "$hour:$minute $day/$month";
-    } else {
-      return "$hour:$minute";
-    }
   }
 
   String _formatDuration(Duration duration) {

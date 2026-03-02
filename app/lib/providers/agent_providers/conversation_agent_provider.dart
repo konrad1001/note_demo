@@ -4,9 +4,11 @@ import 'package:note_demo/agents/chat_turn.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
+import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
+import 'package:note_demo/util/error/errors.dart';
 import 'package:note_demo/util/future.dart';
 
 class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
@@ -32,6 +34,7 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     final buffer = StringBuffer();
     var isFirstChunk = true;
     var isCalling = false;
+    var failed = false;
 
     try {
       await for (final chunk in _model.stream(
@@ -39,6 +42,7 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
         verbose: true,
         history: chatHistory,
         injectedSystemInstructions: principle.fingerprint,
+        key: ref.read(appNotifierProvider).apiKey,
       )) {
         if (chunk.calls.isNotEmpty) {
           print("calling: ${chunk.calls}");
@@ -77,8 +81,10 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     } catch (e) {
       state = state.copyWith(isLoading: false);
       print("Conversation agent error $e");
+      handleException(e, ref);
+      failed = true;
     } finally {
-      if (!isCalling) {
+      if (!isCalling && !failed) {
         insightNotifier.updateLatest(
           insight: _insight(
             ChatRole.agent,
@@ -87,6 +93,7 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
           ),
         );
       }
+
       state = state.copyWith(isLoading: false, calls: []);
     }
   }
@@ -106,6 +113,7 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     final response = await _model.fetch(
       "Result of function call: Generation Completed Successfully",
       history: history,
+      key: ref.read(appNotifierProvider).apiKey,
     );
 
     print(response);

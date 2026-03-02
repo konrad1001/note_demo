@@ -5,6 +5,7 @@ import 'package:note_demo/agents/utils/embedding_service.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/providers/agent_providers/conversation_agent_provider.dart';
+import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
@@ -49,6 +50,7 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
         final response = await _model.fetch(
           _buildPrompt(content, call),
           verbose: false,
+          key: ref.read(appNotifierProvider).apiKey,
         );
 
         final embedding = await _embedder.embed(content);

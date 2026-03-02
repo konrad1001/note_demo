@@ -7,14 +7,14 @@ import 'package:note_demo/providers/models/models.dart';
 part 'models.freezed.dart';
 part 'models.g.dart';
 
-abstract class AgentResponse {
-  const AgentResponse();
+abstract class InsightConvertable {
+  const InsightConvertable();
 
   Insight toInsight(Embedding? queryEmbedding);
 }
 
 @freezed
-abstract class PrincipleResponse extends AgentResponse
+abstract class PrincipleResponse extends InsightConvertable
     with _$PrincipleResponse {
   const PrincipleResponse._();
   const factory PrincipleResponse({
@@ -28,7 +28,7 @@ abstract class PrincipleResponse extends AgentResponse
 }
 
 @freezed
-abstract class ExternalResearchResponse extends AgentResponse
+abstract class ExternalResearchResponse extends InsightConvertable
     with _$ExternalResearchResponse {
   const ExternalResearchResponse._();
   const factory ExternalResearchResponse({required String content}) =
@@ -43,7 +43,7 @@ abstract class ExternalResearchResponse extends AgentResponse
 }
 
 @freezed
-abstract class MindMap extends AgentResponse with _$MindMap {
+abstract class MindMap extends InsightConvertable with _$MindMap {
   const MindMap._();
   const factory MindMap({
     required String id,
@@ -76,7 +76,7 @@ abstract class MindMapNode with _$MindMapNode {
 }
 
 @freezed
-abstract class TextResponse extends AgentResponse with _$TextResponse {
+abstract class TextResponse extends InsightConvertable with _$TextResponse {
   const TextResponse._();
   const factory TextResponse({
     required String content,
@@ -89,7 +89,7 @@ abstract class TextResponse extends AgentResponse with _$TextResponse {
 }
 
 @freezed
-abstract class StudyDesign extends AgentResponse with _$StudyDesign {
+abstract class StudyDesign extends InsightConvertable with _$StudyDesign {
   const StudyDesign._();
 
   const factory StudyDesign({required String title, required String summary}) =
@@ -113,7 +113,7 @@ abstract class StudyDesign extends AgentResponse with _$StudyDesign {
 }
 
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
-abstract class StudyTools extends AgentResponse with _$StudyTools {
+abstract class StudyTools extends InsightConvertable with _$StudyTools {
   const StudyTools._();
 
   @FreezedUnionValue('flashcards')
