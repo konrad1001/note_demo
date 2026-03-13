@@ -54,7 +54,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     if (diff.size > _kMinDiff && timeSinceLastCall > _kMinTime) {
       noteContentNotifier.setPreviousContent(value);
       try {
-        await _runPrinciple(diff);
+        // await _runPrinciple(diff);
         _lastCallTime = now;
       } catch (e) {
         noteContentNotifier.setPreviousContent(prev);
@@ -76,12 +76,15 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
 
     _runObserver();
 
+    print("running principle");
+    print(ref.read(appNotifierProvider.notifier).apiKey);
+
     try {
       await retry(() async {
         final response = await _model.fetch(
           _buildPrompt(diff),
           verbose: false,
-          key: ref.read(appNotifierProvider).apiKey,
+          key: ref.read(appNotifierProvider.notifier).apiKey,
         );
 
         var history = List<String>.from(state.callHistory);
@@ -103,6 +106,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
         );
       }, onRetry: (e, i) {});
     } catch (e) {
+      print("Principle error $e");
       state = state.copyWith(isLoading: false);
       rethrow;
     }

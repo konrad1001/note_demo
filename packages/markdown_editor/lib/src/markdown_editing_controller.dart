@@ -78,7 +78,7 @@ class MarkdownTextEditingController extends TextEditingController {
           line.substring(2),
           baseStyle.copyWith(
             fontStyle: FontStyle.italic,
-            color: Colors.grey[700],
+            color: const Color.fromARGB(255, 146, 146, 146),
           ),
         ),
       );

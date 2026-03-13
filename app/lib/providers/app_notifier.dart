@@ -30,9 +30,13 @@ class AppNotifier extends Notifier<AppState> {
 
   void setApiKey(String key) => state = state.copyWith(apiKey: key);
 
-  String? get apiKey => (state.build == Build.test)
-      ? state.apiKey
-      : String.fromEnvironment("GEMINI_KEY");
+  String? get apiKey {
+    final fromEnv = String.fromEnvironment("GEMINI_KEY");
+
+    print("fromenv: $fromEnv, build: ${state.build}");
+
+    return (state.build == Build.test) ? state.apiKey : fromEnv;
+  }
 
   void loadFromFile() async {
     final File? file = await ref.watch(fileServiceProvider).pickFile();

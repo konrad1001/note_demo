@@ -149,8 +149,6 @@ class GeminiService {
       };
     }
 
-    print(contents);
-
     return jsonEncode(body);
   }
 

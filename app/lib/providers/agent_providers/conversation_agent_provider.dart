@@ -107,7 +107,6 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     );
 
     insightNotifier.append(insight: functionCallResponse);
-    print(insights);
     final history = _generateHistory(insights);
 
     final response = await _model.fetch(
@@ -115,8 +114,6 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
       history: history,
       key: ref.read(appNotifierProvider).apiKey,
     );
-
-    print(response);
 
     insightNotifier.append(
       insight: Insight.chat(

@@ -30,3 +30,5 @@
     }
   ]
 }
+
+// flutter run -d macos --dart-define-from-file=config.json --dart-define=ENVIRONMENT=DEV
