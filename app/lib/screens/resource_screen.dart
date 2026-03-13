@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
-import 'package:note_demo/widgets/flashcard_carousel.dart';
+import 'package:note_demo/widgets/resources/flashcard_widget.dart';
+import 'package:note_demo/widgets/resources/qa_widget.dart';
 
 class ResourceScreen extends StatelessWidget {
   const ResourceScreen({super.key, required this.colour, required this.tool});
@@ -12,7 +13,6 @@ class ResourceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: colour,
         leading: IconButton(
           onPressed: () {
             Navigator.of(context).pop();
@@ -41,40 +41,17 @@ class _ResourceWidget extends StatelessWidget {
           children: [
             Text(
               tool.title,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
             Column(
               spacing: 8,
               crossAxisAlignment: CrossAxisAlignment.start,
-
               children: tool.map(
                 flashcards: (flashcards) => [
-                  ...flashcards.items.map(
-                    (item) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(item.front),
-                        Text(
-                          item.back,
-                          style: TextStyle(fontStyle: FontStyle.italic),
-                        ),
-                      ],
-                    ),
-                  ),
+                  FlashcardWidget(flashcards: flashcards.items),
                 ],
                 qas: (qas) => [
-                  ...qas.items.map(
-                    (item) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(item.question),
-                        Text(
-                          item.answer,
-                          style: TextStyle(fontStyle: FontStyle.italic),
-                        ),
-                      ],
-                    ),
-                  ),
+                  QuestionAnswerWidget(questionAnswers: qas.items),
                 ],
                 keywords: (keywords) => [
                   ...keywords.items.map(

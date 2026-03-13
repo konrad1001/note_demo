@@ -29,9 +29,11 @@ void main() async {
 
     WindowOptions windowOptions = WindowOptions(
       title: "Notable",
-      size: Size(1000, 600),
-      minimumSize: Size(800, 500),
+      size: Size(1250, 800),
+      minimumSize: Size(1000, 600),
       skipTaskbar: false,
+      alwaysOnTop: false,
+      center: true,
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();

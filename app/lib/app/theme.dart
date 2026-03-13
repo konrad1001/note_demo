@@ -35,8 +35,5 @@ final ThemeData darkTheme = ThemeData(
     surfaceTintColor: _appBlack,
     foregroundColor: Colors.white,
   ),
-  colorScheme: ColorScheme.dark(
-    primary: Colors.blueGrey,
-    secondary: Colors.tealAccent,
-  ),
+  colorScheme: ColorScheme.dark(primary: Colors.blueAccent),
 );

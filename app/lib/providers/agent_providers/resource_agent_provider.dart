@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
@@ -9,6 +11,7 @@ import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
+import 'package:note_demo/providers/note_content_provider.dart';
 import 'package:note_demo/util/future.dart';
 
 const kStudyToolsNotifierToolName = "resources";
@@ -28,22 +31,24 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
       final call = next.callsMe(kStudyToolsNotifierToolName);
       if (call != null) {
-        _updateTools(call);
+        _updateTools(call, null);
       }
     });
 
     ref.listen<ConversationAgentState>(conversationAgentProvider, (prev, next) {
       final call = next.callsMe(kStudyToolsNotifierToolName);
       if (call != null) {
-        _updateTools(call);
+        _updateTools(call, next.callback);
       }
     });
   }
 
-  // Uses principle diff only
-  void _updateTools(GeminiFunctionResponse call) async {
+  // Uses principle diff only. All content if called from conversation
+  void _updateTools(GeminiFunctionResponse call, VoidCallback? onFinish) async {
     state = state.copyWith(isLoading: true);
-    final content = ref.read(principleAgentProvider).diff?.additions ?? "";
+    final content = (onFinish == null)
+        ? ref.read(principleAgentProvider).diff?.additions ?? ""
+        : ref.read(noteContentProvider).text;
 
     try {
       await retry(() async {
@@ -69,6 +74,7 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
                 queryEmbedding: null,
               ),
             );
+        onFinish?.call();
       }, retries: _retryLimit);
     } catch (e) {
       state = state.copyWith(isLoading: false);
