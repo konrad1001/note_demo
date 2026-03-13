@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/widgets/resources/flashcard_widget.dart';
+import 'package:note_demo/widgets/resources/keyword_widget.dart';
 import 'package:note_demo/widgets/resources/qa_widget.dart';
 
 class ResourceScreen extends StatelessWidget {
@@ -54,18 +55,7 @@ class _ResourceWidget extends StatelessWidget {
                   QuestionAnswerWidget(questionAnswers: qas.items),
                 ],
                 keywords: (keywords) => [
-                  ...keywords.items.map(
-                    (item) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(item.keyword),
-                        Text(
-                          item.definition,
-                          style: TextStyle(fontStyle: FontStyle.italic),
-                        ),
-                      ],
-                    ),
-                  ),
+                  KeywordDefinitionsWidget(keywords: keywords.items),
                 ],
               ),
             ),

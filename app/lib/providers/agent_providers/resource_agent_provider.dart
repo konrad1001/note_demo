@@ -12,6 +12,7 @@ import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
+import 'package:note_demo/util/error/errors.dart';
 import 'package:note_demo/util/future.dart';
 
 const kStudyToolsNotifierToolName = "resources";
@@ -78,6 +79,7 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
       }, retries: _retryLimit);
     } catch (e) {
       state = state.copyWith(isLoading: false);
+      handleException(e, ref);
       print("Resource agent _updateTools error: $e");
     }
   }
