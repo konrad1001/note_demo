@@ -36,13 +36,15 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     var isCalling = false;
     var failed = false;
 
+    final key = ref.read(appNotifierProvider.notifier).apiKey;
+
     try {
       await for (final chunk in _model.stream(
         message,
         verbose: true,
         history: chatHistory,
         injectedSystemInstructions: principle.fingerprint,
-        key: ref.read(appNotifierProvider).apiKey,
+        key: key,
       )) {
         if (chunk.calls.isNotEmpty) {
           print("calling: ${chunk.calls}");
@@ -112,7 +114,7 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     final response = await _model.fetch(
       "Result of function call: Generation Completed Successfully",
       history: history,
-      key: ref.read(appNotifierProvider).apiKey,
+      key: ref.read(appNotifierProvider.notifier).apiKey,
     );
 
     insightNotifier.append(

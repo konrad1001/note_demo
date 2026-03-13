@@ -119,7 +119,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
       await retry(() async {
         final response = await _observer.fetch(
           noteContent,
-          key: ref.read(appNotifierProvider).apiKey,
+          key: ref.read(appNotifierProvider.notifier).apiKey,
         );
         state = state.copyWith(fingerprint: response.content);
       });

@@ -5,7 +5,6 @@ import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 
 void handleException(Object e, Ref ref) {
-  print("Handling $e,");
   if (e is NException) {
     ref.read(insightProvider.notifier).append(insight: e.toInsight(null));
   } else if (e is Exception) {

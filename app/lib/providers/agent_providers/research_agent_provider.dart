@@ -53,7 +53,7 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
     final pipeline = AgentPipeline(
       3,
       promptPipe: kExternalResearchPromptPipe,
-      key: ref.read(appNotifierProvider).apiKey,
+      key: ref.read(appNotifierProvider.notifier).apiKey,
 
       // additionalPromptInput: call  TODO: FIX
       //     .args

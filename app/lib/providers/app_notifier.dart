@@ -31,9 +31,7 @@ class AppNotifier extends Notifier<AppState> {
   void setApiKey(String key) => state = state.copyWith(apiKey: key);
 
   String? get apiKey {
-    final fromEnv = String.fromEnvironment("GEMINI_KEY");
-
-    print("fromenv: $fromEnv, build: ${state.build}");
+    const fromEnv = String.fromEnvironment("GEMINI_KEY");
 
     return (state.build == Build.test) ? state.apiKey : fromEnv;
   }

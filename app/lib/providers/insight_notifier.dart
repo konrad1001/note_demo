@@ -20,7 +20,6 @@ class InsightNotifier extends Notifier<Insights> {
   }
 
   void append({required Insight insight}) {
-    print("appending. ${state.print()} + $insight");
     state = state + [insight];
   }
 

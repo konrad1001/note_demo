@@ -50,7 +50,7 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
         final response = await _model.fetch(
           _buildPrompt(content, call),
           verbose: false,
-          key: ref.read(appNotifierProvider).apiKey,
+          key: ref.read(appNotifierProvider.notifier).apiKey,
         );
 
         final embedding = await _embedder.embed(content);

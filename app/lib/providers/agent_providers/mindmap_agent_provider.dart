@@ -51,7 +51,7 @@ class MindmapAgentNotifier extends Notifier<MindmapAgentState> {
       await retry(() async {
         final response = await _model.fetch(
           "<User> $notes",
-          key: ref.read(appNotifierProvider).apiKey,
+          key: ref.read(appNotifierProvider.notifier).apiKey,
         );
         final embedding = await _embedder.embed(notes);
 
