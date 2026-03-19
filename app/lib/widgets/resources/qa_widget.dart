@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 
 class QuestionAnswerWidget extends StatefulWidget {
@@ -53,62 +54,52 @@ class _QuestionAnswerWidgetState extends State<QuestionAnswerWidget> {
       );
     }
 
-    return Container(
-      width: widget.width,
-      constraints: const BoxConstraints(maxHeight: 600),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Header with expand/collapse all
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${widget.questionAnswers.length} Questions',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                TextButton.icon(
-                  onPressed: _toggleExpandAll,
-                  icon: Icon(
-                    _expandAll ? Icons.unfold_less : Icons.unfold_more,
-                  ),
-                  label: Text(_expandAll ? 'Collapse All' : 'Expand All'),
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${widget.questionAnswers.length} Questions',
 
-          // Scrollable Q&A list
-          Flexible(
-            child: ListView.separated(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(16.0),
-              itemCount: widget.questionAnswers.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final qa = widget.questionAnswers[index];
-                final isExpanded = _expandedIndices.contains(index);
-
-                return _QuestionAnswerCard(
-                  questionNumber: index + 1,
-                  question: qa.question,
-                  answer: qa.answer,
-                  isExpanded: isExpanded,
-                  onTap: () => _toggleExpanded(index),
-                );
-              },
-            ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              TextButton.icon(
+                onPressed: _toggleExpandAll,
+                icon: Icon(_expandAll ? Icons.unfold_less : Icons.unfold_more),
+                label: Text(_expandAll ? 'Collapse All' : 'Expand All'),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        Opacity(opacity: 0.5, child: const Divider(height: 1)),
+
+        Flexible(
+          child: ListView.separated(
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(16.0),
+            itemCount: widget.questionAnswers.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final qa = widget.questionAnswers[index];
+              final isExpanded = _expandedIndices.contains(index);
+
+              return _QuestionAnswerCard(
+                questionNumber: index + 1,
+                question: qa.question,
+                answer: qa.answer,
+                isExpanded: isExpanded,
+                onTap: () => _toggleExpanded(index),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -121,13 +112,12 @@ class _QuestionAnswerCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const _QuestionAnswerCard({
-    Key? key,
     required this.questionNumber,
     required this.question,
     required this.answer,
     required this.isExpanded,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -151,11 +141,9 @@ class _QuestionAnswerCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Question
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Question number badge
                   Container(
                     width: 32,
                     height: 32,
@@ -215,7 +203,6 @@ class _QuestionAnswerCard extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.green[50],
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.green[200]!, width: 1),
                       ),
@@ -242,14 +229,7 @@ class _QuestionAnswerCard extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          Text(
-                            answer,
-                            style: Theme.of(context).textTheme.bodyLarge
-                                ?.copyWith(
-                                  height: 1.6,
-                                  color: Colors.grey[800],
-                                ),
-                          ),
+                          Text(answer, style: GoogleFonts.ptSerif()),
                         ],
                       ),
                     ),

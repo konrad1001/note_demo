@@ -6,9 +6,14 @@ import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
 
 class NotesScreen extends ConsumerWidget {
-  const NotesScreen({super.key, required this.controller});
+  const NotesScreen({
+    super.key,
+    required this.controller,
+    required this.isInsightsExpanded,
+  });
 
   final TextEditingController controller;
+  final bool isInsightsExpanded;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,9 +29,9 @@ class NotesScreen extends ConsumerWidget {
               ).textTheme.bodyLarge?.backgroundColor,
               style: TextStyle(fontSize: 14.5),
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.fromLTRB(50, 0, 50, 0),
-                constraints: BoxConstraints(maxWidth: 700),
+                contentPadding: EdgeInsets.fromLTRB(0, 40, 0, 40),
                 isDense: true,
+                constraints: BoxConstraints(maxWidth: 700),
                 border: InputBorder.none,
               ),
               controller: noteContent.editingController,

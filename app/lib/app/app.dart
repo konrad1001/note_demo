@@ -125,7 +125,10 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                     child: OverflowBox(
                       minWidth: 0,
                       maxWidth: screenWidth,
-                      child: NotesScreen(controller: _notesController),
+                      child: NotesScreen(
+                        controller: _notesController,
+                        isInsightsExpanded: isRightPanelOpen,
+                      ),
                     ),
                   ),
                 ),

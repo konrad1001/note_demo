@@ -27,29 +27,27 @@ class MarkdownEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsetsGeometry.symmetric(vertical: 12.0),
-      child: TextField(
-        controller: controller,
-        style: style ?? const TextStyle(fontSize: 16),
-        cursorColor: cursorColor,
-        decoration:
-            decoration ??
-            const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Enter markdown text...',
-            ),
-        maxLines: maxLines,
-        minLines: minLines ?? 10,
-        keyboardType: TextInputType.multiline,
-        onChanged: onChanged,
-        // onTapOutside: ((event) {
-        //   FocusScope.of(context).unfocus();
-        // }),
-        // onTap: () {
-        //   FocusScope.of(context).unfocus();
-        // },
-      ),
+    return TextField(
+      controller: controller,
+      style: style ?? const TextStyle(fontSize: 16),
+      cursorColor: cursorColor,
+      decoration:
+          decoration ??
+          const InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: 'Enter markdown text...',
+          ),
+      maxLines: maxLines,
+      minLines: minLines ?? 10,
+      keyboardType: TextInputType.multiline,
+      onChanged: onChanged,
+      clipBehavior: Clip.none,
+      // onTapOutside: ((event) {
+      //   FocusScope.of(context).unfocus();
+      // }),
+      // onTap: () {
+      //   FocusScope.of(context).unfocus();
+      // },
     );
   }
 }
