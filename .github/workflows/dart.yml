@@ -29,13 +29,16 @@ jobs:
         with:
           channel: stable
           flutter-version: 3.x
-      - run: flutter --version
+      - run: flutter --version ; dart --version
 
       - name: Install dependencies
         run: flutter pub get
 
       - name: Run tests
         run: flutter test
+
+      - name: Run build runner
+        run: dart run build_runner build
 
       - name: Write config
         run: echo '${{ secrets.CONFIG_JSON }}' > config.json
