@@ -69,7 +69,7 @@ void main() {
     test('does not catch non-Exception errors', () async {
       expect(
         () => retry(() {
-          throw Error(); // Should not be caught by "on Exception catch"
+          throw Error();
         }),
         throwsA(isA<Error>()),
       );
