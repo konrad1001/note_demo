@@ -11,10 +11,10 @@ jobs:
         include:
           - os: macos-latest
             platform: macos
-            output: build/macos/Build/Products/Release/*.app
+            output: app/build/macos/Build/Products/Release/*.app
           - os: windows-latest
             platform: windows
-            output: build/windows/x64/runner/Release/
+            output: app/build/windows/x64/runner/Release/
 
     runs-on: ${{ matrix.os }}
     defaults:
