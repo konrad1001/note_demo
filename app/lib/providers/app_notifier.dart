@@ -33,7 +33,7 @@ class AppNotifier extends Notifier<AppState> {
   String? get apiKey {
     const fromEnv = String.fromEnvironment("GEMINI_KEY");
 
-    return (state.build == Build.test) ? state.apiKey : fromEnv;
+    return (fromEnv == "") ? state.apiKey : fromEnv;
   }
 
   void loadFromFile() async {

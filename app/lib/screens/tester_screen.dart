@@ -22,29 +22,29 @@ class TesterScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Test panel"),
-            Row(
-              children: [
-                Flexible(
-                  child: TextField(
-                    decoration: InputDecoration(hintText: "Enter api key..."),
-                    onChanged: (value) {
-                      ref.read(appNotifierProvider.notifier).setApiKey(value);
-                    },
-                  ),
-                ),
-                SizedBox(width: 20),
-                Flexible(
-                  child: Opacity(
-                    opacity:
-                        (ref.read(appNotifierProvider).apiKey == null ||
-                            ref.read(appNotifierProvider).apiKey == "")
-                        ? 0.1
-                        : 1.0,
-                    child: Icon(Icons.check_circle_outline),
-                  ),
-                ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     Flexible(
+            //       child: TextField(
+            //         decoration: InputDecoration(hintText: "Enter api key..."),
+            //         onChanged: (value) {
+            //           ref.read(appNotifierProvider.notifier).setApiKey(value);
+            //         },
+            //       ),
+            //     ),
+            //     SizedBox(width: 20),
+            //     Flexible(
+            //       child: Opacity(
+            //         opacity:
+            //             (ref.read(appNotifierProvider).apiKey == null ||
+            //                 ref.read(appNotifierProvider).apiKey == "")
+            //             ? 0.1
+            //             : 1.0,
+            //         child: Icon(Icons.check_circle_outline),
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),
