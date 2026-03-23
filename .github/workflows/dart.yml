@@ -2,7 +2,7 @@ name: Build Flutter
 
 on:
   push:
-    branches: [ "release" ]
+    branches: ["release"]
 
 jobs:
   build:
@@ -32,4 +32,16 @@ jobs:
         run: cd app ; flutter pub get
 
       - name: Run tests
-        run: fluter test
+        run: flutter test
+
+      - name: Write config
+        run: echo '${{ secrets.CONFIG_JSON }}' > config.json
+
+      - name: Build
+        run: flutter build ${{ matrix.platform }} --release --dart-define-from-file=config.json  --dart-define=ENVIRONMENT=TEST
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}-build
+          path: ${{ matrix.output }}
