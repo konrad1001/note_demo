@@ -17,6 +17,9 @@ jobs:
             output: build/windows/x64/runner/Release/
 
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: app
 
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +32,7 @@ jobs:
       - run: flutter --version
 
       - name: Install dependencies
-        run: cd app ; flutter pub get
+        run: flutter pub get
 
       - name: Run tests
         run: flutter test
