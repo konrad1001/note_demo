@@ -1,0 +1,35 @@
+name: Build Flutter
+
+on:
+  push:
+    branches: [ "release" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            platform: macos
+            output: build/macos/Build/Products/Release/*.app
+          - os: windows-latest
+            platform: windows
+            output: build/windows/x64/runner/Release/
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.x
+      - run: flutter --version
+
+      - name: Install dependencies
+        run: cd app ; flutter pub get
+
+      - name: Run tests
+        run: fluter test
