@@ -116,7 +116,7 @@ class _FocusEventWidgetState extends ConsumerState<FocusEventWidget> {
                       fontWeight: FontWeight.w400,
                       fontSize: 12.0,
                     ),
-                    "A Timer ran from ${_formatDateTime(widget.event.startTime, mode: 1)} for ${_formatDuration(widget.event.duration)}. Well done! Remember to take frequent breaks inbetween work.",
+                    "A Timer ran from ${widget.event.startTime.formatHm()} for ${_formatDuration(widget.event.duration)}. Well done! Remember to take frequent breaks inbetween work.",
                   ),
                 ),
               ],
@@ -158,7 +158,7 @@ class _FocusEventWidgetState extends ConsumerState<FocusEventWidget> {
               ),
               Spacer(),
               Text(
-                _formatDateTime(widget.event.startTime),
+                widget.event.startTime.formatHmDM(),
                 style: TextStyle(
                   fontSize: 11.0,
                   color: Theme.of(

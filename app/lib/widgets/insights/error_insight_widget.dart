@@ -63,7 +63,7 @@ class ErrorInsight extends StatelessWidget {
           Row(
             children: [
               Text(
-                _formatDateTime(date),
+                date.formatHmDM(),
                 style: TextStyle(
                   fontSize: 11.0,
                   color: Theme.of(

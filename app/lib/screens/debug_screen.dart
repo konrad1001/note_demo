@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:note_demo/db/util.dart';
+import 'package:note_demo/models/insights.dart';
 import 'package:note_demo/providers/agent_providers/observer_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/insight_notifier.dart';

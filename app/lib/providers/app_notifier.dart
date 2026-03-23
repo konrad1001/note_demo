@@ -145,6 +145,12 @@ class AppNotifier extends Notifier<AppState> {
     state = state.copyWith(autoFileName: newTitle);
   }
 
+  void setKeyDate(DateTime? newDate) {
+    state = state.copyWith(
+      currentFileMetaData: state.currentFileMetaData.copyWith(keyDate: newDate),
+    );
+  }
+
   String _getFileNameFromPath(String path) {
     if (Platform.isWindows) {
       return path.split("\\").last.split(".").first;

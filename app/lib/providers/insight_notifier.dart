@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/mock/mocks.dart';
+import 'package:note_demo/models/insights.dart';
 import 'package:note_demo/providers/mock_service_provider.dart';
 import 'package:note_demo/providers/models/models.dart';
 
@@ -53,6 +54,10 @@ class InsightNotifier extends Notifier<Insights> {
         return i;
       }
     }).toList();
+  }
+
+  void deleteLast() {
+    state.removeLast();
   }
 
   Map<String, int> get allUserRatings {

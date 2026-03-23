@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/models/insights.dart';
 import 'package:note_demo/providers/agent_providers/conversation_agent_provider.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
@@ -26,9 +27,6 @@ class FocusEventNotifier extends Notifier<FocusEvent?> {
 
   setEvent(FocusEvent event) async {
     if (isActive()) return;
-
-    print("Starting event");
-
     state = event;
 
     ref
@@ -55,7 +53,6 @@ class FocusEventNotifier extends Notifier<FocusEvent?> {
     final event = state;
     if (event == null) return false;
 
-    // Check running focus event
     if (DateTime.now().isAfter(event.endTime)) {
       state = null;
       return false;
@@ -67,7 +64,6 @@ class FocusEventNotifier extends Notifier<FocusEvent?> {
     }
   }
 
-  // TODO: fix timer
   _runFromCall(GeminiFunctionResponse call, VoidCallback? callback) async {
     print(call.args);
     final args = call.args.values.toList();

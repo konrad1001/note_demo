@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:note_demo/models/insights.dart';
 import 'package:note_demo/providers/agent_providers/conversation_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/mindmap_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
@@ -11,6 +12,7 @@ import 'package:note_demo/providers/agent_providers/resource_agent_provider.dart
 import 'package:note_demo/providers/agent_providers/summary_agent_provider.dart';
 import 'package:note_demo/providers/focus_event_provider.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
+import 'package:note_demo/providers/modal_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/widgets/insights/insight_widget.dart';
 
@@ -212,7 +214,12 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
     );
   }
 
-  Widget _toolButton(VoidCallback onTap, {bool active = true}) {
+  Widget _toolButton(
+    VoidCallback onTap, {
+    bool active = true,
+    String label = "",
+    IconData? icon,
+  }) {
     return InkWell(
       onTap: active ? onTap : null,
       child: Opacity(
@@ -246,7 +253,7 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
               child: Row(
                 children: [
                   Icon(
-                    Icons.timelapse,
+                    icon,
                     size: 14,
                     color: Theme.of(
                       context,
@@ -254,7 +261,7 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    "Start Focus Timer",
+                    label,
                     style: TextStyle(
                       fontSize: 11.0,
                       color: Theme.of(
@@ -280,6 +287,10 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
     final research = ref.watch(researchAgentProvider);
     final mindmap = ref.watch(mindmapAgentProvider);
     final events = ref.watch(focusEventProvider);
+
+    final insights = ref.watch(insightProvider);
+
+    final isSettingDate = insights.lastOrNull?.name == "Set Date";
 
     final anyLoading = [
       principle,
@@ -354,18 +365,39 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
             scrollDirection: Axis.horizontal,
             physics: AlwaysScrollableScrollPhysics(),
             children: [
-              _toolButton(() {
-                ref
-                    .read(focusEventProvider.notifier)
-                    .setEvent(
-                      FocusEvent(
-                        startTime: DateTime.now(),
-                        duration: Duration(minutes: 0, seconds: 10),
-                      ),
-                    );
-              }, active: events == null),
+              _toolButton(
+                () {
+                  ref
+                      .read(focusEventProvider.notifier)
+                      .setEvent(
+                        FocusEvent(
+                          startTime: DateTime.now(),
+                          duration: Duration(minutes: 0, seconds: 10),
+                        ),
+                      );
+                },
+                active: events == null,
+                icon: Icons.timelapse,
+                label: "Start Focus Timer",
+              ),
               SizedBox(width: 8),
-              // _ToolButton(),
+              _toolButton(
+                () {
+                  if (!isSettingDate) {
+                    ref
+                        .read(insightProvider.notifier)
+                        .append(
+                          insight: Insight.setDate(
+                            queryEmbedding: null,
+                            created: DateTime.now(),
+                          ),
+                        );
+                  }
+                },
+                active: !isSettingDate,
+                icon: Icons.calendar_today_outlined,
+                label: "Set Key Date",
+              ),
               SizedBox(width: 8),
               // _ToolButton(),
             ],

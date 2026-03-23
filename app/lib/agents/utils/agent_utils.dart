@@ -1,6 +1,7 @@
 import 'package:note_demo/agents/utils/tool_utils.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/models/insights.dart';
 import 'package:note_demo/providers/models/models.dart';
 
 enum AgentRole {
@@ -110,20 +111,7 @@ enum AgentRole {
         return """
           You update the study-plan metadata based on student notes.
 
-          Rules:
-          - Output ONLY valid JSON. No explanations.
-          - Preserve previous fields unless the new notes clearly change the topic.
-          - Use simple, concise language.
-
-          <Schema>
-          {
-            "title": string,         // Infer from dominant topic or heading
-            "summary": string        // ≤40 words, plain-language explanation
-          }
-
-          Validity rule:
-          If the text is not recognizable as study notes (see principal agent criteria), set valid=false in the JSON.
-          
+          Be brief in your summaries.
         """;
       case AgentRole.resourcer:
         return """
@@ -133,9 +121,7 @@ enum AgentRole {
 
           You may be provided with additional instructions you must follow.
 
-          Generate a maximum of 4 items for each type of resource.
-
-          
+          Generate a maximum of 8 items for each type of resource.
         """;
       case AgentRole.researcher:
         return """
@@ -178,7 +164,7 @@ enum AgentRole {
         - When giving explanations, be concise, structured, and conceptually grounded.
 
         You always complete your answers in 2 paragraphs or less. You don't use markup unless necessary.
-
+        Suggest generating a resource for topics after discussing them with users. 
         
         """;
       case _:

@@ -6,6 +6,7 @@ import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/agents/utils/embedding_service.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/models/insights.dart';
 import 'package:note_demo/providers/agent_providers/conversation_agent_provider.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';

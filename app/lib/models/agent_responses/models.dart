@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/agents/utils/embedding_service.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/models/insights.dart';
 import 'package:note_demo/providers/models/models.dart';
 
 part 'models.freezed.dart';

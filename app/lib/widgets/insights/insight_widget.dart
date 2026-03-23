@@ -7,31 +7,19 @@ import 'package:markdown_widget/markdown_widget.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/app/theme.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/models/insights.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/screens/mindmap_screen.dart';
 import 'package:note_demo/screens/resource_screen.dart';
+import 'package:note_demo/util/date_time.dart';
 import 'package:note_demo/util/navigator.dart';
 import 'package:note_demo/widgets/blurred_container.dart';
+import 'package:note_demo/widgets/insights/set_date_widget.dart';
 import 'package:note_demo/widgets/mindmap_preview.dart';
 
 part 'focus_event_widget.dart';
 part 'error_insight_widget.dart';
-
-String _formatDateTime(DateTime date, {int mode = 0}) {
-  String two(int n) => n.toString().padLeft(2, '0');
-
-  final hour = two(date.hour);
-  final minute = two(date.minute);
-  final day = two(date.day);
-  final month = two(date.month);
-
-  if (mode == 0) {
-    return "$hour:$minute $day/$month";
-  } else {
-    return "$hour:$minute";
-  }
-}
 
 class InsightWidget extends StatelessWidget {
   const InsightWidget({super.key, required this.insight});
@@ -105,6 +93,7 @@ class InsightWidget extends StatelessWidget {
         date: error.created,
         code: error.code,
       ),
+      setDate: (date) => KeyDateWidget(created: date.created, insight: date),
       orElse: () => const SizedBox.shrink(),
     );
   }
@@ -406,7 +395,7 @@ class _InsightContainer extends ConsumerWidget {
                             ),
                           Spacer(),
                           Text(
-                            _formatDateTime(date),
+                            date.formatHmDM(),
                             style: TextStyle(
                               fontSize: 11.0,
                               color: Theme.of(context)

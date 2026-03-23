@@ -3,6 +3,7 @@ import 'package:note_demo/agents/gpt_agent.dart';
 import 'package:note_demo/agents/chat_turn.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
+import 'package:note_demo/models/insights.dart';
 import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
