@@ -15,6 +15,7 @@ import 'package:note_demo/screens/resource_screen.dart';
 import 'package:note_demo/util/date_time.dart';
 import 'package:note_demo/util/navigator.dart';
 import 'package:note_demo/widgets/blurred_container.dart';
+import 'package:note_demo/widgets/insights/overview_insight.dart';
 import 'package:note_demo/widgets/insights/set_date_widget.dart';
 import 'package:note_demo/widgets/mindmap_preview.dart';
 
@@ -55,12 +56,7 @@ class InsightWidget extends StatelessWidget {
         date: resource.created,
         insight: insight,
         onTap: () {
-          navigator.push(
-            ResourceScreen(
-              colour: resource.resource.colour,
-              tool: resource.resource,
-            ),
-          );
+          navigator.push(ResourceScreen(tool: resource.resource));
         },
       ),
       mindmap: (mindmap) => _InsightContainer(
@@ -94,8 +90,32 @@ class InsightWidget extends StatelessWidget {
         code: error.code,
       ),
       setDate: (date) => KeyDateWidget(created: date.created, insight: date),
+      overview: (overview) => _InsightContainer(
+        title: _overviewTitle(),
+        markdownBody: _overviewBody(overview.title, overview.keyDate),
+        widget: RecommendedInsightWrap(insights: overview.recommendedInsights),
+        rateable: false,
+        colour: NTheme.primary,
+        date: DateTime.now(),
+        insight: insight,
+      ),
       orElse: () => const SizedBox.shrink(),
     );
+  }
+
+  String _overviewTitle() {
+    final now = DateTime.now();
+    if (now.hour < 12) {
+      return "Good Morning";
+    } else if (now.hour < 18) {
+      return "Good Afternoon";
+    } else {
+      return "Good Evening";
+    }
+  }
+
+  String _overviewBody(String? title, DateTime? keyDate) {
+    return "Welcome back to your notes${(title == null) ? "" : " on $title"}. ${(keyDate != null) ? "You have ${keyDate.formatDaysFromNow()} days to go until your key date." : ""} Well done for checking in!";
   }
 }
 
@@ -182,7 +202,7 @@ class _InsightContainer extends ConsumerWidget {
     return Padding(
       padding: EdgeInsets.only(left: isUser ? 40 : 0),
       child: InkWell(
-        onTap: onTap,
+        onTap: insight.stagedForDeletion ? null : onTap,
         child: Container(
           decoration: BoxDecoration(
             color: isUser ? Theme.of(context).cardColor : Colors.transparent,
@@ -217,7 +237,6 @@ class _InsightContainer extends ConsumerWidget {
                           subtitle!,
                           style: TextStyle(fontStyle: FontStyle.italic),
                         ),
-                      if (widget != null) widget!,
                       if (markdownBody != null)
                         DefaultTextStyle(
                           style: isUser
@@ -245,6 +264,8 @@ class _InsightContainer extends ConsumerWidget {
                             ),
                           ),
                         ),
+                      if (widget != null) widget!,
+
                       if (body != null)
                         Text(body!, style: TextStyle(fontSize: 12.0)),
                       if (insight.markForDeletion)
@@ -412,6 +433,92 @@ class _InsightContainer extends ConsumerWidget {
                 ),
         ),
       ),
+    );
+  }
+}
+
+class RecommendedInsightWrap extends StatelessWidget {
+  const RecommendedInsightWrap({super.key, required this.insights});
+
+  final Insights insights;
+
+  @override
+  Widget build(BuildContext context) {
+    final navigator = DefaultNavigator.of(context);
+
+    final filter = insights.where(
+      (i) => i.maybeMap(
+        mindmap: (_) => true,
+        resource: (_) => true,
+        orElse: () => false,
+      ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 4,
+      children: [
+        Text(
+          "Recommended study",
+          style: TextStyle(
+            fontSize: 12.0,
+            color: Theme.of(context).textTheme.bodyLarge?.color?.withAlpha(155),
+          ),
+        ),
+        Wrap(
+          spacing: 3,
+          children: [
+            ...filter.map(
+              (i) => InkWell(
+                onTap: i.maybeMap(
+                  mindmap: (mindmap) =>
+                      () => navigator.push(
+                        MindmapScreen(mindmap: mindmap.mindmap),
+                      ),
+                  resource: (resource) =>
+                      () => navigator.push(
+                        ResourceScreen(tool: resource.resource),
+                      ),
+                  orElse: () => null,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: BoxBorder.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      width: 2.0,
+                    ),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  padding: EdgeInsets.all(2),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 2,
+                      children: [
+                        Icon(
+                          Icons.auto_awesome,
+                          size: 11.0,
+                          color: Colors.deepOrangeAccent,
+                        ),
+                        Text(
+                          i.maybeMap(
+                            resource: (r) => r.resource.title,
+                            mindmap: (m) => m.title,
+                            research: (r) => i.name,
+                            orElse: () => "orElse",
+                          ),
+                          style: TextStyle(fontSize: 11.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

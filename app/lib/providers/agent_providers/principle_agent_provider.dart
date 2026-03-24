@@ -20,7 +20,7 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
   DateTime? _lastCallTime;
 
   static const _kMinDiff = 100;
-  static const _kMinTime = 8;
+  static const _kMinTimeSeconds = 8;
   static const _similarityThreshold = 0.8;
   static const _deletionSimilarityThreshold = 0.9;
 
@@ -31,6 +31,10 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
   @override
   PrincipleAgentState build() {
     return PrincipleAgentState();
+  }
+
+  void runDailySummary() async {
+    final now = DateTime.now();
   }
 
   void runPrinciple(String value) async {
@@ -51,10 +55,10 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
       _checkDeletion(diff.deletions);
     }
 
-    if (diff.size > _kMinDiff && timeSinceLastCall > _kMinTime) {
+    if (diff.size > _kMinDiff && timeSinceLastCall > _kMinTimeSeconds) {
       noteContentNotifier.setPreviousContent(value);
       try {
-        // await _runPrinciple(diff);
+        await _runPrinciple(diff);
         _lastCallTime = now;
       } catch (e) {
         noteContentNotifier.setPreviousContent(prev);
@@ -77,7 +81,6 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     _runObserver();
 
     print("running principle");
-    print(ref.read(appNotifierProvider.notifier).apiKey);
 
     try {
       await retry(() async {
@@ -98,6 +101,8 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
           }
           history.add("${response.calls.map((call) => call.name)}");
         }
+
+        print("Principle calls: $calls");
 
         state = PrincipleAgentState(
           calls: calls,

@@ -2,6 +2,7 @@ import 'package:note_demo/agents/utils/tool_utils.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/models/insights.dart';
+import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 
 enum AgentRole {
@@ -111,7 +112,7 @@ enum AgentRole {
         return """
           You update the study-plan metadata based on student notes.
 
-          Be brief in your summaries.
+          Be brief in your summaries. Try to be broad with the title, and make sure to summarise the content in no more than 3 sentences
         """;
       case AgentRole.resourcer:
         return """
@@ -189,7 +190,7 @@ const kExternalResearchPromptPipe = [
         Respond in a comma seperated list.
          """,
   """
-       You are the second step in a resource fetching and synthesising pipeline. 
+      You are the second step in a resource fetching and synthesising pipeline. 
       Based on this list of resources, visit each one, then rank them in order of usefulness. make sure the links are valid.
       """,
   """

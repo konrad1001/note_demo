@@ -10,6 +10,7 @@ import 'package:note_demo/providers/agent_providers/principle_agent_provider.dar
 import 'package:note_demo/providers/agent_providers/research_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/resource_agent_provider.dart';
 import 'package:note_demo/providers/agent_providers/summary_agent_provider.dart';
+import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/focus_event_provider.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/modal_notifier.dart';
@@ -399,7 +400,9 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
                 label: "Set Key Date",
               ),
               SizedBox(width: 8),
-              // _ToolButton(),
+              _toolButton(() {
+                ref.read(appNotifierProvider.notifier).createOverview();
+              }, label: "Overview"),
             ],
           ),
         ),

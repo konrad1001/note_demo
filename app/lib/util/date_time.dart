@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 extension DateTimeX on DateTime {
   String _two(int n) => n.toString().padLeft(2, '0');
 
@@ -37,5 +39,10 @@ extension DateTimeX on DateTime {
     final month = _month(this.month);
 
     return "$month $day";
+  }
+
+  int formatDaysFromNow() {
+    final timeLeft = difference(DateTime.now());
+    return timeLeft.inDays;
   }
 }

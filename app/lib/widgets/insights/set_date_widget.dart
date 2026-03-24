@@ -59,7 +59,7 @@ class _KeyDateWidgetState extends ConsumerState<KeyDateWidget> {
             },
           ),
           Text(
-            "Set a key date to tell Cebes an important date or deadline you'd like to prepare for.",
+            "Set a key date for an important date or deadline you'd like to prepare for.",
             style: GoogleFonts.ptSerif(
               fontStyle: FontStyle.italic,
               textStyle: TextStyle(

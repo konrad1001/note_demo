@@ -5,9 +5,8 @@ import 'package:note_demo/widgets/resources/keyword_widget.dart';
 import 'package:note_demo/widgets/resources/qa_widget.dart';
 
 class ResourceScreen extends StatelessWidget {
-  const ResourceScreen({super.key, required this.colour, required this.tool});
+  const ResourceScreen({super.key, required this.tool});
 
-  final Color colour;
   final StudyTools tool;
 
   @override

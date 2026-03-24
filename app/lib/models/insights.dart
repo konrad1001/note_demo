@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_demo/agents/utils/embedding_service.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 import 'package:note_demo/models/gemini_response.dart';
+import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 
 part 'insights.freezed.dart';
@@ -93,6 +94,18 @@ abstract class Insight with _$Insight {
     required DateTime created,
   }) = _SetDateInsight;
 
+  const factory Insight.overview({
+    String? title,
+    DateTime? keyDate,
+    @Default([]) Insights recommendedInsights,
+    @Default([]) Insights recommendedActions,
+    required Embedding? queryEmbedding,
+    @Default(UserRating.neither) UserRating rating,
+    @Default(false) bool markForDeletion,
+    @Default(false) bool stagedForDeletion,
+    required DateTime created,
+  }) = _OverviewInsight;
+
   // Use for agent responses that shouldn't be displayed to the user, like steps in agent pipeline
   const factory Insight.meta({
     String? notes,
@@ -120,5 +133,19 @@ extension InsightX on Insight {
     functionCall: (_) => "Function call",
     error: (_) => "Error",
     setDate: (_) => "Set Date",
+    overview: (_) => "Overview",
   );
+}
+
+extension InsightsX on Insights {
+  Insights whereMaterial() => where(
+    (insight) => (insight.maybeMap(
+      resource: (_) => true,
+      mindmap: (_) => true,
+      research: (_) => true,
+      orElse: () => false,
+    )),
+  ).toList();
+
+  String print() => map((i) => i.name).join(", ");
 }

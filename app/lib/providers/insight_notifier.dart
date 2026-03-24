@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/mock/mocks.dart';
@@ -56,6 +58,30 @@ class InsightNotifier extends Notifier<Insights> {
     }).toList();
   }
 
+  void createOverview(String? title, DateTime? keyDate) {
+    final ratings = state
+        .whereMaterial()
+        .where((insight) => insight.rating.toValue > -1)
+        .toList();
+    ratings.sort((a, b) => b.rating.toValue.compareTo(a.rating.toValue));
+
+    final topNRatings = (ratings.isNotEmpty)
+        ? ratings.sublist(0, min(ratings.length, 2))
+        : ratings;
+
+    print(ratings.print());
+
+    append(
+      insight: Insight.overview(
+        title: title,
+        keyDate: keyDate,
+        recommendedInsights: topNRatings,
+        queryEmbedding: null,
+        created: DateTime.now(),
+      ),
+    );
+  }
+
   void deleteLast() {
     state.removeLast();
   }
@@ -80,7 +106,3 @@ class InsightNotifier extends Notifier<Insights> {
 final insightProvider = NotifierProvider<InsightNotifier, Insights>(
   () => InsightNotifier(),
 );
-
-extension InsightsX on Insights {
-  String print() => map((i) => "${i.name}.").join("");
-}

@@ -36,6 +36,13 @@ class AppNotifier extends Notifier<AppState> {
     return (fromEnv == "") ? state.apiKey : fromEnv;
   }
 
+  void createOverview() {
+    final keyDate = state.currentFileMetaData.keyDate;
+    final title = state.userSetFileName ?? state.autoFileName;
+
+    ref.read(insightProvider.notifier).createOverview(title, keyDate);
+  }
+
   void loadFromFile() async {
     final File? file = await ref.watch(fileServiceProvider).pickFile();
     final noteContentNotifer = ref.read(noteContentProvider.notifier);

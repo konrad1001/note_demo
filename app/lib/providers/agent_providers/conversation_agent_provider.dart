@@ -9,6 +9,7 @@ import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/providers/note_content_provider.dart';
+import 'package:note_demo/util/date_time.dart';
 import 'package:note_demo/util/error/errors.dart';
 import 'package:note_demo/util/future.dart';
 
@@ -26,6 +27,7 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     final insightNotifier = ref.read(insightProvider.notifier);
     final insights = ref.read(insightProvider);
     final principle = ref.read(principleAgentProvider);
+    final appNotifier = ref.read(appNotifierProvider);
 
     final newInsight = _insight(ChatRole.user, message);
 
@@ -44,7 +46,10 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
         message,
         verbose: true,
         history: chatHistory,
-        injectedSystemInstructions: principle.fingerprint,
+        injectedSystemInstructions: _injectedSystemPrompt(
+          principle.fingerprint,
+          appNotifier.currentFileMetaData.keyDate,
+        ),
         key: key,
       )) {
         if (chunk.calls.isNotEmpty) {
@@ -128,10 +133,13 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     );
   }
 
-  String _message(String message) {
-    final noteContent = ref.read(noteContentProvider);
-
-    return "$message";
+  String _injectedSystemPrompt(String? fingerprint, DateTime? keyDate) {
+    final prompt = "$fingerprint";
+    if (keyDate != null) {
+      return "$prompt. User has a key date scheduled for ${keyDate.formatDM()}. The current date is ${DateTime.now().formatDM()}";
+    } else {
+      return prompt;
+    }
   }
 
   Insight _insight(ChatRole role, String body, {bool isStreaming = false}) =>
