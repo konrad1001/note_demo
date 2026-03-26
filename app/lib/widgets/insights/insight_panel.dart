@@ -168,6 +168,8 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
       text = "Resourcing...";
     } else if (mapState.isLoading) {
       text = "Mapping...";
+    } else if (rState.isLoading) {
+      text = "Searching...";
     }
 
     if (text == null) {
@@ -201,15 +203,18 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
     }
 
     return Expanded(
-      child: Text(
-        text,
-        style: TextStyle(
-          color: text == "Idle"
-              ? Theme.of(context).textTheme.bodyMedium?.color
-              : Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.color?.withValues(alpha: 0.5),
-          fontSize: 14.0,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: text == "Idle"
+                ? Theme.of(context).textTheme.bodyMedium?.color
+                : Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.color?.withValues(alpha: 0.5),
+            fontSize: 14.0,
+          ),
         ),
       ),
     );
@@ -250,7 +255,7 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
                   ),
                 ],
               ),
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               child: Row(
                 children: [
                   Icon(
@@ -360,7 +365,7 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
           ),
         ),
         SizedBox(
-          height: 30,
+          height: 32,
           child: ListView(
             clipBehavior: Clip.none,
             scrollDirection: Axis.horizontal,
@@ -400,9 +405,6 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
                 label: "Set Key Date",
               ),
               SizedBox(width: 8),
-              _toolButton(() {
-                ref.read(appNotifierProvider.notifier).createOverview();
-              }, label: "Overview"),
             ],
           ),
         ),

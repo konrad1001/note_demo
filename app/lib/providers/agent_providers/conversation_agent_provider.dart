@@ -106,11 +106,17 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     }
   }
 
-  void _callback() async {
+  void _callback(String? resultText) async {
+    print("Running callback");
+    var result = resultText;
+    if (resultText == null) {
+      result = "Generation Completed Successfully";
+    }
+
     final insights = ref.read(insightProvider);
     final insightNotifier = ref.read(insightProvider.notifier);
     final functionCallResponse = Insight.meta(
-      notes: "Result of function call: Success",
+      notes: "Result of function call: $result",
       queryEmbedding: null,
     );
 
@@ -118,7 +124,7 @@ class ConversationAgentNotifier extends Notifier<ConversationAgentState> {
     final history = _generateHistory(insights);
 
     final response = await _model.fetch(
-      "Result of function call: Generation Completed Successfully",
+      "Result of function call: $result",
       history: history,
       key: ref.read(appNotifierProvider.notifier).apiKey,
     );

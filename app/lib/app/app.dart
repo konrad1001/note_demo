@@ -49,7 +49,6 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final _ = ref.watch(observerAgentProvider);
         final _ = ref.watch(researchAgentProvider);
         final _ = ref.watch(resourceAgentProvider);
         final _ = ref.watch(mindmapAgentProvider);

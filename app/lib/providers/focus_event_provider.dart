@@ -64,7 +64,7 @@ class FocusEventNotifier extends Notifier<FocusEvent?> {
     }
   }
 
-  _runFromCall(GeminiFunctionResponse call, VoidCallback? callback) async {
+  _runFromCall(GeminiFunctionResponse call, Function(String?)? callback) async {
     print(call.args);
     final args = call.args.values.toList();
     print(args);
@@ -100,7 +100,7 @@ class FocusEventNotifier extends Notifier<FocusEvent?> {
           insight: Insight.functionCall(function: call, queryEmbedding: null),
         );
 
-    callback?.call();
+    callback?.call(null);
   }
 
   Future<void> _runCountdown(

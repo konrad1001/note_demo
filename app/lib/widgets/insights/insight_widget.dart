@@ -93,7 +93,9 @@ class InsightWidget extends StatelessWidget {
       overview: (overview) => _InsightContainer(
         title: _overviewTitle(),
         markdownBody: _overviewBody(overview.title, overview.keyDate),
-        widget: RecommendedInsightWrap(insights: overview.recommendedInsights),
+        widget: (overview.recommendedInsights.isNotEmpty)
+            ? RecommendedInsightWrap(insights: overview.recommendedInsights)
+            : null,
         rateable: false,
         colour: NTheme.primary,
         date: DateTime.now(),

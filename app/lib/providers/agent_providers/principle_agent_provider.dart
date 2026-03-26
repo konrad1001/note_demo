@@ -33,11 +33,9 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     return PrincipleAgentState();
   }
 
-  void runDailySummary() async {
-    final now = DateTime.now();
-  }
-
   void runPrinciple(String value) async {
+    if (!state.isOn) return;
+
     final now = DateTime.now();
     final timeSinceLastCall = _lastCallTime != null
         ? now.difference(_lastCallTime!).inSeconds
@@ -55,6 +53,8 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
       _checkDeletion(diff.deletions);
     }
 
+    if (diff.deletions.length > diff.additions.length) return;
+
     if (diff.size > _kMinDiff && timeSinceLastCall > _kMinTimeSeconds) {
       noteContentNotifier.setPreviousContent(value);
       try {
@@ -71,6 +71,8 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     if (isMock) return;
 
     state = state.copyWith(isLoading: true, calls: []);
+
+    _deleteStagedInsights();
 
     final isFresh = await _checkWithInsights(diff.additions);
     if (!isFresh) {
@@ -115,6 +117,10 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
       state = state.copyWith(isLoading: false);
       rethrow;
     }
+  }
+
+  void setIsOn(bool value) {
+    state = state.copyWith(isOn: value, calls: []);
   }
 
   Future<void> _runObserver() async {
@@ -183,6 +189,10 @@ class PrincipleAgentNotifier extends Notifier<PrincipleAgentState> {
     }
 
     return true;
+  }
+
+  void _deleteStagedInsights() {
+    ref.read(insightProvider.notifier).deleteStateInsights();
   }
 }
 

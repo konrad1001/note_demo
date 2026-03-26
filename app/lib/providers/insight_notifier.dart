@@ -101,6 +101,14 @@ class InsightNotifier extends Notifier<Insights> {
   Insights getChatHistory() {
     return state.where((i) => i.name == "Chat").toList();
   }
+
+  void deleteStateInsights() {
+    for (var insight in state) {
+      if (insight.stagedForDeletion) {
+        deleteInsight(insight);
+      }
+    }
+  }
 }
 
 final insightProvider = NotifierProvider<InsightNotifier, Insights>(

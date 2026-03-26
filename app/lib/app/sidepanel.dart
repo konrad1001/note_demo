@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
+import 'package:note_demo/providers/app_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 import 'package:note_demo/screens/debug_screen.dart';
 import 'package:note_demo/screens/tester_screen.dart';
@@ -14,7 +17,7 @@ typedef MenuBarFunctions = ({
   Function() openTestView,
 });
 
-class SidePanelWidget extends StatelessWidget {
+class SidePanelWidget extends ConsumerWidget {
   const SidePanelWidget({
     super.key,
     required this.functions,
@@ -27,7 +30,9 @@ class SidePanelWidget extends StatelessWidget {
   final Build buildType;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isPrincipleOn = ref.watch(principleAgentProvider).isOn;
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 64,
@@ -41,6 +46,7 @@ class SidePanelWidget extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _menuButton("Open File", functions.openFile, context),
             _menuButton("Save", functions.saveFile, context),
@@ -56,17 +62,31 @@ class SidePanelWidget extends StatelessWidget {
                 context,
                 dontAutoPop: true,
               ),
-            _menuButton(
-              "Open Test Panel",
-              () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (context) => TesterScreen()));
-              },
-              context,
-              dontAutoPop: true,
-            ),
             _themeToggle(context, functions.toggleTheme),
+            _principleToggle(
+              context,
+              value: isPrincipleOn,
+              onValueChanged: (newValue) {
+                ref.read(principleAgentProvider.notifier).setIsOn(newValue);
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+              child: Opacity(opacity: 0.5, child: Divider()),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 8.0),
+              child: Opacity(
+                opacity: 0.5,
+                child: Text(
+                  "TEST COMMANDS",
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            _menuButton("Generate daily overview", () {
+              ref.read(appNotifierProvider.notifier).createOverview();
+            }, context),
           ],
         ),
       ),
@@ -103,6 +123,7 @@ class SidePanelWidget extends StatelessWidget {
             onValueChanged: (ThemeMode mode) {
               onValueChanged(mode);
             },
+            selectedColor: null,
             children: const {
               ThemeMode.light: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12),
@@ -111,6 +132,41 @@ class SidePanelWidget extends StatelessWidget {
               ThemeMode.dark: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12),
                 child: Text('Dark'),
+              ),
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _principleToggle(
+    BuildContext context, {
+    required bool value,
+    required Function(bool) onValueChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Text(
+            "Autorun insights",
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+          Spacer(),
+          CupertinoSegmentedControl<bool>(
+            groupValue: value,
+            onValueChanged: (bool newValue) {
+              onValueChanged(newValue);
+            },
+            children: const {
+              true: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text('On'),
+              ),
+              false: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text('Off'),
               ),
             },
           ),

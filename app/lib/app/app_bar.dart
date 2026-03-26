@@ -47,7 +47,7 @@ class NoteAppBar extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 const SizedBox(width: 44),
                 _NoteTitle(),
-                const SizedBox(width: 48),
+                const SizedBox(width: 46),
               ],
             ),
           ),

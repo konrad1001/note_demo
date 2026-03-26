@@ -29,7 +29,7 @@ void main() async {
 
     WindowOptions windowOptions = WindowOptions(
       title: "Notable",
-      size: Size(1250, 600),
+      size: Size(1250, 800),
       minimumSize: Size(1000, 600),
       skipTaskbar: false,
       alwaysOnTop: false,

@@ -43,6 +43,9 @@ class AgentPipeline {
           key: key,
         );
         responseChain.add(next.content);
+        print(
+          "Prompting: ${'$prompt ${responseChain.last}'}\n. Result: ${next.content}",
+        );
         yield PipelineResult.step(object: next.content, index: i + 1);
       } catch (e) {
         responseChain.add(e.toString());

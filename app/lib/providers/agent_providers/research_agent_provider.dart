@@ -31,20 +31,23 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
           final call = idle.callsMe(kExternalResearchNotifierToolName);
 
           if (call != null && on) {
-            _updateResearch(call);
+            _updateResearch(call, null);
           }
       }
     });
     ref.listen<ConversationAgentState>(conversationAgentProvider, (prev, next) {
       final call = next.callsMe(kExternalResearchNotifierToolName);
       if (call != null) {
-        _updateResearch(call);
+        _updateResearch(call, next.callback);
       }
     });
   }
 
   // Uses principle diff only
-  void _updateResearch(GeminiFunctionResponse call) async {
+  void _updateResearch(
+    GeminiFunctionResponse call,
+    Function(String?)? onFinish,
+  ) async {
     state = state.copyWith(isLoading: true, pipeLevel: 0);
 
     final diff = ref.read(principleAgentProvider).diff?.additions;
@@ -55,10 +58,7 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
       3,
       promptPipe: kExternalResearchPromptPipe,
       key: ref.read(appNotifierProvider.notifier).apiKey,
-
-      // additionalPromptInput: call  TODO: FIX
-      //     .args
-      //     .first, // Cheeky but I know this type of call will only have one argument.
+      additionalPromptInput: call.args['additional_instructions'],
     );
 
     await for (final result in pipeline.fetch(diff)) {
@@ -77,12 +77,19 @@ class ResearchAgentNotifier extends Notifier<ResearchAgentState> {
                     queryEmbedding: embedding,
                   ),
                 );
+
+            print(onFinish);
+            onFinish?.call(null);
+          } else {
+            onFinish?.call("Failed to find a resource for this topic!");
           }
 
           state = state.copyWith(isLoading: false, content: finished.object);
         },
         error: (error) {
           print("failed to fetch research: ${error.toString()}");
+          onFinish?.call("Hit an api error!");
+
           state = state.copyWith(isLoading: false);
         },
         orElse: () {},

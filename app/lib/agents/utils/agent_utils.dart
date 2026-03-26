@@ -184,8 +184,8 @@ Insight createChatIntro() => Insight.chat(
 const kExternalResearchPromptPipe = [
   """
         You are the first step in a resource fetching and synthesising pipeline. 
-        Your job is to return up to 4 links for online content related to the provided content.
-        It can be blog posts, articles or youtube videos. 
+        Your job is to search the web, and return up to 4 links for online content related to the provided content.
+        It can be blog posts, articles or youtube videos, this may be specified in the prompt. 
 
         Respond in a comma seperated list.
          """,

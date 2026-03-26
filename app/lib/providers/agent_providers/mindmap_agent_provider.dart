@@ -32,7 +32,7 @@ class MindmapAgentNotifier extends Notifier<MindmapAgentState> {
     ref.listen<PrincipleAgentState>(principleAgentProvider, (prev, next) {
       final call = next.callsMe(kMindmapNotifierToolName);
       if (call != null) {
-        _update(call, () {});
+        _update(call, null);
       }
     });
     ref.listen<ConversationAgentState>(conversationAgentProvider, (prev, next) {
@@ -44,7 +44,7 @@ class MindmapAgentNotifier extends Notifier<MindmapAgentState> {
   }
 
   // Uses entire User notes.
-  void _update(GeminiFunctionResponse call, VoidCallback? onFinish) async {
+  void _update(GeminiFunctionResponse call, Function(String?)? onFinish) async {
     state = state.copyWith(isLoading: true);
     final notes = ref.read(noteContentProvider).text;
 
@@ -70,7 +70,7 @@ class MindmapAgentNotifier extends Notifier<MindmapAgentState> {
               ),
             );
 
-        onFinish?.call();
+        onFinish?.call(null);
       });
     } catch (e) {
       state = state.copyWith(isLoading: false);

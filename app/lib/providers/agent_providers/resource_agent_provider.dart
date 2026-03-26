@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/agents/utils/agent_utils.dart';
 import 'package:note_demo/agents/gpt_agent.dart';
@@ -46,7 +44,10 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
   }
 
   // Uses principle diff only. All content if called from conversation
-  void _updateTools(GeminiFunctionResponse call, VoidCallback? onFinish) async {
+  void _updateTools(
+    GeminiFunctionResponse call,
+    Function(String?)? onFinish,
+  ) async {
     state = state.copyWith(isLoading: true);
     final content = (onFinish == null)
         ? ref.read(principleAgentProvider).diff?.additions ?? ""
@@ -76,12 +77,13 @@ class ResourceAgentNotifier extends Notifier<ResourceAgentState> {
                 queryEmbedding: null,
               ),
             );
-        onFinish?.call();
+        onFinish?.call(null);
       }, retries: _retryLimit);
     } catch (e) {
       state = state.copyWith(isLoading: false);
       handleException(e, ref);
       print("Resource agent _updateTools error: $e");
+      onFinish?.call("Error, failed to generate!");
     }
   }
 

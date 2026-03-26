@@ -90,6 +90,7 @@ abstract class PrincipleAgentState extends AgentState
     @Default([]) List<String> callHistory,
     UserDiff? diff,
     @Default(false) bool isLoading,
+    @Default(true) bool isOn,
     String? fingerprint,
   }) = _PrincipleAgentState;
 }
@@ -146,7 +147,7 @@ abstract class ConversationAgentState extends AgentState
   const factory ConversationAgentState({
     @Default([]) List<GeminiFunctionResponse> calls,
     @Default(false) bool isLoading,
-    void Function()? callback,
+    void Function(String?)? callback,
   }) = _ConversationAgentState;
 }
 
