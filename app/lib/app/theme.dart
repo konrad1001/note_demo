@@ -21,6 +21,7 @@ final ThemeData lightTheme = ThemeData(
     foregroundColor: Colors.black,
   ),
   colorScheme: ColorScheme.light(primary: Colors.blueAccent),
+  shadowColor: Color.fromARGB(173, 255, 255, 255),
 );
 
 final ThemeData darkTheme = ThemeData(
@@ -36,4 +37,5 @@ final ThemeData darkTheme = ThemeData(
     foregroundColor: Colors.white,
   ),
   colorScheme: ColorScheme.dark(primary: Colors.blueAccent),
+  shadowColor: Color.fromARGB(56, 80, 80, 80),
 );

@@ -42,7 +42,7 @@ class InsightWidget extends StatelessWidget {
         insight: insight,
       ),
       research: (research) => _InsightContainer(
-        colour: NTheme.primary,
+        colour: Colors.lightGreen,
         title: "I found you a resource...",
         markdownBody: research.research,
         date: research.created,
@@ -97,7 +97,7 @@ class InsightWidget extends StatelessWidget {
             ? RecommendedInsightWrap(insights: overview.recommendedInsights)
             : null,
         rateable: false,
-        colour: NTheme.primary,
+        colour: Colors.cyan,
         date: DateTime.now(),
         insight: insight,
       ),
@@ -117,7 +117,7 @@ class InsightWidget extends StatelessWidget {
   }
 
   String _overviewBody(String? title, DateTime? keyDate) {
-    return "Welcome back to your notes${(title == null) ? "" : " on $title"}. ${(keyDate != null) ? "You have ${keyDate.formatDaysFromNow()} days to go until your key date." : ""} Well done for checking in!";
+    return "Welcome back to your notes${(title == null) ? "" : " on $title"}. ${(keyDate != null) ? "You have ${keyDate.formatDaysFromNow()} days to go until your key date." : ""} Well done for checking in! \nWhat should we tackle today?";
   }
 }
 

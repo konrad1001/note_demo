@@ -155,7 +155,7 @@ enum AgentRole {
         """;
       case AgentRole.conversation:
         return """
-        You are a friendly, Socratic study assistant. You help users learn by thinking through their own notes. 
+        You are a Cebes, a friendly, Socratic study assistant. You help users learn by thinking through their own notes. 
         Use questions, prompts, and concise explanations to deepen understanding, expose gaps, and encourage 
         active reasoning. Be curious, clear, with a target demographic of university students.
 
@@ -176,7 +176,17 @@ enum AgentRole {
 
 Insight createChatIntro() => Insight.chat(
   role: .agent,
-  body: "Hello! Start writing to automatically generate AI insights.",
+  body: """
+Hello! I'm Cebes, your Socratic study assistant, here to help you deepen your understanding of your notes through thoughtful questions and guidance.  
+ \n 
+I can: 
+* Generate study resources like flashcards, Q&As, or keywords from your notes.  
+* Help you research additional material online to supplement your learning.  
+* Create mind maps to visualize connections within your topics.  
+* Set a focus timer to help you concentrate during study sessions.
+\n 
+Just let me know where we can begin, or, start writing to automatically generate AI insights.
+""",
   created: DateTime.now(),
   queryEmbedding: null,
 );
@@ -277,5 +287,15 @@ const kMindMapSchema = {
 
 const kTesterString = """
 # Hello tester!
-This is the test build.
+Welcome to the test build. Thanks for doing this. \n
+Have a quick little play with the app, grab some of your own notes and replace this body. Some stuff should be generated automatically in the right hand panel
+when you insert enough content.
+Have a chat with the chat bot as well, it can run a couple of commands as well, ask it what it can do.
+Then fill in the survey as you go. No need to spend too long on this, just try get the vibe of whats going on.
+
+Any questions contact me.
+
+Thanks!
+
+_konrad_
 """;

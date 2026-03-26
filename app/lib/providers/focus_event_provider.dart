@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_demo/models/gemini_response.dart';
 import 'package:note_demo/models/insights.dart';
 import 'package:note_demo/providers/agent_providers/conversation_agent_provider.dart';
+import 'package:note_demo/providers/agent_providers/principle_agent_provider.dart';
 import 'package:note_demo/providers/insight_notifier.dart';
 import 'package:note_demo/providers/models/models.dart';
 
@@ -39,8 +40,12 @@ class FocusEventNotifier extends Notifier<FocusEvent?> {
           ),
         );
 
+    ref.read(principleAgentProvider.notifier).setIsOn(false);
+
     _runCountdown(event.duration, () {
       print("Event finished");
+      ref.read(principleAgentProvider.notifier).setIsOn(true);
+
       state = null;
     });
   }

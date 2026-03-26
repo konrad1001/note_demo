@@ -31,7 +31,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   late final TabController _tabController;
   late final TextEditingController _notesController = TextEditingController();
 
-  var isRightPanelOpen = !(Platform.isAndroid || Platform.isIOS);
+  var isRightPanelOpen = false;
 
   @override
   void initState() {

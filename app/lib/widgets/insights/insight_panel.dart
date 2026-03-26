@@ -57,7 +57,7 @@ class _InsightPanelState extends ConsumerState<InsightPanel> {
               reverse: true,
               padding: EdgeInsets.fromLTRB(
                 12,
-                12,
+                100,
                 12,
                 _interfacePadding + (isMobile ? 32 : 20) + 60,
               ),
@@ -75,14 +75,8 @@ class _InsightPanelState extends ConsumerState<InsightPanel> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Theme.of(context).cardColor.withValues(alpha: 0.2),
-                    Theme.of(
-                      context,
-                    ).scaffoldBackgroundColor.withValues(alpha: 1.0),
-                  ],
-                  stops: const [0.0, 0.3, 1.0],
+                  colors: [Colors.transparent, Colors.transparent],
+                  stops: const [0.0, 1.0],
                 ),
               ),
               child: Padding(
@@ -237,23 +231,10 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(32.0),
-                color: Theme.of(context).scaffoldBackgroundColor.withValues(
-                  red: 0.2,
-                  green: 0.2,
-                  blue: 0.2,
-                  alpha: 0.4,
-                ),
+                color: Theme.of(context).shadowColor,
                 border: BoxBorder.all(
                   color: const Color.fromARGB(56, 255, 255, 255),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    spreadRadius: 0.3,
-                    blurRadius: 4.0,
-                    offset: Offset(-1, 2),
-                  ),
-                ],
               ),
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               child: Row(
@@ -314,23 +295,18 @@ class _AgentInterfaceState extends ConsumerState<_AgentInterface> {
         ClipRRect(
           borderRadius: BorderRadius.circular(32.0),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
+            filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
             child: Container(
               key: _textFieldKey,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(32.0),
-                color: Theme.of(context).scaffoldBackgroundColor.withValues(
-                  red: 0.2,
-                  green: 0.2,
-                  blue: 0.2,
-                  alpha: 0.4,
-                ),
+                color: Theme.of(context).shadowColor,
                 border: BoxBorder.all(
-                  color: const Color.fromARGB(56, 255, 255, 255),
+                  color: const Color.fromARGB(56, 225, 225, 225),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black12,
+                    color: const Color.fromARGB(0, 0, 0, 0),
                     spreadRadius: 0.3,
                     blurRadius: 4.0,
                     offset: Offset(-1, 2),

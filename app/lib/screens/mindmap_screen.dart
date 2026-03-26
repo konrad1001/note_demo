@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:note_demo/models/agent_responses/models.dart';
 
-import 'package:flutter/material.dart';
-import 'dart:math' as math;
-
 class MindmapScreen extends StatefulWidget {
   final MindMap mindmap;
 
@@ -226,6 +223,7 @@ class MindMapFullPainter extends CustomPainter {
       style: TextStyle(
         fontSize: node.parentId == null ? 16.0 : 14.0,
         fontWeight: node.parentId == null ? FontWeight.bold : FontWeight.normal,
+        color: Theme.of(context).textTheme.bodyLarge?.color,
       ),
     );
 
