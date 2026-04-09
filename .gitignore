@@ -47,6 +47,8 @@ app.*.map.json
 config.json
 notes*.md
 
+todo.md
+
 # Auto-generated
 *.g.dart
 *.freezed.dart
